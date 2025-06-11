@@ -1,0 +1,37 @@
+.bg-static {
+  background-image: url("/images/prova_6.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+}
+
+.bg-gradient {
+  background: linear-gradient(
+    270deg,
+    #140042,
+    #2b3b83,
+    #4c66b5,
+    #6180c7,
+    #6180c7,
+    #4c66b5,
+    #2b3b83,
+    #140042
+  );
+  background-size: 1000% 1000%;
+  animation: gradientBG 20s ease-in-out infinite;
+  min-height: 100vh;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
