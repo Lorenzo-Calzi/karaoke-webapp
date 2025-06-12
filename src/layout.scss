@@ -10,16 +10,15 @@
 .bg-gradient {
   background: linear-gradient(
     270deg,
-    #140042,
-    #2b3b83,
-    #4c66b5,
-    #6180c7,
-    #6180c7,
-    #4c66b5,
-    #2b3b83,
-    #140042
+    #000000,
+    #5e0e0e,
+    #aa1d1d,
+    #b22626,
+    #aa1d1d,
+    #5e0e0e,
+    #000000
   );
-  background-size: 1000% 1000%;
+  background-size: 1400% 1400%;
   animation: gradientBG 20s ease-in-out infinite;
   min-height: 100vh;
 }

@@ -9,6 +9,7 @@
 
   .title {
     color: white;
+    font-family: "Orbitron", sans-serif;
   }
 
   .social_list {
@@ -22,14 +23,15 @@
       margin: 0.5rem;
       text-align: center;
       color: white;
-      font-weight: 600;
+      font-weight: 400;
+      font-family: "Orbitron", sans-serif;
     }
 
     .social_button {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 0.7rem;
       border: none;
       border-radius: 50px;
       font-size: 1rem;
@@ -38,8 +40,7 @@
       box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
       .social_image {
-        width: 45px;
-        height: 45px;
+        width: 3.5rem;
         border-radius: 50%;
         object-fit: cover;
         margin-right: auto;

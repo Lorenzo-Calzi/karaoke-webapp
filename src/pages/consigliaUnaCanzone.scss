@@ -1,11 +1,11 @@
 .consigliaUnaCanzone {
-  padding: 1rem 0;
+  padding: 2rem 0;
   text-align: center;
   color: white;
 
   .title {
     margin: 0;
-    padding-top: 1rem;
+    font-family: "Orbitron", sans-serif;
   }
 
   .tabs {
@@ -24,6 +24,7 @@
       border-bottom: 2px solid transparent;
       border-radius: 0;
       outline: none;
+      color: white;
 
       &.active {
         border-color: white;
@@ -43,6 +44,7 @@
     border-radius: 4px;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     background-color: white;
+    font-size: 1rem;
   }
 
   .song_list {
