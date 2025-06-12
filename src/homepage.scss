@@ -35,13 +35,13 @@
       font-size: 1rem;
       background-color: #f2f2f2;
       box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-      transition: transform 0.2s ease;
+      transform: scale(1);
+      transition: transform 0.15s ease;
       outline: none;
       cursor: pointer;
 
-      &.clicked {
+      &:active {
         transform: scale(0.92);
-        transition: transform 150ms ease;
       }
 
       i {
