@@ -16,7 +16,8 @@ function Homepage() {
 
     return (
         <div className="homepage container">
-            <img className="logo" src="/images/karaoke_logo_3.png" alt="logo karaoke" />
+            TEST
+            {/* <img className="logo" src="/images/karaoke_logo_3.png" alt="logo karaoke" />
             <div>
                 <h3 className="title">È il tuo momento!</h3>
                 <h3 className="title">Scegli un’opzione:</h3>
@@ -46,7 +47,7 @@ function Homepage() {
                     <i className="fa-brands fa-instagram"></i>
                     <span>Social</span>
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 }
