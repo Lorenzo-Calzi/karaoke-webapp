@@ -1,6 +1,7 @@
 .bg-static {
   display: flex;
   min-height: 100dvh;
+  max-width: 100dvh;
   overflow: hidden;
   background-image: url("/images/background.jpg");
   background-repeat: no-repeat;
