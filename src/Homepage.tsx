@@ -1,18 +1,18 @@
 import "./homepage.scss";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { useState } from "react";
 
 function Homepage() {
-    const navigate = useNavigate();
-    const [clickedBtn, setClickedBtn] = useState<string | null>(null);
+    // const navigate = useNavigate();
+    // const [clickedBtn, setClickedBtn] = useState<string | null>(null);
 
-    const handleClick = (path: string, key: string) => {
-        setClickedBtn(key);
-        setTimeout(() => {
-            setClickedBtn(null);
-            navigate(path);
-        }, 150);
-    };
+    // const handleClick = (path: string, key: string) => {
+    //     setClickedBtn(key);
+    //     setTimeout(() => {
+    //         setClickedBtn(null);
+    //         navigate(path);
+    //     }, 150);
+    // };
 
     return (
         <div className="homepage container">
