@@ -1,23 +1,22 @@
 import "./homepage.scss";
-// import { useNavigate } from "react-router-dom";
-// import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Homepage() {
-    // const navigate = useNavigate();
-    // const [clickedBtn, setClickedBtn] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const [clickedBtn, setClickedBtn] = useState<string | null>(null);
 
-    // const handleClick = (path: string, key: string) => {
-    //     setClickedBtn(key);
-    //     setTimeout(() => {
-    //         setClickedBtn(null);
-    //         navigate(path);
-    //     }, 150);
-    // };
+    const handleClick = (path: string, key: string) => {
+        setClickedBtn(key);
+        setTimeout(() => {
+            setClickedBtn(null);
+            navigate(path);
+        }, 150);
+    };
 
     return (
         <div className="homepage container">
-            TEST
-            {/* <img className="logo" src="/images/karaoke_logo_3.png" alt="logo karaoke" />
+            <img className="logo" src="/images/karaoke_logo_3.png" alt="logo karaoke" />
             <div>
                 <h3 className="title">È il tuo momento!</h3>
                 <h3 className="title">Scegli un’opzione:</h3>
@@ -47,7 +46,7 @@ function Homepage() {
                     <i className="fa-brands fa-instagram"></i>
                     <span>Social</span>
                 </button>
-            </div> */}
+            </div>
         </div>
     );
 }

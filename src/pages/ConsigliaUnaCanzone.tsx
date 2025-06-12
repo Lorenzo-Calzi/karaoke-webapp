@@ -69,9 +69,10 @@ export default function ConsigliaUnaCanzone() {
         try {
             const response = await fetch(
                 `https://itunes.apple.com/search?term=${encodeURIComponent(
-                    trimmed
-                )}&entity=song&limit=50`
+                    searchTerm
+                )}&entity=song&country=IT&limit=50`
             );
+
             const data = await response.json();
 
             const loweredWords = normalizeText(trimmed).split(/\s+/);
@@ -98,7 +99,14 @@ export default function ConsigliaUnaCanzone() {
                 const isExcludedByTitle = excludedKeywords.some(k => title.includes(k));
                 const isExcludedByAlbum = excludedAlbums.some(a => album.includes(a));
 
-                return isRelevant && !isExcludedByTitle && !isExcludedByAlbum;
+                const isValid =
+                    typeof s.trackId === "number" &&
+                    s.trackId > 0 &&
+                    s.trackName?.trim() &&
+                    s.artistName?.trim() &&
+                    s.artworkUrl100?.trim();
+
+                return isRelevant && !isExcludedByTitle && !isExcludedByAlbum && isValid;
             });
 
             const uniqueMap = new Map<string, ITunesSong>();
@@ -266,27 +274,43 @@ export default function ConsigliaUnaCanzone() {
                 return;
             }
 
-            const fetchedDetails: ITunesSong[] = [];
+            try {
+                const { data, error } = await supabase
+                    .from("votes")
+                    .select("trackId, title, artist, artworkUrl100")
+                    .eq("voterId", voterId);
 
-            for (const trackId of votedSongs) {
-                try {
-                    const response = await fetch(`https://itunes.apple.com/lookup?id=${trackId}`);
-                    const data = await response.json();
-                    const song = data.results?.[0];
-                    if (song) {
-                        fetchedDetails.push({
+                if (error) {
+                    console.error("Errore nel recuperare dettagli:", error.message);
+                    setLoadingVotedSongs(false);
+                    return;
+                }
+
+                // Rimuovi eventuali duplicati
+                const unique = new Map<number, ITunesSong>();
+                for (const song of data) {
+                    if (
+                        song.trackId &&
+                        song.title &&
+                        song.artist &&
+                        song.artworkUrl100 &&
+                        !unique.has(song.trackId)
+                    ) {
+                        unique.set(song.trackId, {
                             trackId: song.trackId,
-                            trackName: song.trackName,
-                            artistName: song.artistName,
+                            trackName: song.title,
+                            artistName: song.artist,
                             artworkUrl100: song.artworkUrl100
                         });
                     }
-                } catch (error) {
-                    console.error("Errore nel recuperare dettagli:", error);
                 }
-            }
 
-            setVotedSongsDetails(fetchedDetails);
+                setVotedSongsDetails(Array.from(unique.values()));
+            } catch (e) {
+                console.error("Errore nel recuperare dettagli:", e);
+            } finally {
+                setLoadingVotedSongs(false);
+            }
         };
 
         fetchVotedSongsDetails();
