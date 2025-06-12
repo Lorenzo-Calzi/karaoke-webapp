@@ -7,7 +7,7 @@ function Homepage() {
     const handleClick = (path: string) => {
         setTimeout(() => {
             navigate(path);
-        }, 300);
+        }, 200);
     };
 
     return (
