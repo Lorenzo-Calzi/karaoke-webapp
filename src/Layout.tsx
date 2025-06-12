@@ -10,7 +10,7 @@ function Layout() {
         if (path === "/canzoni" || path === "/consigliaci") {
             return "bg-gradient";
         } else {
-            return "bg-gradient";
+            return "bg-static";
         }
     };
 
