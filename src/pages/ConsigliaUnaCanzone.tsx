@@ -125,8 +125,8 @@ export default function ConsigliaUnaCanzone() {
     ) => {
         const alreadyVoted = votedSongs.includes(trackId);
 
-        // ⛔ Limite di 5 voti
-        if (!alreadyVoted && votedSongs.length >= 5) {
+        // ⛔ Limite di 3 voti
+        if (!alreadyVoted && votedSongs.length >= 3) {
             return;
         }
 
@@ -295,8 +295,8 @@ export default function ConsigliaUnaCanzone() {
     return (
         <div className="consigliaUnaCanzone container">
             <h2 className="title">Consigliaci delle canzoni</h2>
-            <p>Chiedi al DJ di suonare la tua canzone preferita</p>
-            <p>Canzoni votate: {votedSongs.length}/5</p>
+            <p>Chiedi al DJ di suonare le tue canzoni preferite</p>
+            <p>Canzoni votate: {votedSongs.length}/3</p>
 
             <div className="tabs">
                 <button
@@ -388,7 +388,7 @@ export default function ConsigliaUnaCanzone() {
                                     <div
                                         className={`song_vote ${
                                             !votedSongs.includes(song.trackId) &&
-                                            votedSongs.length >= 5
+                                            votedSongs.length >= 3
                                                 ? "disabled"
                                                 : ""
                                         }`}
@@ -439,7 +439,7 @@ export default function ConsigliaUnaCanzone() {
                                 </div>
                                 <div
                                     className={`song_vote ${
-                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 5
+                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 3
                                             ? "disabled"
                                             : ""
                                     }`}
