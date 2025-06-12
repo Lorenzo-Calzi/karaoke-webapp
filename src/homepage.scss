@@ -41,6 +41,7 @@
 
       &.clicked {
         transform: scale(0.92);
+        transition: transform 150ms ease;
       }
 
       i {

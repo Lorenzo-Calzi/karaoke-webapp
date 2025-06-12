@@ -1,6 +1,6 @@
 import "./homepage.scss";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Homepage() {
     const navigate = useNavigate();
@@ -8,11 +8,19 @@ function Homepage() {
 
     const handleClick = (path: string, key: string) => {
         setClickedBtn(key);
+
         setTimeout(() => {
             setClickedBtn(null);
-            navigate(path);
         }, 150);
+
+        setTimeout(() => {
+            navigate(path);
+        }, 200);
     };
+
+    useEffect(() => {
+        setClickedBtn(null);
+    }, []);
 
     return (
         <div className="homepage container">
