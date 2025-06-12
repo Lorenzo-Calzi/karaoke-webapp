@@ -52,11 +52,12 @@ export default function Social() {
                             rel="noopener noreferrer"
                             className="social_button"
                         >
-                            <img
+                            <div className="social_image"></div>
+                            {/* <img
                                 src={profile.profileImage}
                                 alt={profile.username}
                                 className="social_image"
-                            />
+                            /> */}
                             <span className="social_username">{profile.username}</span>
                         </a>
                     </div>
