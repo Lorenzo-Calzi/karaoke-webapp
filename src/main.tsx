@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 
+import ScrollToTop from "./ScrollToTop";
 import Layout from "./Layout";
 import Homepage from "./Homepage";
 import ListaCanzoni from "./pages/ListaCanzoni";
@@ -12,6 +13,7 @@ import Social from "./pages/Social";
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
                 <Route element={<Layout />}>
                     <Route path="/" element={<Homepage />} />
