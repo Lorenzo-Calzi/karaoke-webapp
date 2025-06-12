@@ -1,20 +1,10 @@
 .bg-static {
-  //   display: flex;
-  //   min-height: 100dvh;
-  //   background-image: url("/images/background.jpg");
-  //   background-repeat: no-repeat;
-  //   background-size: cover;
-  //   background-position: center;
-
   display: flex;
-  flex-direction: column;
-  min-height: 100dvh; /* usa min-height, NON height */
+  min-height: 100dvh;
   background-image: url("/images/background.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background-color: #000; // fallback per evitare bianco
-  overflow: hidden;
 }
 
 .bg-gradient {
