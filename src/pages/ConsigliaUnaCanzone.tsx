@@ -321,6 +321,10 @@ export default function ConsigliaUnaCanzone() {
             <h2 className="title">Consigliaci delle canzoni</h2>
             <p>Chiedi al DJ di suonare le tue canzoni preferite</p>
             <p>Canzoni votate: {votedSongs.length}/3</p>
+            {/* <p>/</p>
+            <p>/</p>
+            <p>/</p>
+            <p>/</p> */}
 
             <div className="tabs">
                 <button

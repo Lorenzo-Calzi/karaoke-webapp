@@ -1,7 +1,7 @@
 .bg-static {
   display: flex;
   min-height: 100dvh;
-  background-image: url("/images/background.jpg");
+  background-image: url("/images/prova_4.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -19,7 +19,7 @@
     #000000
   );
   background-size: 1400% 1400%;
-  animation: gradientBG 20s ease-in-out infinite;
+  animation: gradientBG 15s ease-in-out infinite;
   min-height: 100vh;
 }
 
