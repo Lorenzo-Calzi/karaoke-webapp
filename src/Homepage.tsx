@@ -28,7 +28,7 @@ function Homepage() {
                     onClick={() => handleClick("/canzoni", "canzoni")}
                 >
                     <i className="fa-solid fa-list-ul"></i>
-                    <span>Karaoke: i nostri consigli</span>
+                    <span>KARAOKE: i nostri consigli</span>
                 </button>
 
                 <button
@@ -36,7 +36,7 @@ function Homepage() {
                     onClick={() => handleClick("/consigliaci", "consigliaci")}
                 >
                     <i className="fa-solid fa-lightbulb"></i>
-                    <span>Chiedi una canzone al DJ</span>
+                    <span>DJ SET: consiglia una canzone</span>
                 </button>
 
                 <button
