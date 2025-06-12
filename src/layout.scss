@@ -1,7 +1,10 @@
 .bg-static {
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
+}
+
+.bg-static {
   display: flex;
-  min-height: 100dvh;
-  max-width: 100dvh;
   overflow: hidden;
   background-image: url("/images/background.jpg");
   background-repeat: no-repeat;
@@ -10,6 +13,7 @@
 }
 
 .bg-gradient {
+  min-height: 100dvh;
   background: linear-gradient(
     270deg,
     #000000,
@@ -22,7 +26,6 @@
   );
   background-size: 1400% 1400%;
   animation: gradientBG 20s ease-in-out infinite;
-  min-height: 100vh;
 }
 
 @keyframes gradientBG {
