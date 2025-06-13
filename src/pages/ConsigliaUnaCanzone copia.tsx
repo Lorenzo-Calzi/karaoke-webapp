@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import "./consigliaUnaCanzone.scss";
 
+type ITunesSong = {
+    trackId: number;
+    trackName: string;
+    artistName: string;
+    artworkUrl100: string;
+    collectionName?: string;
+};
+
 type SpotifySong = {
     trackId: string;
     trackName: string;
@@ -14,8 +22,9 @@ export default function ConsigliaUnaCanzone() {
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
 
     const [query, setQuery] = useState<string>("");
+    // const [results, setResults] = useState<ITunesSong[]>([]);
     const [results, setResults] = useState<SpotifySong[]>([]);
-    const [votedSongs, setVotedSongs] = useState<string[]>([]);
+    const [votedSongs, setVotedSongs] = useState<number[]>([]);
     const [voterId] = useState(() => {
         const stored = localStorage.getItem("voter_id");
         if (stored) return stored;
@@ -24,18 +33,18 @@ export default function ConsigliaUnaCanzone() {
         localStorage.setItem("voter_id", newId);
         return newId;
     });
-    const [votedSongsDetails, setVotedSongsDetails] = useState<SpotifySong[]>([]);
+    const [votedSongsDetails, setVotedSongsDetails] = useState<ITunesSong[]>([]);
     const [loadingVotedSongs, setLoadingVotedSongs] = useState(true);
     const [topSongs, setTopSongs] = useState<
         {
-            trackId: string;
+            trackId: number;
             title: string;
             artist: string;
             artworkUrl100: string;
             voteCount: number;
         }[]
     >([]);
-    const [animatingId, setAnimatingId] = useState<string | null>(null);
+    const [animatingId, setAnimatingId] = useState<number | null>(null);
 
     const normalizeText = (text: string) =>
         text
@@ -43,21 +52,21 @@ export default function ConsigliaUnaCanzone() {
             .normalize("NFD")
             .replace(/[\u0300-\u036f']/g, "");
 
-    // const getSmartScore = (trackName: string): number => {
-    //     const title = normalizeText(trackName);
-    //     const positive = ["feat", "original", "studio", "official", "single"];
-    //     const negative = ["live", "remix", "karaoke", "tour", "soundtrack", "demo"];
+    const getSmartScore = (trackName: string): number => {
+        const title = normalizeText(trackName);
+        const positive = ["feat", "original", "studio", "official", "single"];
+        const negative = ["live", "remix", "karaoke", "tour", "soundtrack", "demo"];
 
-    //     let score = 0;
-    //     positive.forEach(word => {
-    //         if (title.includes(word)) score += 2;
-    //     });
-    //     negative.forEach(word => {
-    //         if (title.includes(word)) score -= 3;
-    //     });
+        let score = 0;
+        positive.forEach(word => {
+            if (title.includes(word)) score += 2;
+        });
+        negative.forEach(word => {
+            if (title.includes(word)) score -= 3;
+        });
 
-    //     return score;
-    // };
+        return score;
+    };
 
     const searchSongs = async (searchTerm: string): Promise<void> => {
         const trimmed = searchTerm.trim();
@@ -143,7 +152,7 @@ export default function ConsigliaUnaCanzone() {
     };
 
     const handleVote = async (
-        trackId: string,
+        trackId: number,
         title: string,
         artist: string,
         artworkUrl100: string
@@ -216,7 +225,7 @@ export default function ConsigliaUnaCanzone() {
 
         if (data) {
             const voteMap = new Map<
-                string,
+                number,
                 {
                     title: string;
                     artist: string;
@@ -303,23 +312,21 @@ export default function ConsigliaUnaCanzone() {
                     return;
                 }
 
-                const unique = new Map<string, SpotifySong>();
+                // Rimuovi eventuali duplicati
+                const unique = new Map<number, ITunesSong>();
                 for (const song of data) {
-                    const trackId = String(song.trackId);
-
                     if (
-                        trackId &&
+                        song.trackId &&
                         song.title &&
                         song.artist &&
                         song.artworkUrl100 &&
-                        !unique.has(trackId)
+                        !unique.has(song.trackId)
                     ) {
-                        unique.set(trackId, {
-                            trackId,
+                        unique.set(song.trackId, {
+                            trackId: song.trackId,
                             trackName: song.title,
                             artistName: song.artist,
-                            artworkUrl100: song.artworkUrl100,
-                            popularity: 0 // opzionale, se non lo salvi su Supabase
+                            artworkUrl100: song.artworkUrl100
                         });
                     }
                 }
