@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/spotify-token.js": {
-      "runtime": "@vercel/node@1.18.0"
+      "runtime": "@vercel/node@1.14.0"
     }
   },
   "routes": [
