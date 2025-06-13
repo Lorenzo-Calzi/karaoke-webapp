@@ -10,6 +10,8 @@ type SpotifySong = {
     popularity: number;
 };
 
+const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-three.vercel.app" : "";
+
 export default function ConsigliaUnaCanzone() {
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
 
@@ -68,7 +70,7 @@ export default function ConsigliaUnaCanzone() {
 
         try {
             // 1. Ottieni token da backend
-            const tokenRes = await fetch("/api/spotify-token");
+            const tokenRes = await fetch(`${apiBaseUrl}/api/spotify-token`);
             const tokenData: { access_token: string } = await tokenRes.json();
             const access_token = tokenData.access_token;
 

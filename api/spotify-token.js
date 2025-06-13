@@ -1,4 +1,6 @@
 export default async function handler(req, res) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
     const client_id = process.env.SPOTIFY_CLIENT_ID;
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
