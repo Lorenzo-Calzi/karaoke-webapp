@@ -45,22 +45,6 @@ export default function ConsigliaUnaCanzone() {
             .normalize("NFD")
             .replace(/[\u0300-\u036f']/g, "");
 
-    // const getSmartScore = (trackName: string): number => {
-    //     const title = normalizeText(trackName);
-    //     const positive = ["feat", "original", "studio", "official", "single"];
-    //     const negative = ["live", "remix", "karaoke", "tour", "soundtrack", "demo"];
-
-    //     let score = 0;
-    //     positive.forEach(word => {
-    //         if (title.includes(word)) score += 2;
-    //     });
-    //     negative.forEach(word => {
-    //         if (title.includes(word)) score -= 3;
-    //     });
-
-    //     return score;
-    // };
-
     const searchSongs = async (searchTerm: string): Promise<void> => {
         const trimmed = searchTerm.trim();
         if (!trimmed) {
@@ -175,7 +159,7 @@ export default function ConsigliaUnaCanzone() {
                 .eq("voterId", voterId);
 
             if (!error) {
-                // ⏱️ Ritarda l’aggiornamento classifica / lista
+                await fetchVotedSongsDetails(); // ✅ aggiorna lista canzoni votate
                 setTimeout(() => {
                     fetchTopSongs();
                 }, 400);
@@ -193,11 +177,10 @@ export default function ConsigliaUnaCanzone() {
             ]);
 
             if (!error) {
-                // ✅ Subito visivo
                 setVotedSongs(prev => [...prev, trackId]);
+                await fetchVotedSongsDetails(); // ✅ aggiorna lista canzoni votate
                 fetchTopSongs();
 
-                // 🔄 Svuota ricerca dopo breve delay
                 setTimeout(() => {
                     setQuery("");
                 }, 400);
@@ -255,6 +238,54 @@ export default function ConsigliaUnaCanzone() {
         }
     };
 
+    const fetchVotedSongsDetails = async () => {
+        if (votedSongs.length === 0) {
+            setVotedSongsDetails([]);
+            setLoadingVotedSongs(false);
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from("votes")
+                .select("trackId, title, artist, artworkUrl100")
+                .eq("voterId", voterId);
+
+            if (error) {
+                console.error("Errore nel recuperare dettagli:", error.message);
+                setLoadingVotedSongs(false);
+                return;
+            }
+
+            const unique = new Map<string, SpotifySong>();
+            for (const song of data) {
+                const trackId = String(song.trackId);
+
+                if (
+                    trackId &&
+                    song.title &&
+                    song.artist &&
+                    song.artworkUrl100 &&
+                    !unique.has(trackId)
+                ) {
+                    unique.set(trackId, {
+                        trackId,
+                        trackName: song.title,
+                        artistName: song.artist,
+                        artworkUrl100: song.artworkUrl100,
+                        popularity: 0
+                    });
+                }
+            }
+
+            setVotedSongsDetails(Array.from(unique.values()));
+        } catch (e) {
+            console.error("Errore nel recuperare dettagli:", e);
+        } finally {
+            setLoadingVotedSongs(false);
+        }
+    };
+
     useEffect(() => {
         fetchTopSongs();
     }, []);
@@ -286,54 +317,6 @@ export default function ConsigliaUnaCanzone() {
     }, [voterId]);
 
     useEffect(() => {
-        const fetchVotedSongsDetails = async () => {
-            if (votedSongs.length === 0) {
-                setVotedSongsDetails([]);
-                setLoadingVotedSongs(false);
-                return;
-            }
-
-            try {
-                const { data, error } = await supabase
-                    .from("votes")
-                    .select("trackId, title, artist, artworkUrl100")
-                    .eq("voterId", voterId);
-
-                if (error) {
-                    console.error("Errore nel recuperare dettagli:", error.message);
-                    setLoadingVotedSongs(false);
-                    return;
-                }
-
-                const unique = new Map<string, SpotifySong>();
-                for (const song of data) {
-                    const trackId = String(song.trackId);
-
-                    if (
-                        trackId &&
-                        song.title &&
-                        song.artist &&
-                        song.artworkUrl100 &&
-                        !unique.has(trackId)
-                    ) {
-                        unique.set(trackId, {
-                            trackId,
-                            trackName: song.title,
-                            artistName: song.artist,
-                            artworkUrl100: song.artworkUrl100,
-                            popularity: 0 // opzionale, se non lo salvi su Supabase
-                        });
-                    }
-                }
-
-                setVotedSongsDetails(Array.from(unique.values()));
-            } catch (e) {
-                console.error("Errore nel recuperare dettagli:", e);
-            } finally {
-                setLoadingVotedSongs(false);
-            }
-        };
-
         fetchVotedSongsDetails();
     }, [votedSongs]);
 
