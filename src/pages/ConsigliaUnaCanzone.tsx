@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import "./consigliaUnaCanzone.scss";
+import VotoProgressivo from "../components/VotoProgressivo";
 
 type SpotifySong = {
     trackId: string;
@@ -324,11 +325,9 @@ export default function ConsigliaUnaCanzone() {
         <div className="consigliaUnaCanzone container">
             <h2 className="title">Consigliaci delle canzoni</h2>
             <p>Chiedi al DJ di suonare le tue canzoni preferite</p>
-            <p>Canzoni votate: {votedSongs.length}/3</p>
-            {/* <p>/</p>
-            <p>/</p>
-            <p>/</p>
-            <p>/</p> */}
+            <p>Puoi votare massimo 3 canzoni</p>
+
+            <VotoProgressivo valore={votedSongs.length} />
 
             <div className="tabs">
                 <button
