@@ -449,7 +449,7 @@ export default function ConsigliaUnaCanzone() {
                     )}
 
                     {results.length > 0 && query !== "" && (
-                        <ul className="song_list" style={{ marginTop: "1rem" }}>
+                        <ul className="song_list">
                             {results.map(song => (
                                 <li key={song.trackId} className="song_item">
                                     <img
@@ -501,7 +501,7 @@ export default function ConsigliaUnaCanzone() {
 
             {activeTab === "ranking" && topSongs.length > 0 && (
                 <>
-                    <ul className="song_list" style={{ marginTop: "1rem" }}>
+                    <ul className="song_list">
                         {topSongs.map(song => (
                             <li key={song.trackId} className="song_item">
                                 <img
