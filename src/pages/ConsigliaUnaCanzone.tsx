@@ -331,7 +331,7 @@ export default function ConsigliaUnaCanzone() {
                 const itemTop = item.getBoundingClientRect().top;
                 const el = item as HTMLElement;
 
-                if (itemTop < searchBarBottom - 60) {
+                if (itemTop < searchBarBottom) {
                     el.classList.remove("fade-in");
                     el.classList.add("invisible");
                 } else {
@@ -449,7 +449,7 @@ export default function ConsigliaUnaCanzone() {
                     )}
 
                     {results.length > 0 && query !== "" && (
-                        <ul className="song_list">
+                        <ul className="song_list" style={{ marginTop: "1rem" }}>
                             {results.map(song => (
                                 <li key={song.trackId} className="song_item">
                                     <img
@@ -501,7 +501,7 @@ export default function ConsigliaUnaCanzone() {
 
             {activeTab === "ranking" && topSongs.length > 0 && (
                 <>
-                    <ul className="song_list">
+                    <ul className="song_list" style={{ marginTop: "1rem" }}>
                         {topSongs.map(song => (
                             <li key={song.trackId} className="song_item">
                                 <img
