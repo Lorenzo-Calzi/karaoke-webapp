@@ -29,8 +29,8 @@ export default function SongList({
                 <SongItem
                     key={song.trackId}
                     trackId={song.trackId}
-                    title={"trackName" in song ? song.trackName : song.title}
-                    artist={"artistName" in song ? song.artistName : song.artist}
+                    title={"trackName" in song ? song.trackName : "song.title"}
+                    artist={"artistName" in song ? song.artistName : "song.artist"}
                     image={song.artworkUrl100}
                     isVoted={votedSongs.includes(song.trackId)}
                     animating={animatingId === song.trackId}
@@ -39,8 +39,8 @@ export default function SongList({
                     onVote={() =>
                         onVote(
                             song.trackId,
-                            "trackName" in song ? song.trackName : song.title,
-                            "artistName" in song ? song.artistName : song.artist,
+                            "trackName" in song ? song.trackName : "song.title",
+                            "artistName" in song ? song.artistName : "song.artist",
                             song.artworkUrl100
                         )
                     }
