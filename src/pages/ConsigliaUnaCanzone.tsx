@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import "./consigliaUnaCanzone.scss";
 import VotoProgressivo from "../components/VotoProgressivo";
@@ -39,6 +39,7 @@ export default function ConsigliaUnaCanzone() {
         }[]
     >([]);
     const [animatingId, setAnimatingId] = useState<string | null>(null);
+    const searchBarRef = useRef<HTMLInputElement>(null);
 
     const normalizeText = (text: string) =>
         text
@@ -321,6 +322,39 @@ export default function ConsigliaUnaCanzone() {
         fetchVotedSongsDetails();
     }, [votedSongs]);
 
+    useEffect(() => {
+        const checkVisibility = () => {
+            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
+            const items = document.querySelectorAll(".song_item");
+
+            items.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const el = item as HTMLElement;
+
+                if (itemTop < searchBarBottom - 60) {
+                    el.classList.remove("fade-in");
+                    el.classList.add("invisible");
+                } else {
+                    if (el.classList.contains("invisible")) {
+                        el.classList.remove("invisible");
+                        el.classList.add("fade-in");
+                    }
+                }
+            });
+        };
+
+        window.addEventListener("scroll", checkVisibility);
+        window.addEventListener("resize", checkVisibility);
+
+        // chiamata iniziale
+        checkVisibility();
+
+        return () => {
+            window.removeEventListener("scroll", checkVisibility);
+            window.removeEventListener("resize", checkVisibility);
+        };
+    }, [results, query]);
+
     return (
         <div className="consigliaUnaCanzone container">
             <h2 className="title">Consigliaci delle canzoni</h2>
@@ -346,13 +380,17 @@ export default function ConsigliaUnaCanzone() {
 
             {activeTab === "search" && (
                 <>
-                    <input
-                        type="text"
-                        placeholder="Cerca la tua canzone preferita..."
-                        value={query}
-                        onChange={e => setQuery(e.target.value)}
-                        className="search_bar"
-                    />
+                    <div className="search_bar_container">
+                        <input
+                            ref={searchBarRef}
+                            type="text"
+                            placeholder="Cerca la tua canzone preferita..."
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            className="search_bar"
+                        />
+                    </div>
+
                     {loadingVotedSongs && <p className="loader">Caricamento voti...</p>}
 
                     {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
