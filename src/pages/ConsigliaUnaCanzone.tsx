@@ -11,7 +11,7 @@ type SpotifySong = {
     popularity: number;
 };
 
-const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-three.vercel.app" : "";
+const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "";
 
 export default function ConsigliaUnaCanzone() {
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
