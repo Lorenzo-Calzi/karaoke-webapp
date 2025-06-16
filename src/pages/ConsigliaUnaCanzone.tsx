@@ -388,6 +388,13 @@ export default function ConsigliaUnaCanzone() {
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             className="search_bar"
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    searchSongs(query);
+                                    searchBarRef.current?.blur();
+                                }
+                            }}
                         />
                     </div>
 
