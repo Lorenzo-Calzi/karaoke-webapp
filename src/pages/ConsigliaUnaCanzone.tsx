@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import "./consigliaUnaCanzone.scss";
 import VotoProgressivo from "../components/VotoProgressivo";
+import "./consigliaUnaCanzone.scss";
 
 type SpotifySong = {
     trackId: string;
@@ -324,23 +324,27 @@ export default function ConsigliaUnaCanzone() {
 
     useEffect(() => {
         const checkVisibility = () => {
-            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-            const items = document.querySelectorAll(".song_item");
+            if (activeTab === "search") {
+                const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
+                const items = document.querySelectorAll(".song_item");
 
-            items.forEach(item => {
-                const itemTop = item.getBoundingClientRect().top;
-                const el = item as HTMLElement;
+                items.forEach(item => {
+                    const itemTop = item.getBoundingClientRect().top;
+                    const el = item as HTMLElement;
 
-                if (itemTop < searchBarBottom) {
-                    el.classList.remove("fade-in");
-                    el.classList.add("invisible");
-                } else {
-                    if (el.classList.contains("invisible")) {
-                        el.classList.remove("invisible");
-                        el.classList.add("fade-in");
+                    if (itemTop < searchBarBottom) {
+                        el.classList.remove("fade-in");
+                        el.classList.add("invisible");
+                    } else {
+                        if (el.classList.contains("invisible")) {
+                            el.classList.remove("invisible");
+                            el.classList.add("fade-in");
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                return;
+            }
         };
 
         window.addEventListener("scroll", checkVisibility);
@@ -353,7 +357,7 @@ export default function ConsigliaUnaCanzone() {
             window.removeEventListener("scroll", checkVisibility);
             window.removeEventListener("resize", checkVisibility);
         };
-    }, [results, query]);
+    }, [results, query, activeTab]);
 
     return (
         <div className="consigliaUnaCanzone container">
@@ -378,26 +382,33 @@ export default function ConsigliaUnaCanzone() {
                 </button>
             </div>
 
+            <div
+                className="search_bar_container"
+                style={{
+                    height: activeTab === "search" ? "60px" : 0,
+                    opacity: activeTab === "search" ? 1 : 0,
+                    paddingTop: activeTab === "search" ? "1rem" : 0
+                }}
+            >
+                <input
+                    ref={searchBarRef}
+                    type="text"
+                    placeholder="Cerca la tua canzone preferita..."
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    className="search_bar"
+                    onKeyDown={e => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            searchSongs(query);
+                            searchBarRef.current?.blur();
+                        }
+                    }}
+                />
+            </div>
+
             {activeTab === "search" && (
                 <>
-                    <div className="search_bar_container">
-                        <input
-                            ref={searchBarRef}
-                            type="text"
-                            placeholder="Cerca la tua canzone preferita..."
-                            value={query}
-                            onChange={e => setQuery(e.target.value)}
-                            className="search_bar"
-                            onKeyDown={e => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    searchSongs(query);
-                                    searchBarRef.current?.blur();
-                                }
-                            }}
-                        />
-                    </div>
-
                     {loadingVotedSongs && <p className="loader">Caricamento voti...</p>}
 
                     {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
