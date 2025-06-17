@@ -4,9 +4,12 @@
   color: white;
   box-sizing: border-box;
 
-  .title {
+  .description {
     margin: 0 0 2rem 0;
-    font-family: "Orbitron", sans-serif;
+
+    .title {
+      font-family: "Orbitron", sans-serif;
+    }
   }
 
   .song_list {

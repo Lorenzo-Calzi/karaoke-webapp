@@ -361,9 +361,11 @@ export default function ConsigliaUnaCanzone() {
 
     return (
         <div className="consigliaUnaCanzone container">
-            <h2 className="title">Consigliaci delle canzoni</h2>
-            <p>Chiedi al DJ di suonare le tue canzoni preferite</p>
-            <p>Puoi votare massimo 3 canzoni</p>
+            <div className="description">
+                <h2 className="title">Partecipa alla festa</h2>
+                <p className="paragraph">Vota le canzoni che vuoi ballare! (max 3)</p>
+                <p className="paragraph">Il DJ metterà le più richieste</p>
+            </div>
 
             <VotoProgressivo valore={votedSongs.length} />
 

@@ -151,7 +151,13 @@ export default function ListaCanzoni() {
 
     return (
         <div className="listaCanzoni container">
-            <h2 className="title">Lista delle canzoni consigliate</h2>
+            <div className="description">
+                <h2 className="title">Lista delle canzoni consigliate</h2>
+                <p>Non sai cosa cantare?</p>
+                <p>Scorri i nostri consigli e scegli la tua hit.</p>
+                <p>Quando hai deciso, vieni a prenotarti!</p>
+            </div>
+
             <ul className="song_list">
                 {songs.map((song, index) => (
                     <li key={index} className="song_item">

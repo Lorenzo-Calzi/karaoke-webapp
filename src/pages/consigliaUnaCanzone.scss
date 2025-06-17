@@ -4,9 +4,19 @@
   color: white;
   box-sizing: border-box;
 
-  .title {
-    margin: 0;
-    font-family: "Orbitron", sans-serif;
+  .description {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+
+    .title {
+      font-family: "Orbitron", sans-serif;
+      margin: 0;
+    }
+    .paragraph {
+      margin: 0;
+    }
   }
 
   .tabs {
@@ -51,7 +61,7 @@
     );
     background-size: 1400% 1400%;
     animation: gradientBG 15s ease-in-out infinite;
-    transition: padding-top 0.3s ease-out;
+    transition: padding-top 0.5s ease-out;
 
     .search_bar {
       width: 100%;
