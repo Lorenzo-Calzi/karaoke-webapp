@@ -18,6 +18,18 @@ function Homepage() {
                 <h3 className="title">Scegli un’opzione:</h3>
             </div> */}
 
+            {/* <div className="glitch-wrapper">
+                <div className="glitch" data-glitch="DJ SET">
+                    DJ SET
+                </div>
+                <div className="glitch" data-glitch="&">
+                    &
+                </div>
+                <div className="glitch" data-glitch="KARAOKE">
+                    KARAOKE
+                </div>
+            </div> */}
+
             <div className="buttons_list">
                 <button onClick={() => handleClick("/canzoni")}>
                     <i className="fa-solid fa-list-ul"></i>
