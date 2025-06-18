@@ -5,12 +5,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 1rem 0;
+  padding: 2rem 0;
   box-sizing: border-box;
   font-family: "Orbitron", sans-serif;
 
   .title {
     color: white;
+    margin: 0 0 2rem 0;
   }
 
   .social_list {
@@ -20,7 +21,7 @@
     gap: 1.5rem;
 
     .social_section_label {
-      font-size: 1.15rem;
+      font-size: 1rem;
       margin: 0.5rem;
       text-align: center;
       color: white;
