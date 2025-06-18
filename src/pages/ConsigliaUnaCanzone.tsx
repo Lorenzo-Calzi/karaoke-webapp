@@ -288,17 +288,30 @@ export default function ConsigliaUnaCanzone() {
         }
     };
 
+    const filteredRankingResults = topSongs.filter(song => {
+        const normalizedQuery = normalizeText(query);
+        const normalizedTitle = normalizeText(song.title);
+        const normalizedArtist = normalizeText(song.artist);
+        return (
+            normalizedQuery !== "" &&
+            (normalizedTitle.includes(normalizedQuery) ||
+                normalizedArtist.includes(normalizedQuery))
+        );
+    });
+
     useEffect(() => {
         fetchTopSongs();
     }, []);
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
-            searchSongs(query);
+            if (activeTab === "search") {
+                searchSongs(query);
+            }
         }, 200);
 
         return () => clearTimeout(delayDebounce);
-    }, [query]);
+    }, [query, activeTab]);
 
     useEffect(() => {
         const fetchVotesFromDB = async () => {
@@ -372,26 +385,25 @@ export default function ConsigliaUnaCanzone() {
             <div className="tabs">
                 <button
                     className={activeTab === "search" ? "tab active" : "tab"}
-                    onClick={() => setActiveTab("search")}
+                    onClick={() => {
+                        setActiveTab("search");
+                        setQuery("");
+                    }}
                 >
                     Cerca
                 </button>
                 <button
                     className={activeTab === "ranking" ? "tab active" : "tab"}
-                    onClick={() => setActiveTab("ranking")}
+                    onClick={() => {
+                        setActiveTab("ranking");
+                        setQuery("");
+                    }}
                 >
                     Classifica
                 </button>
             </div>
 
-            <div
-                className="search_bar_container"
-                style={{
-                    height: activeTab === "search" ? "60px" : 0,
-                    opacity: activeTab === "search" ? 1 : 0,
-                    paddingTop: activeTab === "search" ? "1rem" : 0
-                }}
-            >
+            <div className="search_bar_container">
                 <input
                     ref={searchBarRef}
                     type="text"
@@ -513,52 +525,46 @@ export default function ConsigliaUnaCanzone() {
             )}
 
             {activeTab === "ranking" && topSongs.length > 0 && (
-                <>
-                    <ul className="song_list">
-                        {topSongs.map(song => (
-                            <li key={song.trackId} className="song_item">
-                                <img
-                                    src={song.artworkUrl100}
-                                    alt={song.title}
-                                    className="song_cover"
-                                />
-                                <div className="song_info">
-                                    <span className="song_title">{song.title}</span>
-                                    <span className="song_singer">{song.artist}</span>
-                                </div>
-                                <div
-                                    className={`song_vote ${
-                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 3
-                                            ? "disabled"
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleVote(
-                                            song.trackId,
-                                            song.title,
-                                            song.artist,
-                                            song.artworkUrl100
-                                        )
-                                    }
-                                >
-                                    <span>{song.voteCount}</span>
-                                    <i
-                                        className={`fa-heart ${
-                                            votedSongs.includes(song.trackId)
-                                                ? "fa-solid"
-                                                : "fa-regular"
-                                        } ${animatingId === song.trackId ? "animate-like" : ""}`}
-                                        style={{
-                                            color: votedSongs.includes(song.trackId)
-                                                ? "#FF2F40"
-                                                : "white"
-                                        }}
-                                    ></i>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </>
+                <ul className="song_list">
+                    {(query ? filteredRankingResults : topSongs).map(song => (
+                        <li key={song.trackId} className="song_item">
+                            <img src={song.artworkUrl100} alt={song.title} className="song_cover" />
+                            <div className="song_info">
+                                <span className="song_title">{song.title}</span>
+                                <span className="song_singer">{song.artist}</span>
+                            </div>
+                            <div
+                                className={`song_vote ${
+                                    !votedSongs.includes(song.trackId) && votedSongs.length >= 3
+                                        ? "disabled"
+                                        : ""
+                                }`}
+                                onClick={() =>
+                                    handleVote(
+                                        song.trackId,
+                                        song.title,
+                                        song.artist,
+                                        song.artworkUrl100
+                                    )
+                                }
+                            >
+                                <span>{song.voteCount}</span>
+                                <i
+                                    className={`fa-heart ${
+                                        votedSongs.includes(song.trackId)
+                                            ? "fa-solid"
+                                            : "fa-regular"
+                                    } ${animatingId === song.trackId ? "animate-like" : ""}`}
+                                    style={{
+                                        color: votedSongs.includes(song.trackId)
+                                            ? "#FF2F40"
+                                            : "white"
+                                    }}
+                                ></i>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
             )}
         </div>
     );

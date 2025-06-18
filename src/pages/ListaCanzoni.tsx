@@ -160,7 +160,7 @@ export default function ListaCanzoni() {
 
             <ul className="song_list">
                 {songs.map((song, index) => (
-                    <li key={index} className="song_item">
+                    <li key={index} className="song_item" style={{ ["--i" as any]: index }}>
                         <img className="song_cover" src={song.cover} alt={song.title} />
                         <div className="song_info">
                             <span className="song_title">{song.title}</span>
