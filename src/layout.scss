@@ -7,7 +7,7 @@
 .bg-static {
   display: flex;
   min-height: 100dvh;
-  background-image: url("/images/background.jpg");
+  background-image: url("/images/background_1.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   // background-position: center;
@@ -16,13 +16,13 @@
 .bg-gradient {
   background: linear-gradient(
     270deg,
-    #000000,
-    #5e0e0e,
-    #aa1d1d,
-    #b22626,
-    #aa1d1d,
-    #5e0e0e,
-    #000000
+    #100000,
+    #5e1212,
+    #801f3a,
+    #801f3a,
+    #4a1e59,
+    #24072e,
+    #100000
   );
   background-size: 1400% 1400%;
   animation: gradientBG 15s ease-in-out infinite;

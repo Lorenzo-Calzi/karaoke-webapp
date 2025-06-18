@@ -21,6 +21,7 @@ function Homepage() {
             <div className="buttons_list">
                 <button onClick={() => handleClick("/canzoni")}>
                     <i className="fa-solid fa-list-ul"></i>
+
                     <div className="button_content">
                         <span className="button_title">KARAOKE</span>
                         <p className="button_description">Le canzoni che ti consigliamo</p>
@@ -29,13 +30,16 @@ function Homepage() {
 
                 <button onClick={() => handleClick("/consigliaci")}>
                     <i className="fa-solid fa-lightbulb"></i>
+
                     <div className="button_content">
                         <span className="button_title">DJ SET</span>
                         <p className="button_description">Vota le canzoni che vuoi ballare</p>
                     </div>
                 </button>
+
                 <button onClick={() => handleClick("/social")}>
                     <i className="fa-brands fa-instagram"></i>
+
                     <div className="button_content">
                         <span className="button_title">SOCIAL</span>
                         <p className="button_description">I nostri profili Instagram</p>
