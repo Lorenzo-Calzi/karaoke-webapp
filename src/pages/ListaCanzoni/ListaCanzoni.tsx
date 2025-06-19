@@ -1,3 +1,4 @@
+import SongItem from "../../components/SongItem/SongItem";
 import "./listaCanzoni.scss";
 
 export default function ListaCanzoni() {
@@ -160,13 +161,12 @@ export default function ListaCanzoni() {
 
             <ul className="song_list">
                 {songs.map((song, index) => (
-                    <li key={index} className="song_item" style={{ ["--i" as any]: index }}>
-                        <img className="song_cover" src={song.cover} alt={song.title} />
-                        <div className="song_info">
-                            <span className="song_title">{song.title}</span>
-                            <span className="song_singer">{song.singer}</span>
-                        </div>
-                    </li>
+                    <SongItem
+                        trackId={index.toString()}
+                        title={song.title}
+                        artist={song.singer}
+                        cover={song.cover}
+                    />
                 ))}
             </ul>
         </div>

@@ -5,9 +5,9 @@ type Props = {
     title: string;
     artist: string;
     cover: string;
-    voted: boolean;
-    animating: boolean;
-    onVote: () => void;
+    voted?: boolean;
+    animating?: boolean;
+    onVote?: () => void;
     voteCount?: number;
     disabled?: boolean;
 };
@@ -31,20 +31,22 @@ export default function SongItem({
                 <span>{artist}</span>
             </div>
 
-            <div
-                className={`song_vote ${disabled ? "disabled" : ""}`}
-                onClick={() => {
-                    if (!disabled) onVote();
-                }}
-            >
-                {voteCount !== undefined && <span className="vote_count">{voteCount}</span>}
-                <i
-                    className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
-                        animating ? "animate-like" : ""
-                    }`}
-                    style={{ color: voted ? "#FF2F40" : "white" }}
-                ></i>
-            </div>
+            {onVote && (
+                <div
+                    className={`song_vote ${disabled ? "disabled" : ""}`}
+                    onClick={() => {
+                        if (!disabled) onVote();
+                    }}
+                >
+                    {voteCount !== undefined && <span className="vote_count">{voteCount}</span>}
+                    <i
+                        className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
+                            animating ? "animate-like" : ""
+                        }`}
+                        style={{ color: voted ? "#FF2F40" : "white" }}
+                    ></i>
+                </div>
+            )}
         </li>
     );
 }

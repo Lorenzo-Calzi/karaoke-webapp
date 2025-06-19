@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { supabase } from "../supabaseClient";
-import VotoProgressivo from "../components/VotoProgressivo/VotoProgressivo";
-import Tabs from "../components/Tabs/Tabs";
-import SearchBar from "../components/SearchBar/SearchBar";
-import SongItem from "../components/SongItem/SongItem";
+import { supabase } from "../../supabaseClient";
+import VotoProgressivo from "../../components/VotoProgressivo/VotoProgressivo";
+import Tabs from "../../components/Tabs/Tabs";
+import SearchBar from "../../components/SearchBar/SearchBar";
+import SongItem from "../../components/SongItem/SongItem";
 import "./consigliaUnaCanzone.scss";
 
 type SpotifySong = {
