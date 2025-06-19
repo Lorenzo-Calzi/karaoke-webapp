@@ -154,9 +154,9 @@ export default function ListaCanzoni() {
         <div className="listaCanzoni container">
             <div className="description">
                 <h2 className="title">Lista delle canzoni consigliate</h2>
-                <p>Non sai cosa cantare?</p>
-                <p>Scorri i nostri consigli e scegli la tua hit.</p>
-                <p>Quando hai deciso, vieni a prenotarti!</p>
+                <p className="paragraph">Non sai cosa cantare?</p>
+                <p className="paragraph">Scorri i nostri consigli e scegli la tua hit.</p>
+                <p className="paragraph">Quando hai deciso, vieni a prenotarti!</p>
             </div>
 
             <ul className="song_list">

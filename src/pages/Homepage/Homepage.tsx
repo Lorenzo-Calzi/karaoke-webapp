@@ -13,10 +13,6 @@ function Homepage() {
     return (
         <div className="homepage container">
             <img className="logo" src="/images/karaoke_logo_4.png" alt="logo karaoke" />
-            {/* <div>
-                <h3 className="title">È il tuo momento!</h3>
-                <h3 className="title">Scegli un’opzione:</h3>
-            </div> */}
 
             {/* <div className="glitch-wrapper">
                 <div className="glitch" data-glitch="DJ SET">
@@ -31,7 +27,7 @@ function Homepage() {
             </div> */}
 
             <div className="buttons_list">
-                <button onClick={() => handleClick("/canzoni")}>
+                <button className="button" onClick={() => handleClick("/canzoni")}>
                     <i className="fa-solid fa-list-ul"></i>
 
                     <div className="button_content">
@@ -40,7 +36,7 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button onClick={() => handleClick("/consigliaci")}>
+                <button className="button" onClick={() => handleClick("/consigliaci")}>
                     <i className="fa-solid fa-lightbulb"></i>
 
                     <div className="button_content">
@@ -49,7 +45,7 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button onClick={() => handleClick("/social")}>
+                <button className="button" onClick={() => handleClick("/social")}>
                     <i className="fa-brands fa-instagram"></i>
 
                     <div className="button_content">

@@ -1,0 +1,77 @@
+:root {
+  font-family: "DM Sans", sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  color-scheme: light dark;
+  color: white;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: 16px;
+}
+
+#root {
+  width: 100%;
+}
+
+body {
+  display: flex;
+  min-width: 360px;
+  margin: 0;
+}
+
+.container {
+  width: 85%;
+  max-width: 600px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: "Orbitron", sans-serif;
+  margin: 0;
+}
+
+.paragraph {
+  margin: 0;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  color: #3b5474;
+  background-color: #e5edf5;
+  border-style: solid;
+  border-width: 2px 2px 2px 2px;
+  border-color: rgba(255, 255, 255, 0.333);
+  border-radius: 50px;
+  transform: scale(1);
+  transition: transform 0.15s ease, box-shadow 0.3s ease;
+  box-shadow: -2px -1px 6px rgba(255, 255, 255, 0.698), 2px 1px 8px rgba(255, 255, 255, 0.698);
+  outline: none;
+  cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+
+  &:active {
+    transform: scale(0.92) translateY(0.5rem);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

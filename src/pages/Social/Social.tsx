@@ -50,7 +50,7 @@ export default function Social() {
                             href={profile.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="social_button"
+                            className="button"
                         >
                             <img
                                 src={profile.profileImage}

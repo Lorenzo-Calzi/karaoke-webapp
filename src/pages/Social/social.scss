@@ -9,47 +9,22 @@
   box-sizing: border-box;
   font-family: "Orbitron", sans-serif;
 
-  .title {
-    color: white;
-    margin: 0 0 2rem 0;
-  }
-
   .social_list {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin-top: 2rem;
 
     .social_section_label {
-      font-size: 1rem;
       margin: 0.5rem;
-      text-align: center;
-      color: white;
+      font-size: 1rem;
       font-weight: 500;
-      font-family: "Orbitron", sans-serif;
+      text-align: center;
     }
 
-    .social_button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0.5px;
-      color: #3b5474;
-      background-color: #e5edf5;
-      border-style: solid;
-      border-width: 2px 2px 2px 2px;
-      border-color: rgba(255, 255, 255, 0.333);
-      border-radius: 50px;
+    .button {
       padding: 0.7rem;
-      transform: scale(1);
-      transition: transform 0.15s ease, box-shadow 0.3s ease;
-      box-shadow: -2px -1px 6px rgba(255, 255, 255, 0.698), 2px 1px 8px rgba(255, 255, 255, 0.698);
-      outline: none;
-      cursor: pointer;
-
-      &:active {
-        transform: scale(0.92) translateY(0.5rem);
-      }
 
       .social_image {
         width: 50px;
@@ -59,12 +34,12 @@
         margin-right: auto;
       }
       .social_username {
-        font-weight: 600;
-        font-size: 0.9rem;
         flex: 1;
+        padding-right: 2.5rem;
         text-align: center;
         font-weight: 600;
-        padding-right: 2.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
       }
     }
   }
