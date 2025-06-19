@@ -1,0 +1,33 @@
+.voto_progressivo_container {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: auto;
+
+  svg {
+    width: 100px;
+    height: 100px;
+
+    .inner_circle {
+      stroke: #eee;
+      stroke-width: 7;
+      fill: transparent;
+    }
+    .outer_circle {
+      stroke-width: 7;
+      fill: transparent;
+      transition: stroke-dashoffset 0.4s ease;
+    }
+  }
+  p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 1rem;
+    font-family: "Orbitron", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+}

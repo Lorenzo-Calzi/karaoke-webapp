@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import VotoProgressivo from "../components/VotoProgressivo";
+import VotoProgressivo from "../components/VotoProgressivo/VotoProgressivo";
+import SearchBar from "../components/SearchBar/SearchBar";
 import "./consigliaUnaCanzone.scss";
 
 type SpotifySong = {
@@ -15,7 +16,6 @@ const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "
 
 export default function ConsigliaUnaCanzone() {
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
-
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SpotifySong[]>([]);
     const [votedSongs, setVotedSongs] = useState<string[]>([]);
@@ -337,27 +337,23 @@ export default function ConsigliaUnaCanzone() {
 
     useEffect(() => {
         const checkVisibility = () => {
-            if (activeTab === "search") {
-                const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-                const items = document.querySelectorAll(".song_item");
+            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
+            const items = document.querySelectorAll(".song_item");
 
-                items.forEach(item => {
-                    const itemTop = item.getBoundingClientRect().top;
-                    const el = item as HTMLElement;
+            items.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const el = item as HTMLElement;
 
-                    if (itemTop < searchBarBottom) {
-                        el.classList.remove("fade-in");
-                        el.classList.add("invisible");
-                    } else {
-                        if (el.classList.contains("invisible")) {
-                            el.classList.remove("invisible");
-                            el.classList.add("fade-in");
-                        }
+                if (itemTop < searchBarBottom) {
+                    el.classList.remove("fade-in");
+                    el.classList.add("invisible");
+                } else {
+                    if (el.classList.contains("invisible")) {
+                        el.classList.remove("invisible");
+                        el.classList.add("fade-in");
                     }
-                });
-            } else {
-                return;
-            }
+                }
+            });
         };
 
         window.addEventListener("scroll", checkVisibility);
@@ -403,23 +399,12 @@ export default function ConsigliaUnaCanzone() {
                 </button>
             </div>
 
-            <div className="search_bar_container">
-                <input
-                    ref={searchBarRef}
-                    type="text"
-                    placeholder="Cerca la tua canzone preferita..."
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                    className="search_bar"
-                    onKeyDown={e => {
-                        if (e.key === "Enter") {
-                            e.preventDefault();
-                            searchSongs(query);
-                            searchBarRef.current?.blur();
-                        }
-                    }}
-                />
-            </div>
+            <SearchBar
+                query={query}
+                setQuery={setQuery}
+                searchSongs={searchSongs}
+                searchBarRef={searchBarRef}
+            />
 
             {activeTab === "search" && (
                 <>
@@ -524,48 +509,55 @@ export default function ConsigliaUnaCanzone() {
                 </>
             )}
 
-            {activeTab === "ranking" && topSongs.length > 0 && (
-                <ul className="song_list">
-                    {(query ? filteredRankingResults : topSongs).map(song => (
-                        <li key={song.trackId} className="song_item">
-                            <img src={song.artworkUrl100} alt={song.title} className="song_cover" />
-                            <div className="song_info">
-                                <span className="song_title">{song.title}</span>
-                                <span className="song_singer">{song.artist}</span>
-                            </div>
-                            <div
-                                className={`song_vote ${
-                                    !votedSongs.includes(song.trackId) && votedSongs.length >= 3
-                                        ? "disabled"
-                                        : ""
-                                }`}
-                                onClick={() =>
-                                    handleVote(
-                                        song.trackId,
-                                        song.title,
-                                        song.artist,
-                                        song.artworkUrl100
-                                    )
-                                }
-                            >
-                                <span>{song.voteCount}</span>
-                                <i
-                                    className={`fa-heart ${
-                                        votedSongs.includes(song.trackId)
-                                            ? "fa-solid"
-                                            : "fa-regular"
-                                    } ${animatingId === song.trackId ? "animate-like" : ""}`}
-                                    style={{
-                                        color: votedSongs.includes(song.trackId)
-                                            ? "#FF2F40"
-                                            : "white"
-                                    }}
-                                ></i>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            {activeTab === "ranking" &&
+                (topSongs.length > 0 ? (
+                    <ul className="song_list">
+                        {(query ? filteredRankingResults : topSongs).map(song => (
+                            <li key={song.trackId} className="song_item">
+                                <img
+                                    src={song.artworkUrl100}
+                                    alt={song.title}
+                                    className="song_cover"
+                                />
+                                <div className="song_info">
+                                    <span className="song_title">{song.title}</span>
+                                    <span className="song_singer">{song.artist}</span>
+                                </div>
+                                <div
+                                    className={`song_vote ${
+                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 3
+                                            ? "disabled"
+                                            : ""
+                                    }`}
+                                    onClick={() =>
+                                        handleVote(
+                                            song.trackId,
+                                            song.title,
+                                            song.artist,
+                                            song.artworkUrl100
+                                        )
+                                    }
+                                >
+                                    <span>{song.voteCount}</span>
+                                    <i
+                                        className={`fa-heart ${
+                                            votedSongs.includes(song.trackId)
+                                                ? "fa-solid"
+                                                : "fa-regular"
+                                        } ${animatingId === song.trackId ? "animate-like" : ""}`}
+                                        style={{
+                                            color: votedSongs.includes(song.trackId)
+                                                ? "#FF2F40"
+                                                : "white"
+                                        }}
+                                    ></i>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Ancora nessuna canzone in classifica</p>
+                ))}
         </div>
     );
 }

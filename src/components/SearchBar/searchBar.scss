@@ -1,0 +1,33 @@
+.search_bar_container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding-top: 1rem;
+  background: linear-gradient(
+    270deg,
+    #100000,
+    #5e1212,
+    #801f3a,
+    #801f3a,
+    #4a1e59,
+    #24072e,
+    #100000
+  );
+  background-size: 1400% 1400%;
+  animation: gradientBG 15s ease-in-out infinite;
+  transition: padding-top 0.5s ease-out;
+
+  .search_bar {
+    width: 100%;
+    height: 60px;
+    padding: 1rem;
+    box-sizing: border-box;
+    background-color: #f2f2f2;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    background-color: white;
+    font-size: 1rem;
+  }
+}

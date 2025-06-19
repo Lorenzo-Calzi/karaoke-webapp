@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./votoProgressivo.scss";
 
 type VotoProgressivoProps = {
     valore: number;
@@ -28,37 +29,23 @@ export default function VotoProgressivo({ valore, massimo = 3 }: VotoProgressivo
     }, [valore]);
 
     return (
-        <div style={{ width: "100px", height: "100px", position: "relative", margin: "auto" }}>
-            <svg width="100" height="100">
-                <circle cx="50" cy="50" r="45" stroke="#eee" strokeWidth="10" fill="transparent" />
+        <div className="voto_progressivo_container">
+            <svg>
+                <circle cx="50" cy="50" r="45" className="inner_circle" />
                 <circle
+                    className="outer_circle"
                     cx="50"
                     cy="50"
                     r="45"
                     stroke={color}
-                    strokeWidth="10"
-                    fill="transparent"
                     strokeDasharray={strokeDasharray}
                     strokeDashoffset={offset}
                     transform="rotate(-90 50 50)"
-                    style={{
-                        transition: "stroke-dashoffset 0.4s ease"
-                    }}
                 />
             </svg>
-            <div
-                style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    fontWeight: "bold",
-                    fontSize: "18px",
-                    fontFamily: "Orbitron, sans-serif"
-                }}
-            >
+            <p>
                 {valore}/{massimo}
-            </div>
+            </p>
         </div>
     );
 }
