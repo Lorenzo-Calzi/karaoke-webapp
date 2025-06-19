@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import VotoProgressivo from "../components/VotoProgressivo/VotoProgressivo";
+import Tabs from "../components/Tabs/Tabs";
 import SearchBar from "../components/SearchBar/SearchBar";
+import SongItem from "../components/SongItem/SongItem";
 import "./consigliaUnaCanzone.scss";
 
 type SpotifySong = {
@@ -378,26 +380,13 @@ export default function ConsigliaUnaCanzone() {
 
             <VotoProgressivo valore={votedSongs.length} />
 
-            <div className="tabs">
-                <button
-                    className={activeTab === "search" ? "tab active" : "tab"}
-                    onClick={() => {
-                        setActiveTab("search");
-                        setQuery("");
-                    }}
-                >
-                    Cerca
-                </button>
-                <button
-                    className={activeTab === "ranking" ? "tab active" : "tab"}
-                    onClick={() => {
-                        setActiveTab("ranking");
-                        setQuery("");
-                    }}
-                >
-                    Classifica
-                </button>
-            </div>
+            <Tabs
+                activeTab={activeTab}
+                onTabChange={t => {
+                    setActiveTab(t);
+                    setQuery("");
+                }}
+            />
 
             <SearchBar
                 query={query}
@@ -411,98 +400,50 @@ export default function ConsigliaUnaCanzone() {
                     {loadingVotedSongs && <p className="loader">Caricamento voti...</p>}
 
                     {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
-                        <div className="voted_section">
-                            <ul className="song_list">
-                                {votedSongsDetails.map(song => (
-                                    <li key={song.trackId} className="song_item">
-                                        <img
-                                            src={song.artworkUrl100}
-                                            alt={song.trackName}
-                                            className="song_cover"
-                                        />
-                                        <div className="song_info">
-                                            <span className="song_title">{song.trackName}</span>
-                                            <span className="song_singer">{song.artistName}</span>
-                                        </div>
-                                        <div
-                                            className="song_vote"
-                                            onClick={() =>
-                                                handleVote(
-                                                    song.trackId,
-                                                    song.trackName,
-                                                    song.artistName,
-                                                    song.artworkUrl100
-                                                )
-                                            }
-                                        >
-                                            <i
-                                                className={`fa-heart ${
-                                                    votedSongs.includes(song.trackId)
-                                                        ? "fa-solid"
-                                                        : "fa-regular"
-                                                } ${
-                                                    animatingId === song.trackId
-                                                        ? "animate-like"
-                                                        : ""
-                                                }`}
-                                                style={{
-                                                    color: votedSongs.includes(song.trackId)
-                                                        ? "#FF2F40"
-                                                        : "white"
-                                                }}
-                                            ></i>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <ul className="song_list">
+                            {votedSongsDetails.map(song => (
+                                <SongItem
+                                    trackId={song.trackId}
+                                    title={song.trackName}
+                                    artist={song.artistName}
+                                    cover={song.artworkUrl100}
+                                    voted={votedSongs.includes(song.trackId)}
+                                    animating={animatingId === song.trackId}
+                                    onVote={() =>
+                                        handleVote(
+                                            song.trackId,
+                                            song.trackName,
+                                            song.artistName,
+                                            song.artworkUrl100
+                                        )
+                                    }
+                                    disabled={
+                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 5
+                                    }
+                                />
+                            ))}
+                        </ul>
                     )}
 
                     {results.length > 0 && query !== "" && (
                         <ul className="song_list">
                             {results.map(song => (
-                                <li key={song.trackId} className="song_item">
-                                    <img
-                                        src={song.artworkUrl100}
-                                        alt={song.trackName}
-                                        className="song_cover"
-                                    />
-                                    <div className="song_info">
-                                        <span className="song_title">{song.trackName}</span>
-                                        <span className="song_singer">{song.artistName}</span>
-                                    </div>
-                                    <div
-                                        className={`song_vote ${
-                                            !votedSongs.includes(song.trackId) &&
-                                            votedSongs.length >= 3
-                                                ? "disabled"
-                                                : ""
-                                        }`}
-                                        onClick={() =>
-                                            handleVote(
-                                                song.trackId,
-                                                song.trackName,
-                                                song.artistName,
-                                                song.artworkUrl100
-                                            )
-                                        }
-                                    >
-                                        <i
-                                            className={`fa-heart ${
-                                                votedSongs.includes(song.trackId)
-                                                    ? "fa-solid"
-                                                    : "fa-regular"
-                                            } ${
-                                                animatingId === song.trackId ? "animate-like" : ""
-                                            }`}
-                                            style={{
-                                                color: votedSongs.includes(song.trackId)
-                                                    ? "#FF2F40"
-                                                    : "white"
-                                            }}
-                                        ></i>
-                                    </div>
-                                </li>
+                                <SongItem
+                                    trackId={song.trackId}
+                                    title={song.trackName}
+                                    artist={song.artistName}
+                                    cover={song.artworkUrl100}
+                                    voted={votedSongs.includes(song.trackId)}
+                                    animating={animatingId === song.trackId}
+                                    onVote={() =>
+                                        handleVote(
+                                            song.trackId,
+                                            song.trackName,
+                                            song.artistName,
+                                            song.artworkUrl100
+                                        )
+                                    }
+                                />
                             ))}
                         </ul>
                     )}
@@ -513,46 +454,27 @@ export default function ConsigliaUnaCanzone() {
                 (topSongs.length > 0 ? (
                     <ul className="song_list">
                         {(query ? filteredRankingResults : topSongs).map(song => (
-                            <li key={song.trackId} className="song_item">
-                                <img
-                                    src={song.artworkUrl100}
-                                    alt={song.title}
-                                    className="song_cover"
-                                />
-                                <div className="song_info">
-                                    <span className="song_title">{song.title}</span>
-                                    <span className="song_singer">{song.artist}</span>
-                                </div>
-                                <div
-                                    className={`song_vote ${
-                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 3
-                                            ? "disabled"
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleVote(
-                                            song.trackId,
-                                            song.title,
-                                            song.artist,
-                                            song.artworkUrl100
-                                        )
-                                    }
-                                >
-                                    <span>{song.voteCount}</span>
-                                    <i
-                                        className={`fa-heart ${
-                                            votedSongs.includes(song.trackId)
-                                                ? "fa-solid"
-                                                : "fa-regular"
-                                        } ${animatingId === song.trackId ? "animate-like" : ""}`}
-                                        style={{
-                                            color: votedSongs.includes(song.trackId)
-                                                ? "#FF2F40"
-                                                : "white"
-                                        }}
-                                    ></i>
-                                </div>
-                            </li>
+                            <SongItem
+                                key={song.trackId}
+                                trackId={song.trackId}
+                                title={song.title}
+                                artist={song.artist}
+                                cover={song.artworkUrl100}
+                                voted={votedSongs.includes(song.trackId)}
+                                animating={animatingId === song.trackId}
+                                voteCount={song.voteCount}
+                                onVote={() =>
+                                    handleVote(
+                                        song.trackId,
+                                        song.title,
+                                        song.artist,
+                                        song.artworkUrl100
+                                    )
+                                }
+                                disabled={
+                                    !votedSongs.includes(song.trackId) && votedSongs.length >= 3
+                                }
+                            />
                         ))}
                     </ul>
                 ) : (

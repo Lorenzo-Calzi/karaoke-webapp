@@ -1,0 +1,25 @@
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .tab {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    opacity: 0.5;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    outline: none;
+    color: white;
+
+    &.active {
+      border-color: white;
+      font-weight: 900;
+      opacity: 1;
+    }
+  }
+}

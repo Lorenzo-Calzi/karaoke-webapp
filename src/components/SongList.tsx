@@ -1,4 +1,4 @@
-import SongItem from "./SongItem";
+import SongItem from "./SongItem/SongItem";
 
 type Song = {
     trackId: string;
