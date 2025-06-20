@@ -302,6 +302,10 @@ export default function ConsigliaUnaCanzone() {
     });
 
     useEffect(() => {
+        fetchTopSongs();
+    }, []);
+
+    useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (activeTab === "search") {
                 searchSongs(query);
@@ -404,7 +408,6 @@ export default function ConsigliaUnaCanzone() {
                                 <SongItem
                                     key={index}
                                     index={index}
-                                    trackId={song.trackId}
                                     title={song.trackName}
                                     artist={song.artistName}
                                     cover={song.artworkUrl100}
@@ -432,7 +435,6 @@ export default function ConsigliaUnaCanzone() {
                                 <SongItem
                                     key={index}
                                     index={index}
-                                    trackId={song.trackId}
                                     title={song.trackName}
                                     artist={song.artistName}
                                     cover={song.artworkUrl100}
@@ -460,7 +462,6 @@ export default function ConsigliaUnaCanzone() {
                             <SongItem
                                 key={index}
                                 index={index}
-                                trackId={song.trackId}
                                 title={song.title}
                                 artist={song.artist}
                                 cover={song.artworkUrl100}

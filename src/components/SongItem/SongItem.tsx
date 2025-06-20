@@ -2,7 +2,6 @@ import "./songItem.scss";
 
 type Props = {
     index: number;
-    trackId: string;
     title: string;
     artist: string;
     cover: string;
