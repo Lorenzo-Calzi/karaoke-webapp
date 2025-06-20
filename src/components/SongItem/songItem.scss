@@ -3,20 +3,20 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  opacity: 1;
   pointer-events: auto;
-  // opacity: 0;
-  // animation: fadeInUp 0.6s ease forwards;
-  // animation-delay: calc(var(--i) * 0.05s);
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 0.5s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--i, 0) * 0.1s);
 
   &.invisible {
-    opacity: 0;
+    opacity: 0 !important;
     pointer-events: none;
-    transition: opacity 0.5s ease;
   }
 
   &.fade-in {
-    transition: opacity 0.5s ease;
+    opacity: 1 !important;
   }
 
   .song_cover {
@@ -91,13 +91,13 @@
   animation: like-pop 0.2s ease;
 }
 
-// @keyframes fadeInUp {
-//   from {
-//     opacity: 0;
-//     transform: translateY(20px);
-//   }
-//   to {
-//     opacity: 1;
-//     transform: translateY(0);
-//   }
-// }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

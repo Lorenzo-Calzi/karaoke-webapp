@@ -1,6 +1,7 @@
 import "./songItem.scss";
 
 type Props = {
+    index: number;
     trackId: string;
     title: string;
     artist: string;
@@ -10,10 +11,11 @@ type Props = {
     onVote?: () => void;
     voteCount?: number;
     disabled?: boolean;
+    showEntrance?: boolean;
 };
 
 export default function SongItem({
-    trackId,
+    index,
     title,
     artist,
     cover,
@@ -21,10 +23,14 @@ export default function SongItem({
     animating,
     onVote,
     voteCount,
-    disabled
+    disabled,
+    showEntrance
 }: Props) {
     return (
-        <li key={trackId} className="song_item">
+        <li
+            className={`song_item ${showEntrance ? "entrata-iniziale" : ""}`}
+            style={{ ["--i" as any]: index }}
+        >
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>

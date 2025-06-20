@@ -162,6 +162,7 @@ export default function ListaCanzoni() {
             <ul className="song_list">
                 {songs.map((song, index) => (
                     <SongItem
+                        index={index}
                         trackId={index.toString()}
                         title={song.title}
                         artist={song.singer}

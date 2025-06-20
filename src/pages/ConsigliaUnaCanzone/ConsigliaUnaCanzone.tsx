@@ -302,10 +302,6 @@ export default function ConsigliaUnaCanzone() {
     });
 
     useEffect(() => {
-        fetchTopSongs();
-    }, []);
-
-    useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (activeTab === "search") {
                 searchSongs(query);
@@ -346,6 +342,9 @@ export default function ConsigliaUnaCanzone() {
                 const itemTop = item.getBoundingClientRect().top;
                 const el = item as HTMLElement;
 
+                el.style.opacity = "1";
+                el.style.animation = "normal";
+
                 if (itemTop < searchBarBottom) {
                     el.classList.remove("fade-in");
                     el.classList.add("invisible");
@@ -362,7 +361,7 @@ export default function ConsigliaUnaCanzone() {
         window.addEventListener("resize", checkVisibility);
 
         // chiamata iniziale
-        checkVisibility();
+        // checkVisibility();
 
         return () => {
             window.removeEventListener("scroll", checkVisibility);
@@ -401,8 +400,10 @@ export default function ConsigliaUnaCanzone() {
 
                     {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
                         <ul className="song_list">
-                            {votedSongsDetails.map(song => (
+                            {votedSongsDetails.map((song, index) => (
                                 <SongItem
+                                    key={index}
+                                    index={index}
                                     trackId={song.trackId}
                                     title={song.trackName}
                                     artist={song.artistName}
@@ -427,8 +428,10 @@ export default function ConsigliaUnaCanzone() {
 
                     {results.length > 0 && query !== "" && (
                         <ul className="song_list">
-                            {results.map(song => (
+                            {results.map((song, index) => (
                                 <SongItem
+                                    key={index}
+                                    index={index}
                                     trackId={song.trackId}
                                     title={song.trackName}
                                     artist={song.artistName}
@@ -453,9 +456,10 @@ export default function ConsigliaUnaCanzone() {
             {activeTab === "ranking" &&
                 (topSongs.length > 0 ? (
                     <ul className="song_list">
-                        {(query ? filteredRankingResults : topSongs).map(song => (
+                        {(query ? filteredRankingResults : topSongs).map((song, index) => (
                             <SongItem
-                                key={song.trackId}
+                                key={index}
+                                index={index}
                                 trackId={song.trackId}
                                 title={song.title}
                                 artist={song.artist}
