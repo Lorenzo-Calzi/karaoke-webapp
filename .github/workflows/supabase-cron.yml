@@ -1,0 +1,16 @@
+name: Esegui Supabase Check ogni 10 minuti
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # ogni 10 minuti UTC
+  workflow_dispatch:
+
+jobs:
+  call-supabase-function:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Chiamata POST a Supabase
+        run: |
+          curl -X POST https://mzcqosceyruvhzguvbcc.supabase.co/functions/v1/checkAndManageEvents \
+            -H "Authorization: ${{ secrets.SUPABASE_SECRET }}"
