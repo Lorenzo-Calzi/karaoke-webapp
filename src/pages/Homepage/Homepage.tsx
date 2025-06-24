@@ -1,5 +1,5 @@
-import "./homepage.scss";
 import { useNavigate } from "react-router-dom";
+import "./homepage.scss";
 
 function Homepage() {
     const navigate = useNavigate();
@@ -13,18 +13,6 @@ function Homepage() {
     return (
         <div className="homepage container">
             <img className="logo" src="/images/karaoke_logo_4.png" alt="logo karaoke" />
-
-            {/* <div className="glitch-wrapper">
-                <div className="glitch" data-glitch="DJ SET">
-                    DJ SET
-                </div>
-                <div className="glitch" data-glitch="&">
-                    &
-                </div>
-                <div className="glitch" data-glitch="KARAOKE">
-                    KARAOKE
-                </div>
-            </div> */}
 
             <div className="buttons_list">
                 <button className="button" onClick={() => handleClick("/canzoni")}>

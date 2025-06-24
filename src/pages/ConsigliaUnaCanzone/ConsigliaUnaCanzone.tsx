@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../supabaseClient";
+import { useVoting } from "../../structure/VotingContext";
 import VotoProgressivo from "../../components/VotoProgressivo/VotoProgressivo";
 import Tabs from "../../components/Tabs/Tabs";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -17,6 +18,9 @@ type SpotifySong = {
 const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "";
 
 export default function ConsigliaUnaCanzone() {
+    const { votingAllowed } = useVoting();
+
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SpotifySong[]>([]);
@@ -376,114 +380,139 @@ export default function ConsigliaUnaCanzone() {
     return (
         <div className="consigliaUnaCanzone container">
             <div className="description">
-                <h2 className="title">Partecipa alla festa</h2>
-                <p className="paragraph">Vota le canzoni che vuoi ballare! (max 3)</p>
-                <p className="paragraph">Il DJ metterà le più richieste</p>
+                <h2 className="title">
+                    {votingAllowed || isAdmin
+                        ? "Partecipa alla festa"
+                        : "La festa non è ancora iniziata"}
+                </h2>
+                <p className="paragraph">
+                    {votingAllowed || isAdmin
+                        ? "Vota le canzoni che vuoi ballare! (max 3)"
+                        : "Le votazioni non sono attive"}
+                </p>
+                <p className="paragraph">
+                    {votingAllowed || isAdmin
+                        ? "Il DJ metterà le più richieste"
+                        : "Torna più tardi durante la serata!"}
+                </p>
             </div>
 
-            <VotoProgressivo valore={votedSongs.length} />
+            {votingAllowed ||
+                (isAdmin && (
+                    <>
+                        <VotoProgressivo valore={votedSongs.length} />
 
-            <Tabs
-                activeTab={activeTab}
-                onTabChange={t => {
-                    setActiveTab(t);
-                    setQuery("");
-                }}
-            />
+                        <Tabs
+                            activeTab={activeTab}
+                            onTabChange={t => {
+                                setActiveTab(t);
+                                setQuery("");
+                            }}
+                        />
 
-            <SearchBar
-                query={query}
-                setQuery={setQuery}
-                searchSongs={searchSongs}
-                searchBarRef={searchBarRef}
-            />
+                        <SearchBar
+                            query={query}
+                            setQuery={setQuery}
+                            searchSongs={searchSongs}
+                            searchBarRef={searchBarRef}
+                        />
 
-            {activeTab === "search" && (
-                <>
-                    {loadingVotedSongs && <p className="loader">Caricamento voti...</p>}
+                        {activeTab === "search" && (
+                            <>
+                                {loadingVotedSongs && (
+                                    <p className="loader">Controllo disponibilità votazioni...</p>
+                                )}
 
-                    {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
-                        <ul className="song_list">
-                            {votedSongsDetails.map((song, index) => (
-                                <SongItem
-                                    key={index}
-                                    index={index}
-                                    title={song.trackName}
-                                    artist={song.artistName}
-                                    cover={song.artworkUrl100}
-                                    voted={votedSongs.includes(song.trackId)}
-                                    animating={animatingId === song.trackId}
-                                    onVote={() =>
-                                        handleVote(
-                                            song.trackId,
-                                            song.trackName,
-                                            song.artistName,
-                                            song.artworkUrl100
+                                {votedSongsDetails.length > 0 &&
+                                    !loadingVotedSongs &&
+                                    query === "" && (
+                                        <ul className="song_list">
+                                            {votedSongsDetails.map((song, index) => (
+                                                <SongItem
+                                                    key={index}
+                                                    index={index}
+                                                    title={song.trackName}
+                                                    artist={song.artistName}
+                                                    cover={song.artworkUrl100}
+                                                    voted={votedSongs.includes(song.trackId)}
+                                                    animating={animatingId === song.trackId}
+                                                    onVote={() =>
+                                                        handleVote(
+                                                            song.trackId,
+                                                            song.trackName,
+                                                            song.artistName,
+                                                            song.artworkUrl100
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        !votedSongs.includes(song.trackId) &&
+                                                        votedSongs.length >= 5
+                                                    }
+                                                />
+                                            ))}
+                                        </ul>
+                                    )}
+
+                                {results.length > 0 && query !== "" && (
+                                    <ul className="song_list">
+                                        {results.map((song, index) => (
+                                            <SongItem
+                                                key={index}
+                                                index={index}
+                                                title={song.trackName}
+                                                artist={song.artistName}
+                                                cover={song.artworkUrl100}
+                                                voted={votedSongs.includes(song.trackId)}
+                                                animating={animatingId === song.trackId}
+                                                onVote={() =>
+                                                    handleVote(
+                                                        song.trackId,
+                                                        song.trackName,
+                                                        song.artistName,
+                                                        song.artworkUrl100
+                                                    )
+                                                }
+                                            />
+                                        ))}
+                                    </ul>
+                                )}
+                            </>
+                        )}
+
+                        {activeTab === "ranking" &&
+                            (topSongs.length > 0 ? (
+                                <ul className="song_list">
+                                    {(query ? filteredRankingResults : topSongs).map(
+                                        (song, index) => (
+                                            <SongItem
+                                                key={index}
+                                                index={index}
+                                                title={song.title}
+                                                artist={song.artist}
+                                                cover={song.artworkUrl100}
+                                                voted={votedSongs.includes(song.trackId)}
+                                                animating={animatingId === song.trackId}
+                                                voteCount={song.voteCount}
+                                                onVote={() =>
+                                                    handleVote(
+                                                        song.trackId,
+                                                        song.title,
+                                                        song.artist,
+                                                        song.artworkUrl100
+                                                    )
+                                                }
+                                                disabled={
+                                                    !votedSongs.includes(song.trackId) &&
+                                                    votedSongs.length >= 3
+                                                }
+                                            />
                                         )
-                                    }
-                                    disabled={
-                                        !votedSongs.includes(song.trackId) && votedSongs.length >= 5
-                                    }
-                                />
+                                    )}
+                                </ul>
+                            ) : (
+                                <p>Ancora nessuna canzone in classifica</p>
                             ))}
-                        </ul>
-                    )}
-
-                    {results.length > 0 && query !== "" && (
-                        <ul className="song_list">
-                            {results.map((song, index) => (
-                                <SongItem
-                                    key={index}
-                                    index={index}
-                                    title={song.trackName}
-                                    artist={song.artistName}
-                                    cover={song.artworkUrl100}
-                                    voted={votedSongs.includes(song.trackId)}
-                                    animating={animatingId === song.trackId}
-                                    onVote={() =>
-                                        handleVote(
-                                            song.trackId,
-                                            song.trackName,
-                                            song.artistName,
-                                            song.artworkUrl100
-                                        )
-                                    }
-                                />
-                            ))}
-                        </ul>
-                    )}
-                </>
-            )}
-
-            {activeTab === "ranking" &&
-                (topSongs.length > 0 ? (
-                    <ul className="song_list">
-                        {(query ? filteredRankingResults : topSongs).map((song, index) => (
-                            <SongItem
-                                key={index}
-                                index={index}
-                                title={song.title}
-                                artist={song.artist}
-                                cover={song.artworkUrl100}
-                                voted={votedSongs.includes(song.trackId)}
-                                animating={animatingId === song.trackId}
-                                voteCount={song.voteCount}
-                                onVote={() =>
-                                    handleVote(
-                                        song.trackId,
-                                        song.title,
-                                        song.artist,
-                                        song.artworkUrl100
-                                    )
-                                }
-                                disabled={
-                                    !votedSongs.includes(song.trackId) && votedSongs.length >= 3
-                                }
-                            />
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Ancora nessuna canzone in classifica</p>
+                    </>
                 ))}
         </div>
     );
