@@ -56,6 +56,17 @@ export default function AdminPanel() {
             <>
                 <h2 className="title">Accesso amministratore confermato</h2>
                 <p className="paragraph">Hai accesso illimitato alla piattaforma.</p>
+                <button
+                    onClick={() => {
+                        window.open(
+                            "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/exportVotes",
+                            "_blank"
+                        );
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                >
+                    📤 Esporta voti
+                </button>
             </>
         );
     }
