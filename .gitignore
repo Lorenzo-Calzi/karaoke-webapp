@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+supabase/.gitignore
+supabase/functions/exportVotes/.npmrc
+.env

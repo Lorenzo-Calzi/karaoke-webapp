@@ -1,8 +1,6 @@
 # Supabase
 .branches
 .temp
-supabase/functions/exportVotes/.npmrc
-.env 
 
 # dotenvx
 .env.keys
