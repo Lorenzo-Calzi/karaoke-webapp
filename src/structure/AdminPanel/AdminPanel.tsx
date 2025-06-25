@@ -56,6 +56,7 @@ export default function AdminPanel() {
             <>
                 <h2 className="title">Accesso amministratore confermato</h2>
                 <p className="paragraph">Hai accesso illimitato alla piattaforma.</p>
+
                 <button
                     className="button"
                     onClick={() => {
@@ -70,6 +71,55 @@ export default function AdminPanel() {
                     <div className="button_content">
                         <span className="button_title">REPORT</span>
                         <p className="button_description">Scarica il CSV</p>
+                    </div>
+                </button>
+
+                <button
+                    className="button"
+                    onClick={async () => {
+                        const confirm = window.confirm(
+                            "Sicuro di voler svuotare la tabella votes?"
+                        );
+                        if (!confirm) return;
+
+                        const res = await fetch(
+                            "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/clearVotes",
+                            {
+                                method: "POST"
+                            }
+                        );
+
+                        const json = await res.json();
+                        alert(json.message || "Errore");
+                    }}
+                >
+                    <i className="fa-solid fa-trash"></i>
+
+                    <div className="button_content">
+                        <span className="button_title">SVUOTA</span>
+                        <p className="button_description">Svuota tabella voti</p>
+                    </div>
+                </button>
+
+                <button
+                    className="button"
+                    onClick={async () => {
+                        const res = await fetch(
+                            "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/seedVotes",
+                            {
+                                method: "POST"
+                            }
+                        );
+
+                        const json = await res.json();
+                        alert(json.message || "Errore");
+                    }}
+                >
+                    <i className="fa-solid fa-upload"></i>
+
+                    <div className="button_content">
+                        <span className="button_title">POPOLA</span>
+                        <p className="button_description">Popola tabella voti</p>
                     </div>
                 </button>
             </>
