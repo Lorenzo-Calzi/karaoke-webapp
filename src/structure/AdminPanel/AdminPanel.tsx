@@ -50,22 +50,27 @@ export default function AdminPanel() {
             </>
         );
     } else if (session.user.email !== ADMIN_EMAIL) {
-        content = <p className="text-red-500">Accesso non autorizzato</p>;
+        content = <p className="paragraph">Accesso non autorizzato</p>;
     } else {
         content = (
             <>
                 <h2 className="title">Accesso amministratore confermato</h2>
                 <p className="paragraph">Hai accesso illimitato alla piattaforma.</p>
                 <button
+                    className="button"
                     onClick={() => {
                         window.open(
                             "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/exportVotes",
-                            "_blank"
+                            "_self"
                         );
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                 >
-                    📤 Esporta voti
+                    <i className="fa-solid fa-file-arrow-down"></i>
+
+                    <div className="button_content">
+                        <span className="button_title">REPORT</span>
+                        <p className="button_description">Scarica il CSV</p>
+                    </div>
                 </button>
             </>
         );
