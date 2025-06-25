@@ -397,123 +397,118 @@ export default function ConsigliaUnaCanzone() {
                 </p>
             </div>
 
-            {votingAllowed ||
-                (isAdmin && (
-                    <>
-                        <VotoProgressivo valore={votedSongs.length} />
+            {(votingAllowed || isAdmin) && (
+                <>
+                    <VotoProgressivo valore={votedSongs.length} />
 
-                        <Tabs
-                            activeTab={activeTab}
-                            onTabChange={t => {
-                                setActiveTab(t);
-                                setQuery("");
-                            }}
-                        />
+                    <Tabs
+                        activeTab={activeTab}
+                        onTabChange={t => {
+                            setActiveTab(t);
+                            setQuery("");
+                        }}
+                    />
 
-                        <SearchBar
-                            query={query}
-                            setQuery={setQuery}
-                            searchSongs={searchSongs}
-                            searchBarRef={searchBarRef}
-                        />
+                    <SearchBar
+                        query={query}
+                        setQuery={setQuery}
+                        searchSongs={searchSongs}
+                        searchBarRef={searchBarRef}
+                    />
 
-                        {activeTab === "search" && (
-                            <>
-                                {loadingVotedSongs && (
-                                    <p className="loader">Controllo disponibilità votazioni...</p>
-                                )}
+                    {activeTab === "search" && (
+                        <>
+                            {loadingVotedSongs && (
+                                <p className="loader">Controllo disponibilità votazioni...</p>
+                            )}
 
-                                {votedSongsDetails.length > 0 &&
-                                    !loadingVotedSongs &&
-                                    query === "" && (
-                                        <ul className="song_list">
-                                            {votedSongsDetails.map((song, index) => (
-                                                <SongItem
-                                                    key={index}
-                                                    index={index}
-                                                    title={song.trackName}
-                                                    artist={song.artistName}
-                                                    cover={song.artworkUrl100}
-                                                    voted={votedSongs.includes(song.trackId)}
-                                                    animating={animatingId === song.trackId}
-                                                    onVote={() =>
-                                                        handleVote(
-                                                            song.trackId,
-                                                            song.trackName,
-                                                            song.artistName,
-                                                            song.artworkUrl100
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        !votedSongs.includes(song.trackId) &&
-                                                        votedSongs.length >= 5
-                                                    }
-                                                />
-                                            ))}
-                                        </ul>
-                                    )}
-
-                                {results.length > 0 && query !== "" && (
-                                    <ul className="song_list">
-                                        {results.map((song, index) => (
-                                            <SongItem
-                                                key={index}
-                                                index={index}
-                                                title={song.trackName}
-                                                artist={song.artistName}
-                                                cover={song.artworkUrl100}
-                                                voted={votedSongs.includes(song.trackId)}
-                                                animating={animatingId === song.trackId}
-                                                onVote={() =>
-                                                    handleVote(
-                                                        song.trackId,
-                                                        song.trackName,
-                                                        song.artistName,
-                                                        song.artworkUrl100
-                                                    )
-                                                }
-                                            />
-                                        ))}
-                                    </ul>
-                                )}
-                            </>
-                        )}
-
-                        {activeTab === "ranking" &&
-                            (topSongs.length > 0 ? (
+                            {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
                                 <ul className="song_list">
-                                    {(query ? filteredRankingResults : topSongs).map(
-                                        (song, index) => (
-                                            <SongItem
-                                                key={index}
-                                                index={index}
-                                                title={song.title}
-                                                artist={song.artist}
-                                                cover={song.artworkUrl100}
-                                                voted={votedSongs.includes(song.trackId)}
-                                                animating={animatingId === song.trackId}
-                                                voteCount={song.voteCount}
-                                                onVote={() =>
-                                                    handleVote(
-                                                        song.trackId,
-                                                        song.title,
-                                                        song.artist,
-                                                        song.artworkUrl100
-                                                    )
-                                                }
-                                                disabled={
-                                                    !votedSongs.includes(song.trackId) &&
-                                                    votedSongs.length >= 3
-                                                }
-                                            />
-                                        )
-                                    )}
+                                    {votedSongsDetails.map((song, index) => (
+                                        <SongItem
+                                            key={index}
+                                            index={index}
+                                            title={song.trackName}
+                                            artist={song.artistName}
+                                            cover={song.artworkUrl100}
+                                            voted={votedSongs.includes(song.trackId)}
+                                            animating={animatingId === song.trackId}
+                                            onVote={() =>
+                                                handleVote(
+                                                    song.trackId,
+                                                    song.trackName,
+                                                    song.artistName,
+                                                    song.artworkUrl100
+                                                )
+                                            }
+                                            disabled={
+                                                !votedSongs.includes(song.trackId) &&
+                                                votedSongs.length >= 5
+                                            }
+                                        />
+                                    ))}
                                 </ul>
-                            ) : (
-                                <p>Ancora nessuna canzone in classifica</p>
-                            ))}
-                    </>
-                ))}
+                            )}
+
+                            {results.length > 0 && query !== "" && (
+                                <ul className="song_list">
+                                    {results.map((song, index) => (
+                                        <SongItem
+                                            key={index}
+                                            index={index}
+                                            title={song.trackName}
+                                            artist={song.artistName}
+                                            cover={song.artworkUrl100}
+                                            voted={votedSongs.includes(song.trackId)}
+                                            animating={animatingId === song.trackId}
+                                            onVote={() =>
+                                                handleVote(
+                                                    song.trackId,
+                                                    song.trackName,
+                                                    song.artistName,
+                                                    song.artworkUrl100
+                                                )
+                                            }
+                                        />
+                                    ))}
+                                </ul>
+                            )}
+                        </>
+                    )}
+
+                    {activeTab === "ranking" &&
+                        (topSongs.length > 0 ? (
+                            <ul className="song_list">
+                                {(query ? filteredRankingResults : topSongs).map((song, index) => (
+                                    <SongItem
+                                        key={index}
+                                        index={index}
+                                        title={song.title}
+                                        artist={song.artist}
+                                        cover={song.artworkUrl100}
+                                        voted={votedSongs.includes(song.trackId)}
+                                        animating={animatingId === song.trackId}
+                                        voteCount={song.voteCount}
+                                        onVote={() =>
+                                            handleVote(
+                                                song.trackId,
+                                                song.title,
+                                                song.artist,
+                                                song.artworkUrl100
+                                            )
+                                        }
+                                        disabled={
+                                            !votedSongs.includes(song.trackId) &&
+                                            votedSongs.length >= 3
+                                        }
+                                    />
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>Ancora nessuna canzone in classifica</p>
+                        ))}
+                </>
+            )}
         </div>
     );
 }
