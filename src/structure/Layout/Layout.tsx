@@ -6,10 +6,10 @@ function Layout() {
 
     const getBgClass = () => {
         const path = location.pathname;
-        if (path === "/karaoke" || path === "/djset") {
-            return "bg-gradient";
-        } else {
+        if (path === "/") {
             return "bg-static";
+        } else {
+            return "bg-gradient";
         }
     };
 
