@@ -15,7 +15,7 @@ function Homepage() {
             <img className="logo" src="/images/karaoke_logo_4.png" alt="logo karaoke" />
 
             <div className="buttons_list">
-                <button className="button" onClick={() => handleClick("/canzoni")}>
+                <button className="button" onClick={() => handleClick("/karaoke")}>
                     <i className="fa-solid fa-list-ul"></i>
 
                     <div className="button_content">
@@ -24,7 +24,7 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button className="button" onClick={() => handleClick("/consigliaci")}>
+                <button className="button" onClick={() => handleClick("/djset")}>
                     <i className="fa-solid fa-lightbulb"></i>
 
                     <div className="button_content">

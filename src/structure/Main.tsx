@@ -21,8 +21,8 @@ createRoot(document.getElementById("root")!).render(
                 <Routes>
                     <Route element={<Layout />}>
                         <Route path="/" element={<Homepage />} />
-                        <Route path="/canzoni" element={<ListaCanzoni />} />
-                        <Route path="/consigliaci" element={<ConsigliaUnaCanzone />} />
+                        <Route path="/karaoke" element={<ListaCanzoni />} />
+                        <Route path="/djset" element={<ConsigliaUnaCanzone />} />
                         <Route path="/social" element={<Social />} />
                         <Route path="/admin" element={<AdminPanel />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
