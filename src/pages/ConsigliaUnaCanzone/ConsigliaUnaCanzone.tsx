@@ -19,7 +19,6 @@ const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "
 
 export default function ConsigliaUnaCanzone() {
     const { votingAllowed } = useVoting();
-
     const isAdmin = localStorage.getItem("isAdmin") === "true";
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
     const [query, setQuery] = useState<string>("");

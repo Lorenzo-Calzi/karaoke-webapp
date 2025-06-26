@@ -1,17 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import "./index.scss";
-
+import { VotingProvider } from "../structure/VotingContext";
 import ScrollToTop from "./ScrollToTop";
+import NavBar from "../components/NavBar/NavBar";
 import Layout from "./Layout/Layout";
 import AdminPanel from "./AdminPanel/AdminPanel";
 import Homepage from "../pages/Homepage/Homepage";
 import ListaCanzoni from "../pages/ListaCanzoni/ListaCanzoni";
 import ConsigliaUnaCanzone from "../pages/ConsigliaUnaCanzone/ConsigliaUnaCanzone";
 import Social from "../pages/Social/Social";
-
-import { VotingProvider } from "../structure/VotingContext";
+import "./index.scss";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
@@ -28,6 +27,7 @@ createRoot(document.getElementById("root")!).render(
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Route>
                 </Routes>
+                <NavBar />
             </BrowserRouter>
         </VotingProvider>
     </StrictMode>
