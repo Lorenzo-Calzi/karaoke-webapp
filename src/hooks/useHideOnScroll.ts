@@ -5,14 +5,25 @@ export function useHideOnScroll() {
     let lastScroll = 0;
 
     useEffect(() => {
-        const onScroll = () => {
+        const handleScroll = () => {
             const current = window.scrollY;
-            setHidden(current > lastScroll && current > 60);
+            const scrollHeight = document.documentElement.scrollHeight;
+            const windowHeight = window.innerHeight;
+
+            const isAtBottom = current + windowHeight >= scrollHeight - 10; // tolleranza
+
+            // Nascondi se si scrolla in basso o siamo a fondo pagina
+            if ((current > lastScroll && current > 60) || isAtBottom) {
+                setHidden(true);
+            } else {
+                setHidden(false);
+            }
+
             lastScroll = current;
         };
 
-        window.addEventListener("scroll", onScroll);
-        return () => window.removeEventListener("scroll", onScroll);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return hidden;
