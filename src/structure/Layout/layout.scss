@@ -29,6 +29,17 @@
   min-height: 100dvh;
 }
 
+.hamburger {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
 @keyframes gradientBG {
   0% {
     background-position: 0% 50%;

@@ -27,7 +27,7 @@ createRoot(document.getElementById("root")!).render(
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Route>
                 </Routes>
-                <NavBar />
+                {/* <NavBar /> */}
             </BrowserRouter>
         </VotingProvider>
     </StrictMode>
