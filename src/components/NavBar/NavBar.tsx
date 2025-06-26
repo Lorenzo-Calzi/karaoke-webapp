@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useHideOnScroll } from "../../hooks/useHideOnScroll";
 import { HiHome } from "react-icons/hi2";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
@@ -15,6 +16,7 @@ interface NavItem {
 export default function NavBar() {
     const location = useLocation();
     const currentPath = location.pathname;
+    const isHidden = useHideOnScroll();
 
     if (currentPath === "/") return null;
 
@@ -36,7 +38,7 @@ export default function NavBar() {
     }
 
     return (
-        <nav className="bottom-navbar">
+        <nav className={`bottom-navbar ${isHidden ? "hide" : ""}`}>
             {navItems.map(({ path, iconComponent, label }) => (
                 <Link
                     key={path}
