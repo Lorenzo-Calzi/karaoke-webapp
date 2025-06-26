@@ -1,13 +1,25 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PiMicrophoneStageFill } from "react-icons/pi";
+import { IoHeadset } from "react-icons/io5";
+import { AiFillInstagram } from "react-icons/ai";
 import "./homepage.scss";
 
 function Homepage() {
     const navigate = useNavigate();
+    const [clickedPath, setClickedPath] = useState<string | null>(null);
 
     const handleClick = (path: string) => {
-        setTimeout(() => {
-            navigate(path);
-        }, 200);
+        setClickedPath(path);
+    };
+
+    const handleTransitionEnd = (e: React.TransitionEvent<HTMLButtonElement>) => {
+        if (e.target !== e.currentTarget) return;
+
+        if (clickedPath) {
+            navigate(clickedPath);
+            setClickedPath(null);
+        }
     };
 
     return (
@@ -15,8 +27,12 @@ function Homepage() {
             <img className="logo" src="/images/karaoke_logo_4.png" alt="logo karaoke" />
 
             <div className="buttons_list">
-                <button className="button" onClick={() => handleClick("/karaoke")}>
-                    <i className="fa-solid fa-list-ul"></i>
+                <button
+                    className={`button ${clickedPath === "/karaoke" ? "clicked" : ""}`}
+                    onClick={() => handleClick("/karaoke")}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                    <PiMicrophoneStageFill />
 
                     <div className="button_content">
                         <span className="button_title">KARAOKE</span>
@@ -24,8 +40,12 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button className="button" onClick={() => handleClick("/djset")}>
-                    <i className="fa-solid fa-lightbulb"></i>
+                <button
+                    className={`button ${clickedPath === "/djset" ? "clicked" : ""}`}
+                    onClick={() => handleClick("/djset")}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                    <IoHeadset />
 
                     <div className="button_content">
                         <span className="button_title">DJ SET</span>
@@ -33,8 +53,12 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button className="button" onClick={() => handleClick("/social")}>
-                    <i className="fa-brands fa-instagram"></i>
+                <button
+                    className={`button ${clickedPath === "/social" ? "clicked" : ""}`}
+                    onClick={() => handleClick("/social")}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                    <AiFillInstagram />
 
                     <div className="button_content">
                         <span className="button_title">SOCIAL</span>

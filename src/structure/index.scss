@@ -70,6 +70,10 @@ a {
   }
 }
 
+.clicked {
+  transform: scale(0.92) translateY(0.5rem);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #3b5474;
