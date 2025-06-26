@@ -10,7 +10,6 @@ type Props = {
     onVote?: () => void;
     voteCount?: number;
     disabled?: boolean;
-    showEntrance?: boolean;
 };
 
 export default function SongItem({
@@ -22,14 +21,10 @@ export default function SongItem({
     animating,
     onVote,
     voteCount,
-    disabled,
-    showEntrance
+    disabled
 }: Props) {
     return (
-        <li
-            className={`song_item ${showEntrance ? "entrata-iniziale" : ""}`}
-            style={{ ["--i" as any]: index }}
-        >
+        <li className="song_item" style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
