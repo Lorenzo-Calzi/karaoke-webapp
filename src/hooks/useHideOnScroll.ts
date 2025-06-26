@@ -10,10 +10,10 @@ export function useHideOnScroll() {
             const scrollHeight = document.documentElement.scrollHeight;
             const windowHeight = window.innerHeight;
 
-            const isAtBottom = current + windowHeight >= scrollHeight - 10; // tolleranza
+            const isAtBottom = current + windowHeight >= scrollHeight - 10;
+            const isScrollable = scrollHeight > windowHeight + 10; // se c'è abbastanza contenuto
 
-            // Nascondi se si scrolla in basso o siamo a fondo pagina
-            if ((current > lastScroll && current > 60) || isAtBottom) {
+            if ((current > lastScroll && current > 60) || (isAtBottom && isScrollable)) {
                 setHidden(true);
             } else {
                 setHidden(false);
