@@ -4,7 +4,7 @@ import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { RiAdminFill } from "react-icons/ri";
-import "./sidebar.scss";
+import "./sideBar.scss";
 
 interface Props {
     isOpen: boolean;
