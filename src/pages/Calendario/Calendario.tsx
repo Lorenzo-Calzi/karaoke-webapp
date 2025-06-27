@@ -13,8 +13,8 @@ export default function Calendario() {
         <div className="calendario container">
             <h2 className="title">Prossimi Eventi</h2>
             <div className="calendario-list">
-                {eventiFuturi.map((event, idx) => (
-                    <EventCard key={idx} event={event} />
+                {eventiFuturi.map((event, index) => (
+                    <EventCard key={index} event={event} index={index} />
                 ))}
             </div>
         </div>

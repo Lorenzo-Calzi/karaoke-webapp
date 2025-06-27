@@ -9,6 +9,11 @@
   padding: 1rem 2rem;
   background-color: rgba(0, 0, 0, 0.276);
   border: 1px solid rgba(255, 255, 255, 0.334);
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 0.5s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--i, 0) * 0.1s);
 
   .event-date-box {
     color: white;
@@ -77,5 +82,16 @@
       width: 16px;
       height: 16px;
     }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

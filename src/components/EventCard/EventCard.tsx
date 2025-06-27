@@ -8,7 +8,7 @@ type Event = {
     poster?: string;
 };
 
-export default function EventCard({ event }: { event: Event }) {
+export default function EventCard({ event, index }: { event: Event; index: number }) {
     const startDate = new Date(event.start);
     const day = startDate.getDate();
     const month = startDate.toLocaleString("it-IT", { month: "short" });
@@ -18,7 +18,7 @@ export default function EventCard({ event }: { event: Event }) {
     });
 
     return (
-        <div className="event-card">
+        <div className="event-card" style={{ ["--i" as any]: index }}>
             <div className="event-date-box">
                 <span className="event-day">{day}</span>
                 <span className="event-month">{month}</span>
