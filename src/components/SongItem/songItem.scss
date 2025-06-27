@@ -6,17 +6,26 @@
   pointer-events: auto;
   opacity: 0;
   transform: translateY(0);
-  transition: opacity 0.5s ease;
+  // transition: opacity 0.5s ease;
   animation: fadeInUp 0.5s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
 
+  // width: 100%;
+  // display: flex;
+  // align-items: center;
+  // gap: 15px;
+  // pointer-events: auto;
+  // transform: translateY(0);
+  // animation: fadeInUp 50.5s ease forwards;
+  // animation-delay: calc(var(--i, 0) * 0.1s);
+
   &.invisible {
-    opacity: 0 !important;
-    pointer-events: none;
+    // opacity: 0 !important;
+    // pointer-events: none;
   }
 
   &.fade-in {
-    opacity: 1 !important;
+    // opacity: 1 !important;
   }
 
   .song_cover {
