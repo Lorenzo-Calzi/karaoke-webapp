@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import "./songItem.scss";
 
 type Props = {
@@ -24,28 +23,8 @@ export default function SongItem({
     voteCount,
     disabled
 }: Props) {
-    const ref = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        console.log(isVisible);
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    observer.disconnect(); // disattiva dopo il primo trigger
-                }
-            },
-            { threshold: 0.1 } // quanto deve essere visibile per attivarsi
-        );
-
-        if (ref.current) observer.observe(ref.current);
-
-        return () => observer.disconnect();
-    }, []);
-
     return (
-        <li className={`song_item visible`} style={{ ["--i" as any]: index }}>
+        <li className="song_item animate" style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
