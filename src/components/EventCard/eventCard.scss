@@ -1,0 +1,81 @@
+.event-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem 2rem;
+  background-color: rgba(0, 0, 0, 0.276);
+  border: 1px solid rgba(255, 255, 255, 0.334);
+
+  .event-date-box {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.276);
+
+    .event-day {
+      font-size: 2rem;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .event-month {
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+  }
+
+  .event-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.5rem;
+
+    .poster-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .poster {
+        height: 35px;
+        width: 35px;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-radius: 4px;
+      }
+      .event-location {
+        color: #0051ff;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+    }
+
+    .event-description {
+      color: white;
+    }
+    .event-time-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #fef3c7;
+      color: #92400e;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .event-clock-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

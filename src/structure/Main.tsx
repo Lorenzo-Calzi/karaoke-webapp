@@ -10,6 +10,7 @@ import Homepage from "../pages/Homepage/Homepage";
 import ListaCanzoni from "../pages/ListaCanzoni/ListaCanzoni";
 import ConsigliaUnaCanzone from "../pages/ConsigliaUnaCanzone/ConsigliaUnaCanzone";
 import Social from "../pages/Social/Social";
+import Calendario from "../pages/Calendario/Calendario";
 import "./index.scss";
 
 createRoot(document.getElementById("root")!).render(
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
                         <Route path="/karaoke" element={<ListaCanzoni />} />
                         <Route path="/djset" element={<ConsigliaUnaCanzone />} />
                         <Route path="/social" element={<Social />} />
+                        <Route path="/calendario" element={<Calendario />} />
                         <Route path="/admin" element={<AdminPanel />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Route>

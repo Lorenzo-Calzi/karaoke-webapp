@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
+import { IoCalendarNumber } from "react-icons/io5";
 import "./homepage.scss";
 
 function Homepage() {
@@ -63,6 +64,19 @@ function Homepage() {
                     <div className="button_content">
                         <span className="button_title">SOCIAL</span>
                         <p className="button_description">I nostri profili Instagram</p>
+                    </div>
+                </button>
+
+                <button
+                    className={`button ${clickedPath === "/calendario" ? "clicked" : ""}`}
+                    onClick={() => handleClick("/calendario")}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                    <IoCalendarNumber />
+
+                    <div className="button_content">
+                        <span className="button_title">CALENDARIO</span>
+                        <p className="button_description">Le nostre date</p>
                     </div>
                 </button>
             </div>

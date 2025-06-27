@@ -5,6 +5,7 @@ import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { RiAdminFill } from "react-icons/ri";
+import { IoCalendarNumber } from "react-icons/io5";
 import "./navBar.scss";
 
 interface NavItem {
@@ -26,7 +27,8 @@ export default function NavBar() {
         { path: "/", iconComponent: <HiHome />, label: "Home" },
         { path: "/karaoke", iconComponent: <PiMicrophoneStageFill />, label: "Karaoke" },
         { path: "/djset", iconComponent: <IoHeadset />, label: "DJ Set" },
-        { path: "/social", iconComponent: <AiFillInstagram />, label: "Social" }
+        { path: "/social", iconComponent: <AiFillInstagram />, label: "Social" },
+        { path: "/calendario", iconComponent: <IoCalendarNumber />, label: "Calendario" }
     ];
 
     if (isAdmin) {
