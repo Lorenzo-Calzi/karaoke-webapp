@@ -1,13 +1,26 @@
 .song_item {
+  // width: 100%;
+  // display: flex;
+  // align-items: center;
+  // gap: 15px;
+  // pointer-events: auto;
+  // opacity: 0;
+  // transform: translateY(0);
+  // animation: fadeInUp 0.5s ease forwards;
+  // animation-delay: calc(var(--i, 0) * 0.1s);
+
   width: 100%;
   display: flex;
   align-items: center;
   gap: 15px;
   pointer-events: auto;
   opacity: 0;
-  transform: translateY(0);
-  animation: fadeInUp 0.5s ease forwards;
-  animation-delay: calc(var(--i, 0) * 0.1s);
+  transform: translateY(20px);
+
+  &.visible {
+    animation: fadeInUp 0.5s ease forwards;
+    animation-delay: calc(var(--i, 0) * 0.1s);
+  }
 
   &.invisible {
     opacity: 0 !important;
@@ -92,7 +105,7 @@
 
 @keyframes fadeInUp {
   from {
-    // opacity: 0;
+    opacity: 0;
     transform: translateY(20px);
   }
   to {
