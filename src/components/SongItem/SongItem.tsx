@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import "./songItem.scss";
 
 type Props = {
@@ -24,31 +23,8 @@ export default function SongItem({
     voteCount,
     disabled
 }: Props) {
-    const ref = useRef<HTMLLIElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (ref.current) observer.observe(ref.current);
-
-        return () => observer.disconnect();
-    }, []);
-
     return (
-        <li
-            ref={ref}
-            className={`song_item ${isVisible ? "visible" : ""}`}
-            style={{ ["--i" as any]: index }}
-        >
+        <li className="song_item visible" style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>

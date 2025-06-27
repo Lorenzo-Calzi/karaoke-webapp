@@ -1,29 +1,18 @@
 .song_item {
-  // width: 100%;
-  // display: flex;
-  // align-items: center;
-  // gap: 15px;
-  // pointer-events: auto;
-  // opacity: 0;
-  // transform: translateY(0);
-  // animation: fadeInUp 0.5s ease forwards;
-  // animation-delay: calc(var(--i, 0) * 0.1s);
-
   width: 100%;
   display: flex;
   align-items: center;
   gap: 15px;
-
   pointer-events: auto;
   opacity: 0;
-  visibility: hidden; // 👈 fondamentale su mobile
-  transform: translateY(20px);
+  transform: translateY(0);
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--i, 0) * 0.1s);
 
-  &.visible {
-    visibility: visible; // 👈 diventa visibile prima del fade
-    animation: fadeInUp 0.5s ease forwards;
-    animation-delay: calc(var(--i, 0) * 0.1s);
-  }
+  // transform: scale(0);
+  // pointer-events: auto;
+  // animation: scaleIn 0.4s ease-out forwards;
+  // animation-delay: calc(var(--i, 0) * 0.1s);
 
   &.invisible {
     opacity: 0 !important;
@@ -108,13 +97,17 @@
 
 @keyframes fadeInUp {
   from {
-    // opacity: 0;
+    opacity: 0;
     transform: translateY(20px);
-    visibility: visible !important;
   }
   to {
-    // opacity: 1;
+    opacity: 1;
     transform: translateY(0);
-    visibility: visible !important;
   }
 }
+
+// @keyframes scaleIn {
+//   to {
+//     transform: scale(1);
+//   }
+// }
