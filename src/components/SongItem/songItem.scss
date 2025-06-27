@@ -9,14 +9,14 @@
   animation: fadeInUp 0.5s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
 
-  // &.invisible {
-  //   // opacity: 0 !important;
-  //   // pointer-events: none;
-  // }
+  &.invisible {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
 
-  // &.fade-in {
-  //   // opacity: 1 !important;
-  // }
+  &.fade-in {
+    opacity: 1 !important;
+  }
 
   .song_cover {
     height: 60px;
@@ -92,7 +92,7 @@
 
 @keyframes fadeInUp {
   from {
-    opacity: 0;
+    // opacity: 0;
     transform: translateY(20px);
   }
   to {

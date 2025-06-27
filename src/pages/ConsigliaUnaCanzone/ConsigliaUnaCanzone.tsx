@@ -343,26 +343,25 @@ export default function ConsigliaUnaCanzone() {
     useEffect(() => {
         const checkVisibility = () => {
             const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-            console.log(searchBarBottom);
-            // const items = document.querySelectorAll(".song_item");
+            const items = document.querySelectorAll(".song_item");
 
-            // items.forEach(item => {
-            //     const itemTop = item.getBoundingClientRect().top;
-            //     const el = item as HTMLElement;
+            items.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const el = item as HTMLElement;
 
-            //     el.style.opacity = "1";
-            //     el.style.animation = "normal";
+                el.style.opacity = "1";
+                el.style.animation = "normal";
 
-            //     if (itemTop < searchBarBottom) {
-            //         el.classList.remove("fade-in");
-            //         el.classList.add("invisible");
-            //     } else {
-            //         if (el.classList.contains("invisible")) {
-            //             el.classList.remove("invisible");
-            //             el.classList.add("fade-in");
-            //         }
-            //     }
-            // });
+                if (itemTop < searchBarBottom) {
+                    el.classList.remove("fade-in");
+                    el.classList.add("invisible");
+                } else {
+                    if (el.classList.contains("invisible")) {
+                        el.classList.remove("invisible");
+                        el.classList.add("fade-in");
+                    }
+                }
+            });
         };
 
         window.addEventListener("scroll", checkVisibility);
