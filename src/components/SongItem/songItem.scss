@@ -8,6 +8,7 @@
   // transform: translateY(0);
   // animation: fadeInUp 0.5s ease forwards;
   // animation-delay: calc(var(--i, 0) * 0.1s);
+
   width: 100%;
   display: flex;
   align-items: center;
@@ -15,9 +16,11 @@
 
   pointer-events: auto;
   opacity: 0;
+  visibility: hidden; // 👈 fondamentale su mobile
   transform: translateY(20px);
 
-  &.animate {
+  &.visible {
+    visibility: visible; // 👈 diventa visibile prima del fade
     animation: fadeInUp 0.5s ease forwards;
     animation-delay: calc(var(--i, 0) * 0.1s);
   }
@@ -105,11 +108,13 @@
 
 @keyframes fadeInUp {
   from {
-    opacity: 0;
+    // opacity: 0;
     transform: translateY(20px);
+    visibility: visible !important;
   }
   to {
-    opacity: 1;
+    // opacity: 1;
     transform: translateY(0);
+    visibility: visible !important;
   }
 }
