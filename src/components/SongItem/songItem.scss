@@ -5,10 +5,10 @@
   gap: 15px;
   pointer-events: auto;
   // opacity: 0;
-  // transform: translateY(0);
-  // transition: opacity 0.5s ease;
-  // animation: fadeInUp 0.5s ease forwards;
-  // animation-delay: calc(var(--i, 0) * 0.1s);
+  transform: translateY(0);
+  transition: opacity 0.5s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--i, 0) * 0.1s);
 
   &.invisible {
     opacity: 0 !important;
