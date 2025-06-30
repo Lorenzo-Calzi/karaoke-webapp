@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./songItem.scss";
 
 type Props = {
@@ -11,11 +11,9 @@ type Props = {
     onVote?: () => void;
     voteCount?: number;
     disabled?: boolean;
-    // Nuova prop per re-triggerare l'animazione
-    animationKey?: string | number; // Cambia questo valore per riavviare l'animazione
 };
 
-type AnimationState = "hidden" | "animating" | "visible";
+type AnimationState = "initial" | "visible";
 
 export default function SongItem({
     index,
@@ -26,53 +24,38 @@ export default function SongItem({
     animating,
     onVote,
     voteCount,
-    disabled,
-    animationKey
+    disabled
 }: Props) {
-    const [animationState, setAnimationState] = useState<AnimationState>("hidden");
-    const elementRef = useRef<HTMLLIElement>(null);
+    const [animationState, setAnimationState] = useState<AnimationState>("initial");
 
     useEffect(() => {
-        // Reset e riavvia l'animazione ogni volta che cambia animationKey
-        setAnimationState("hidden");
-
-        // Forza un reflow per resettare l'animazione CSS
-        if (elementRef.current) {
-            elementRef.current.offsetHeight; // Trigger reflow
-        }
-
-        // Avvia l'animazione dopo un frame
-        const timer = requestAnimationFrame(() => {
-            setAnimationState("animating");
-        });
-
-        return () => cancelAnimationFrame(timer);
-    }, [animationKey]); // Riavvia quando cambia animationKey
-
-    const handleAnimationEnd = (e: React.AnimationEvent) => {
-        // Assicurati che l'evento provenga dall'elemento principale
-        if (e.target === elementRef.current && e.animationName === "fadeInUp") {
+        // Triggera l'animazione dopo un breve delay per permettere il mount
+        const timer = setTimeout(() => {
             setAnimationState("visible");
-        }
+        }, 50);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleAnimationEnd = () => {
+        // L'animazione CSS è terminata, ora gli elementi sono completamente interattivi
+        setAnimationState("visible");
     };
 
     const handleVoteClick = () => {
-        // Permetti il click solo se l'animazione è completata e non è disabled
-        if (animationState === "visible" && !disabled && onVote) {
+        // Permetti il click solo se non è disabled e l'animazione è iniziata
+        if (!disabled && onVote) {
             onVote();
         }
     };
 
-    const isInteractionEnabled = animationState === "visible" && !disabled;
-
     return (
         <li
-            ref={elementRef}
             className={`song_item ${animationState}`}
             style={{
                 ["--i" as any]: index,
                 // Fallback inline per il fix iOS
-                pointerEvents: isInteractionEnabled ? "auto" : "none"
+                pointerEvents: animationState === "visible" ? "auto" : "none"
             }}
             onAnimationEnd={handleAnimationEnd}
         >
@@ -86,9 +69,6 @@ export default function SongItem({
                 <div
                     className={`song_vote ${disabled ? "disabled" : ""}`}
                     onClick={handleVoteClick}
-                    style={{
-                        pointerEvents: isInteractionEnabled ? "auto" : "none"
-                    }}
                 >
                     {voteCount !== undefined && <span className="vote_count">{voteCount}</span>}
                     <i

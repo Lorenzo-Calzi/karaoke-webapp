@@ -45,7 +45,6 @@ export default function ConsigliaUnaCanzone() {
     >([]);
     const [animatingId, setAnimatingId] = useState<string | null>(null);
     const searchBarRef = useRef<HTMLInputElement>(null);
-    const [animationKey, setAnimationKey] = useState(0);
 
     const normalizeText = (text: string) =>
         text
@@ -306,10 +305,6 @@ export default function ConsigliaUnaCanzone() {
     });
 
     useEffect(() => {
-        setAnimationKey(Date.now());
-    }, []);
-
-    useEffect(() => {
         fetchTopSongs();
     }, []);
 
@@ -449,7 +444,6 @@ export default function ConsigliaUnaCanzone() {
                                                 !votedSongs.includes(song.trackId) &&
                                                 votedSongs.length >= 5
                                             }
-                                            animationKey={animationKey}
                                         />
                                     ))}
                                 </ul>
@@ -474,7 +468,6 @@ export default function ConsigliaUnaCanzone() {
                                                     song.artworkUrl100
                                                 )
                                             }
-                                            animationKey={animationKey}
                                         />
                                     ))}
                                 </ul>
@@ -507,7 +500,6 @@ export default function ConsigliaUnaCanzone() {
                                             !votedSongs.includes(song.trackId) &&
                                             votedSongs.length >= 3
                                         }
-                                        animationKey={animationKey}
                                     />
                                 ))}
                             </ul>
