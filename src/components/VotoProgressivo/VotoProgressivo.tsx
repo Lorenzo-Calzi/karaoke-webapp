@@ -15,13 +15,13 @@ export default function VotoProgressivo({ valore, massimo = 3 }: VotoProgressivo
 
     useEffect(() => {
         const nuovoOffset = strokeDasharray - (percentuale / 100) * strokeDasharray;
-        const timeout = setTimeout(() => setOffset(nuovoOffset), 50);
+        const timeout = setTimeout(() => setOffset(nuovoOffset));
         return () => clearTimeout(timeout);
     }, [percentuale]);
 
     useEffect(() => {
         if (valore === 0) {
-            const delay = setTimeout(() => setColor("#ddd"), 400);
+            const delay = setTimeout(() => setColor("#ddd"), 150);
             return () => clearTimeout(delay);
         } else {
             setColor("#ff2f40");
