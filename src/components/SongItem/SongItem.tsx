@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import "./songItem.scss";
 
 type Props = {
@@ -13,8 +12,6 @@ type Props = {
     disabled?: boolean;
 };
 
-type AnimationState = "initial" | "visible";
-
 export default function SongItem({
     index,
     title,
@@ -26,39 +23,8 @@ export default function SongItem({
     voteCount,
     disabled
 }: Props) {
-    const [animationState, setAnimationState] = useState<AnimationState>("initial");
-
-    useEffect(() => {
-        // Triggera l'animazione dopo un breve delay per permettere il mount
-        const timer = setTimeout(() => {
-            setAnimationState("visible");
-        }, 50);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    const handleAnimationEnd = () => {
-        // L'animazione CSS è terminata, ora gli elementi sono completamente interattivi
-        setAnimationState("visible");
-    };
-
-    const handleVoteClick = () => {
-        // Permetti il click solo se non è disabled e l'animazione è iniziata
-        if (!disabled && onVote) {
-            onVote();
-        }
-    };
-
     return (
-        <li
-            className={`song_item ${animationState}`}
-            style={{
-                ["--i" as any]: index,
-                // Fallback inline per il fix iOS
-                pointerEvents: animationState === "visible" ? "auto" : "none"
-            }}
-            onAnimationEnd={handleAnimationEnd}
-        >
+        <li className="song_item visible" style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
@@ -68,7 +34,9 @@ export default function SongItem({
             {onVote && (
                 <div
                     className={`song_vote ${disabled ? "disabled" : ""}`}
-                    onClick={handleVoteClick}
+                    onClick={() => {
+                        if (!disabled) onVote();
+                    }}
                 >
                     {voteCount !== undefined && <span className="vote_count">{voteCount}</span>}
                     <i
