@@ -4,15 +4,16 @@
   align-items: center;
   gap: 15px;
   pointer-events: auto;
-  // opacity: 0;
-  // transform: translateY(0);
-  // animation: fadeInUp 0.5s ease forwards;
-  // animation-delay: calc(var(--i, 0) * 0.1s);
-
-  transform: scale(0);
-  pointer-events: auto;
-  animation: scaleIn 0.4s ease-out forwards;
+  opacity: 0;
+  transform: translateY(0);
+  animation: fadeInUp 0.5s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
+
+  // pointer-events: auto;
+  // transform: scale(0);
+  // transform-origin: top left;
+  // animation: scaleIn 0.3s ease-out forwards;
+  // animation-delay: calc(var(--i, 0) * 0.1s);
 
   &.invisible {
     opacity: 0 !important;
@@ -106,8 +107,8 @@
   }
 }
 
-@keyframes scaleIn {
-  to {
-    transform: scale(1);
-  }
-}
+// @keyframes scaleIn {
+//   to {
+//     transform: scale(1);
+//   }
+// }

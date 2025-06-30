@@ -5,7 +5,7 @@ import { VotingProvider } from "../structure/VotingContext";
 import ScrollToTop from "./ScrollToTop";
 import NavBar from "../components/NavBar/NavBar";
 import Layout from "./Layout/Layout";
-import AdminPanel from "./AdminPanel/AdminPanel";
+import AdminPanel from "../pages/AdminPanel/AdminPanel";
 import Homepage from "../pages/Homepage/Homepage";
 import ListaCanzoni from "../pages/ListaCanzoni/ListaCanzoni";
 import ConsigliaUnaCanzone from "../pages/ConsigliaUnaCanzone/ConsigliaUnaCanzone";

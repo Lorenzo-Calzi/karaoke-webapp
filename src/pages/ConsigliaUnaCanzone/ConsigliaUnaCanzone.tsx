@@ -18,8 +18,7 @@ type SpotifySong = {
 const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "";
 
 export default function ConsigliaUnaCanzone() {
-    const { votingAllowed } = useVoting();
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    const { votingAllowed, isAdmin } = useVoting();
     const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SpotifySong[]>([]);

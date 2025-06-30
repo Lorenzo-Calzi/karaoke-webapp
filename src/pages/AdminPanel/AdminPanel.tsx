@@ -7,13 +7,30 @@ const ADMIN_EMAIL = "lorenzocalzi@gmail.com";
 export default function AdminPanel() {
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
+    const [overrideActive, setOverrideActive] = useState(false);
+    const [loadingOverride, setLoadingOverride] = useState(true);
 
     useEffect(() => {
+        const fetchOverride = async () => {
+            const { data, error } = await supabase
+                .from("override_settings")
+                .select("enabled")
+                .eq("key", "voting_override")
+                .single();
+
+            if (!error && data) {
+                setOverrideActive(data.enabled);
+            }
+
+            setLoadingOverride(false);
+        };
+
         supabase.auth.getSession().then(({ data }) => {
             setSession(data.session);
             const email = data.session?.user?.email;
             if (email === ADMIN_EMAIL) {
                 localStorage.setItem("isAdmin", "true");
+                fetchOverride();
             }
         });
 
@@ -31,6 +48,19 @@ export default function AdminPanel() {
         const { error } = await supabase.auth.signInWithOtp({ email });
         if (error) alert("Errore login: " + error.message);
         else alert("Controlla la tua email per il link di accesso");
+    };
+
+    const toggleOverride = async () => {
+        const newValue = !overrideActive;
+
+        const { error } = await supabase
+            .from("override_settings")
+            .update({ enabled: newValue })
+            .eq("key", "voting_override");
+
+        if (!error) {
+            setOverrideActive(newValue);
+        }
     };
 
     let content;
@@ -67,7 +97,6 @@ export default function AdminPanel() {
                     }}
                 >
                     <i className="fa-solid fa-file-arrow-down"></i>
-
                     <div className="button_content">
                         <span className="button_title">REPORT</span>
                         <p className="button_description">Scarica il CSV</p>
@@ -84,17 +113,13 @@ export default function AdminPanel() {
 
                         const res = await fetch(
                             "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/clearVotes",
-                            {
-                                method: "POST"
-                            }
+                            { method: "POST" }
                         );
-
                         const json = await res.json();
                         alert(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-trash"></i>
-
                     <div className="button_content">
                         <span className="button_title">SVUOTA</span>
                         <p className="button_description">Svuota tabella voti</p>
@@ -106,20 +131,28 @@ export default function AdminPanel() {
                     onClick={async () => {
                         const res = await fetch(
                             "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/seedVotes",
-                            {
-                                method: "POST"
-                            }
+                            { method: "POST" }
                         );
-
                         const json = await res.json();
                         alert(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-upload"></i>
-
                     <div className="button_content">
                         <span className="button_title">POPOLA</span>
                         <p className="button_description">Popola tabella voti</p>
+                    </div>
+                </button>
+
+                <button className="button" onClick={toggleOverride} disabled={loadingOverride}>
+                    <i
+                        className={`fa-solid ${overrideActive ? "fa-toggle-on" : "fa-toggle-off"}`}
+                    ></i>
+                    <div className="button_content">
+                        <span className="button_title">OVERRIDE</span>
+                        <p className="button_description">
+                            {overrideActive ? "Disabilità votazione" : "Abilita votazione"}
+                        </p>
                     </div>
                 </button>
             </>
