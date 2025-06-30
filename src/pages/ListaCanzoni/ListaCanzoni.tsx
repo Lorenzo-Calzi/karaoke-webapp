@@ -1,8 +1,16 @@
+import { useState, useEffect } from "react";
 import SongItem from "../../components/SongItem/SongItem";
 import songs from "../../data/songs.json";
 import "./listaCanzoni.scss";
 
 export default function ListaCanzoni() {
+    const [animationKey, setAnimationKey] = useState(0);
+
+    // Riavvia le animazioni ogni volta che il componente viene montato
+    useEffect(() => {
+        setAnimationKey(Date.now());
+    }, []);
+
     return (
         <div className="listaCanzoni container">
             <div className="description">
@@ -20,6 +28,7 @@ export default function ListaCanzoni() {
                         title={song.title}
                         artist={song.singer}
                         cover={song.cover}
+                        animationKey={animationKey}
                     />
                 ))}
             </ul>
