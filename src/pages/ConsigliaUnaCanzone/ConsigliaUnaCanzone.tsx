@@ -59,12 +59,10 @@ export default function ConsigliaUnaCanzone() {
         }
 
         try {
-            // 1. Ottieni token da backend
             const tokenRes = await fetch(`${apiBaseUrl}/api/spotify-token`);
             const tokenData: { access_token: string } = await tokenRes.json();
             const access_token = tokenData.access_token;
 
-            // 2. Chiamata alle API Spotify
             const res = await fetch(
                 `https://api.spotify.com/v1/search?q=${encodeURIComponent(
                     trimmed
@@ -76,23 +74,11 @@ export default function ConsigliaUnaCanzone() {
                 }
             );
 
-            type SpotifyAPITrack = {
-                id: string;
-                name: string;
-                popularity: number;
-                artists: { name: string }[];
-                album: { images: { url: string }[] };
-            };
-
-            const data: {
-                tracks: {
-                    items: SpotifyAPITrack[];
-                };
-            } = await res.json();
+            const data = await res.json();
 
             const loweredWords = normalizeText(trimmed).split(/\s+/);
 
-            const rawTracks: SpotifySong[] = data.tracks.items.map(item => ({
+            const rawTracks: SpotifySong[] = data.tracks.items.map((item: any) => ({
                 trackId: item.id,
                 trackName: item.name,
                 artistName: item.artists?.[0]?.name || "Sconosciuto",
@@ -103,18 +89,11 @@ export default function ConsigliaUnaCanzone() {
             const filtered = rawTracks.filter(track => {
                 const title = normalizeText(track.trackName);
                 const artist = normalizeText(track.artistName);
-
                 const isRelevant = loweredWords.every(
                     word => title.includes(word) || artist.includes(word)
                 );
-
                 const isValid =
-                    typeof track.trackId === "string" &&
-                    track.trackId.trim() !== "" &&
-                    track.trackName.trim() !== "" &&
-                    track.artistName.trim() !== "" &&
-                    track.artworkUrl100.trim() !== "";
-
+                    track.trackId && track.trackName && track.artistName && track.artworkUrl100;
                 return isRelevant && isValid;
             });
 
@@ -127,7 +106,6 @@ export default function ConsigliaUnaCanzone() {
             const sorted = Array.from(uniqueMap.values()).sort(
                 (a, b) => b.popularity - a.popularity
             );
-
             setResults(sorted);
         } catch (error) {
             console.error("Errore durante la ricerca:", error);
@@ -142,54 +120,50 @@ export default function ConsigliaUnaCanzone() {
     ) => {
         const alreadyVoted = votedSongs.includes(trackId);
 
-        // ⛔ Limite di 3 voti
-        if (!alreadyVoted && votedSongs.length >= 3) {
-            return;
-        }
+        if (!alreadyVoted && votedSongs.length >= 3) return;
 
-        // ❤️ ANIMAZIONE
         setAnimatingId(trackId);
-        setTimeout(() => {
-            setAnimatingId(null);
-        }, 400);
+        setTimeout(() => setAnimatingId(null), 400);
 
         if (alreadyVoted) {
-            // ✅ Aggiorna SUBITO il cuore (grigio)
             setVotedSongs(prev => prev.filter(id => id !== trackId));
+            setTopSongs(prev =>
+                prev.map(song =>
+                    song.trackId === trackId ? { ...song, voteCount: song.voteCount - 1 } : song
+                )
+            );
 
-            // 🗑️ Rimuovi dal DB
             const { error } = await supabase
                 .from("votes")
                 .delete()
                 .eq("trackId", trackId)
                 .eq("voterId", voterId);
-
             if (!error) {
-                await fetchVotedSongsDetails(); // ✅ aggiorna lista canzoni votate
-                setTimeout(() => {
-                    fetchTopSongs();
-                }, 400);
+                await fetchVotedSongsDetails();
+                setTimeout(() => fetchTopSongs(), 400);
             }
         } else {
-            // ➕ Inserisci nel DB
-            const { error } = await supabase.from("votes").insert([
-                {
-                    trackId,
-                    title,
-                    artist,
-                    artworkUrl100,
-                    voterId
-                }
-            ]);
-
+            const { error } = await supabase
+                .from("votes")
+                .insert([{ trackId, title, artist, artworkUrl100, voterId }]);
             if (!error) {
                 setVotedSongs(prev => [...prev, trackId]);
-                await fetchVotedSongsDetails(); // ✅ aggiorna lista canzoni votate
+                setTopSongs(prev => {
+                    const songIndex = prev.findIndex(s => s.trackId === trackId);
+                    if (songIndex !== -1) {
+                        const updated = [...prev];
+                        updated[songIndex] = {
+                            ...updated[songIndex],
+                            voteCount: updated[songIndex].voteCount + 1
+                        };
+                        return updated;
+                    } else {
+                        return [...prev, { trackId, title, artist, artworkUrl100, voteCount: 1 }];
+                    }
+                });
+                await fetchVotedSongsDetails();
                 fetchTopSongs();
-
-                setTimeout(() => {
-                    setQuery("");
-                }, 400);
+                setTimeout(() => setQuery(""), 400);
             }
         }
     };
@@ -205,43 +179,35 @@ export default function ConsigliaUnaCanzone() {
             return;
         }
 
-        if (data) {
-            const voteMap = new Map<
-                string,
-                {
-                    title: string;
-                    artist: string;
-                    artworkUrl100: string;
-                    count: number;
-                }
-            >();
-
-            for (const row of data) {
-                const trackId = row.trackId;
-                if (!voteMap.has(trackId)) {
-                    voteMap.set(trackId, {
-                        title: row.title,
-                        artist: row.artist,
-                        artworkUrl100: row.artworkUrl100,
-                        count: 1
-                    });
-                } else {
-                    voteMap.get(trackId)!.count += 1;
-                }
+        const voteMap = new Map<
+            string,
+            { title: string; artist: string; artworkUrl100: string; count: number }
+        >();
+        for (const row of data) {
+            const trackId = row.trackId;
+            if (!voteMap.has(trackId)) {
+                voteMap.set(trackId, {
+                    title: row.title,
+                    artist: row.artist,
+                    artworkUrl100: row.artworkUrl100,
+                    count: 1
+                });
+            } else {
+                voteMap.get(trackId)!.count += 1;
             }
-
-            const topList = Array.from(voteMap.entries())
-                .map(([trackId, info]) => ({
-                    trackId,
-                    title: info.title,
-                    artist: info.artist,
-                    artworkUrl100: info.artworkUrl100,
-                    voteCount: info.count
-                }))
-                .sort((a, b) => b.voteCount - a.voteCount);
-
-            setTopSongs(topList);
         }
+
+        const topList = Array.from(voteMap.entries())
+            .map(([trackId, info]) => ({
+                trackId,
+                title: info.title,
+                artist: info.artist,
+                artworkUrl100: info.artworkUrl100,
+                voteCount: info.count
+            }))
+            .sort((a, b) => b.voteCount - a.voteCount);
+
+        setTopSongs(topList);
     };
 
     const fetchVotedSongsDetails = async () => {
@@ -266,7 +232,6 @@ export default function ConsigliaUnaCanzone() {
             const unique = new Map<string, SpotifySong>();
             for (const song of data) {
                 const trackId = String(song.trackId);
-
                 if (
                     trackId &&
                     song.title &&
@@ -283,7 +248,6 @@ export default function ConsigliaUnaCanzone() {
                     });
                 }
             }
-
             setVotedSongsDetails(Array.from(unique.values()));
         } catch (e) {
             console.error("Errore nel recuperare dettagli:", e);
@@ -313,7 +277,6 @@ export default function ConsigliaUnaCanzone() {
                 searchSongs(query);
             }
         }, 200);
-
         return () => clearTimeout(delayDebounce);
     }, [query, activeTab]);
 
@@ -323,7 +286,6 @@ export default function ConsigliaUnaCanzone() {
                 .from("votes")
                 .select("trackId")
                 .eq("voterId", voterId);
-
             if (error) {
                 console.error("Errore nel recupero voti:", error.message);
             } else if (data) {
@@ -331,49 +293,12 @@ export default function ConsigliaUnaCanzone() {
                 setVotedSongs(ids);
             }
         };
-
         fetchVotesFromDB();
     }, [voterId]);
 
     useEffect(() => {
         fetchVotedSongsDetails();
     }, [votedSongs]);
-
-    useEffect(() => {
-        const checkVisibility = () => {
-            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-            const items = document.querySelectorAll(".song_item");
-
-            items.forEach(item => {
-                const itemTop = item.getBoundingClientRect().top;
-                const el = item as HTMLElement;
-
-                el.style.opacity = "1";
-                el.style.animation = "normal";
-
-                if (itemTop < searchBarBottom) {
-                    el.classList.remove("fade-in");
-                    el.classList.add("invisible");
-                } else {
-                    if (el.classList.contains("invisible")) {
-                        el.classList.remove("invisible");
-                        el.classList.add("fade-in");
-                    }
-                }
-            });
-        };
-
-        window.addEventListener("scroll", checkVisibility);
-        window.addEventListener("resize", checkVisibility);
-
-        // chiamata iniziale
-        // checkVisibility();
-
-        return () => {
-            window.removeEventListener("scroll", checkVisibility);
-            window.removeEventListener("resize", checkVisibility);
-        };
-    }, [results, query, activeTab]);
 
     return (
         <div className="consigliaUnaCanzone container">

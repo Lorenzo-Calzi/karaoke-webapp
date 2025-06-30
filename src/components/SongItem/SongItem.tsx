@@ -24,7 +24,7 @@ export default function SongItem({
     disabled
 }: Props) {
     return (
-        <li className="song_item visible" style={{ ["--i" as any]: index }}>
+        <li className="song_item" style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
