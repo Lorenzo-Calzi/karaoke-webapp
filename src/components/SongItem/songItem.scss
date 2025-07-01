@@ -62,6 +62,9 @@
     display: flex;
     align-items: center;
     gap: 0.7rem;
+    background-color: rgba(159, 159, 159, 0.292);
+    padding: 5px 15px;
+    border-radius: 50px;
 
     span {
       font-size: 1rem;
@@ -71,6 +74,10 @@
     i {
       font-size: 1.7rem;
     }
+  }
+  .song_toggle_played {
+    font-size: 1.7rem;
+    padding-top: 3px;
   }
   .disabled {
     opacity: 0.2;
@@ -111,4 +118,10 @@
 //   to {
 //     transform: scale(1);
 //   }
+// }
+
+// .song_played_badge,
+// .song_toggle_played {
+//   font-size: 1.5rem;
+//   cursor: pointer;
 // }

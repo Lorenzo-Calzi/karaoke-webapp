@@ -10,6 +10,9 @@ type Props = {
     onVote?: () => void;
     voteCount?: number;
     disabled?: boolean;
+    isAdmin?: boolean;
+    played?: boolean;
+    onTogglePlayed?: () => void;
 };
 
 export default function SongItem({
@@ -21,31 +24,59 @@ export default function SongItem({
     animating,
     onVote,
     voteCount,
-    disabled
+    disabled,
+    isAdmin,
+    played,
+    onTogglePlayed
 }: Props) {
     return (
-        <li className="song_item" style={{ ["--i" as any]: index }}>
+        <li className={`song_item ${played ? "played" : ""}`} style={{ ["--i" as any]: index }}>
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
                 <span>{artist}</span>
             </div>
 
-            {onVote && (
-                <div
-                    className={`song_vote ${disabled ? "disabled" : ""}`}
-                    onClick={() => {
-                        if (!disabled) onVote();
-                    }}
-                >
-                    {voteCount !== undefined && <span className="vote_count">{voteCount}</span>}
-                    <i
-                        className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
-                            animating ? "animate-like" : ""
-                        }`}
-                        style={{ color: voted ? "#FF2F40" : "white" }}
-                    ></i>
-                </div>
+            {/* Se la canzone è già stata suonata */}
+            {played ? (
+                isAdmin ? (
+                    <div className="song_toggle_played" onClick={onTogglePlayed}>
+                        <i className="fa-solid fa-square-check" style={{ color: "#7CFC00" }}></i>
+                    </div>
+                ) : (
+                    <div className="song_toggle_played">
+                        <i className="fa-solid fa-square-check" style={{ color: "#7CFC00" }}></i>
+                    </div>
+                )
+            ) : (
+                <>
+                    {/* Bottone like (solo se played è false) */}
+                    {onVote && (
+                        <div
+                            className={`song_vote ${disabled ? "disabled" : ""}`}
+                            onClick={() => {
+                                if (!disabled) onVote();
+                            }}
+                        >
+                            {voteCount !== undefined && (
+                                <span className="vote_count">{voteCount}</span>
+                            )}
+                            <i
+                                className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
+                                    animating ? "animate-like" : ""
+                                }`}
+                                style={{ color: voted ? "#FF2F40" : "white" }}
+                            ></i>
+                        </div>
+                    )}
+
+                    {/* Checkbox vuota (solo admin, se played === false) */}
+                    {isAdmin && (
+                        <div className="song_toggle_played" onClick={onTogglePlayed}>
+                            <i className="fa-solid fa-square-check"></i>
+                        </div>
+                    )}
+                </>
             )}
         </li>
     );

@@ -13,6 +13,7 @@ type SpotifySong = {
     artistName: string;
     artworkUrl100: string;
     popularity: number;
+    played?: boolean;
 };
 
 const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "";
@@ -40,6 +41,7 @@ export default function ConsigliaUnaCanzone() {
             artist: string;
             artworkUrl100: string;
             voteCount: number;
+            played?: boolean;
         }[]
     >([]);
     const [animatingId, setAnimatingId] = useState<string | null>(null);
@@ -169,21 +171,23 @@ export default function ConsigliaUnaCanzone() {
     };
 
     const fetchTopSongs = async () => {
-        const { data, error } = await supabase
+        // Step 1: prendi i voti
+        const { data: votesData, error: votesError } = await supabase
             .from("votes")
-            .select("trackId, title, artist, artworkUrl100", { count: "exact" })
-            .order("trackId", { ascending: true });
+            .select("trackId, title, artist, artworkUrl100");
 
-        if (error) {
-            console.error("Errore nel recupero classifica:", error.message);
+        if (votesError || !votesData) {
+            console.error("Errore nel recupero classifica:", votesError?.message);
             return;
         }
 
+        // Step 2: aggrega i voti per canzone
         const voteMap = new Map<
             string,
             { title: string; artist: string; artworkUrl100: string; count: number }
         >();
-        for (const row of data) {
+
+        for (const row of votesData) {
             const trackId = row.trackId;
             if (!voteMap.has(trackId)) {
                 voteMap.set(trackId, {
@@ -197,13 +201,39 @@ export default function ConsigliaUnaCanzone() {
             }
         }
 
+        // Step 3: assicurati che tutte le canzoni siano presenti in `songs`
+        const missingSongs = Array.from(voteMap.entries()).map(([trackId, info]) => ({
+            trackId,
+            title: info.title,
+            artist: info.artist,
+            artworkUrl100: info.artworkUrl100
+        }));
+
+        const { error: upsertError } = await supabase.from("songs").upsert(missingSongs);
+        if (upsertError) {
+            console.error("Errore nel fare upsert in songs:", upsertError.message);
+        }
+
+        // Step 4: recupera stato `played` dalla tabella songs
+        const { data: songsData, error: songsError } = await supabase
+            .from("songs")
+            .select("trackId, played");
+
+        if (songsError) {
+            console.error("Errore nel recupero songs:", songsError.message);
+        }
+
+        const playedMap = new Map(songsData?.map(s => [s.trackId, s.played]));
+
+        // Step 5: unisci tutto
         const topList = Array.from(voteMap.entries())
             .map(([trackId, info]) => ({
                 trackId,
                 title: info.title,
                 artist: info.artist,
                 artworkUrl100: info.artworkUrl100,
-                voteCount: info.count
+                voteCount: info.count,
+                played: playedMap.get(trackId) ?? false
             }))
             .sort((a, b) => b.voteCount - a.voteCount);
 
@@ -266,6 +296,17 @@ export default function ConsigliaUnaCanzone() {
                 normalizedArtist.includes(normalizedQuery))
         );
     });
+
+    async function togglePlayed(trackId: string, played: boolean) {
+        const { error } = await supabase.from("songs").update({ played }).eq("trackId", trackId);
+
+        if (!error) {
+            fetchTopSongs(); // ricarica la lista aggiornata
+        } else {
+            console.log("NO");
+            console.error("Errore aggiornamento played:", error.message);
+        }
+    }
 
     useEffect(() => {
         fetchTopSongs();
@@ -368,6 +409,11 @@ export default function ConsigliaUnaCanzone() {
                                                 !votedSongs.includes(song.trackId) &&
                                                 votedSongs.length >= 5
                                             }
+                                            isAdmin={isAdmin}
+                                            played={song.played}
+                                            onTogglePlayed={() =>
+                                                togglePlayed(song.trackId, !song.played)
+                                            }
                                         />
                                     ))}
                                 </ul>
@@ -391,6 +437,11 @@ export default function ConsigliaUnaCanzone() {
                                                     song.artistName,
                                                     song.artworkUrl100
                                                 )
+                                            }
+                                            isAdmin={isAdmin}
+                                            played={song.played}
+                                            onTogglePlayed={() =>
+                                                togglePlayed(song.trackId, !song.played)
                                             }
                                         />
                                     ))}
@@ -423,6 +474,11 @@ export default function ConsigliaUnaCanzone() {
                                         disabled={
                                             !votedSongs.includes(song.trackId) &&
                                             votedSongs.length >= 3
+                                        }
+                                        isAdmin={isAdmin}
+                                        played={song.played}
+                                        onTogglePlayed={() =>
+                                            togglePlayed(song.trackId, !song.played)
                                         }
                                     />
                                 ))}
