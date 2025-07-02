@@ -5,17 +5,18 @@
   gap: 15px;
   pointer-events: auto;
   filter: opacity(0);
-  transform: scale(0.98) translateY(20px);
-  animation: fakeFadeIn 0.75s ease forwards;
+  animation: fakeFadeIn 0.5s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
 
-  &.invisible {
-    opacity: 0 !important;
-    pointer-events: none;
+  &.fade_in {
+    filter: opacity(0);
+    animation: fakeFadeIn 0.5s ease forwards;
   }
 
-  &.fade-in {
-    opacity: 1 !important;
+  &.fade_out {
+    pointer-events: none;
+    filter: opacity(1);
+    animation: fakeFadeOut 0.5s ease forwards;
   }
 
   .song_cover {
@@ -85,6 +86,28 @@
   }
 }
 
+@keyframes fakeFadeIn {
+  from {
+    transform: scale(0.98) translateY(0px);
+    filter: opacity(0);
+  }
+  to {
+    transform: scale(1) translateY(0);
+    filter: opacity(1);
+  }
+}
+
+@keyframes fakeFadeOut {
+  from {
+    transform: scale(1) translateY(0);
+    filter: opacity(1);
+  }
+  to {
+    transform: scale(0.98) translateY(0px);
+    filter: opacity(0);
+  }
+}
+
 @keyframes like-pop {
   0% {
     transform: scale(1);
@@ -98,33 +121,4 @@
   100% {
     transform: scale(1);
   }
-}
-
-.animate-like {
-  animation: like-pop 0.2s ease;
-}
-
-@keyframes fakeFadeIn {
-  to {
-    transform: scale(1) translateY(0);
-    filter: opacity(1);
-  }
-}
-
-@keyframes check-pop {
-  0% {
-    transform: scale(0.4);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.animate-check {
-  animation: check-pop 0.3s ease;
 }

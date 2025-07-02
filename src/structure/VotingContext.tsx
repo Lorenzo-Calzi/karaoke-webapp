@@ -17,6 +17,11 @@ export function VotingProvider({ children }: { children: React.ReactNode }) {
     const [isAdmin, setIsAdmin] = useState(false);
 
     async function getServerTime(): Promise<Date | null> {
+        if (!navigator.onLine) {
+            console.warn("Sei offline. Impossibile recuperare l'orario dal server.");
+            return null;
+        }
+
         const { data, error } = await supabase.rpc("get_server_time");
         if (error) {
             console.error("Errore nel recuperare l’orario dal server:", error);

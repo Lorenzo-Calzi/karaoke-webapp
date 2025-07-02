@@ -55,6 +55,12 @@ export default function ConsigliaUnaCanzone() {
             .replace(/[\u0300-\u036f']/g, "");
 
     const searchSongs = async (searchTerm: string): Promise<void> => {
+        if (!navigator.onLine) {
+            console.warn("Sei offline. Salto ricerca canzoni.");
+            setResults([]);
+            return;
+        }
+
         const trimmed = searchTerm.trim();
         if (!trimmed) {
             setResults([]);
@@ -137,6 +143,11 @@ export default function ConsigliaUnaCanzone() {
         artist: string,
         artworkUrl100: string
     ) => {
+        if (!navigator.onLine) {
+            showInfo("Sei offline. Non puoi votare in questo momento.");
+            return;
+        }
+
         const alreadyVoted = votedSongs.includes(trackId);
         if (!alreadyVoted && votedSongs.length >= 3) return;
 
@@ -223,6 +234,11 @@ export default function ConsigliaUnaCanzone() {
     };
 
     const fetchTopSongs = async () => {
+        if (!navigator.onLine) {
+            console.warn("Sei offline. Salto aggiornamento classifica.");
+            return;
+        }
+
         // Step 1: prendi i voti
         const { data: votesData, error: votesError } = await supabase
             .from("votes")
@@ -293,6 +309,12 @@ export default function ConsigliaUnaCanzone() {
     };
 
     const fetchVotedSongsDetails = async () => {
+        if (!navigator.onLine) {
+            console.warn("Sei offline. Salto recupero dettagli canzoni votate.");
+            setLoadingVotedSongs(false);
+            return;
+        }
+
         if (votedSongs.length === 0) {
             setVotedSongsDetails([]);
             setLoadingVotedSongs(false);
@@ -377,13 +399,31 @@ export default function ConsigliaUnaCanzone() {
     }
 
     useEffect(() => {
+        // fetchTopSongs iniziale
         fetchTopSongs();
 
+        // intervallo ogni 10 secondi
         const interval = setInterval(() => {
-            fetchTopSongs(); // ogni 10 secondi
+            fetchTopSongs();
         }, 10000);
 
-        return () => clearInterval(interval);
+        // listener rete
+        const handleOffline = () => {
+            showInfo("Sei offline. Alcune funzionalità non saranno disponibili.");
+        };
+
+        const handleOnline = () => {
+            showInfo("Connessione ripristinata!");
+        };
+
+        window.addEventListener("offline", handleOffline);
+        window.addEventListener("online", handleOnline);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("offline", handleOffline);
+            window.removeEventListener("online", handleOnline);
+        };
     }, []);
 
     useEffect(() => {
@@ -397,6 +437,11 @@ export default function ConsigliaUnaCanzone() {
 
     useEffect(() => {
         const fetchVotesFromDB = async () => {
+            if (!navigator.onLine) {
+                console.warn("Sei offline. Salto recupero voti da Supabase.");
+                return;
+            }
+
             const { data, error } = await supabase
                 .from("votes")
                 .select("trackId")
@@ -415,41 +460,35 @@ export default function ConsigliaUnaCanzone() {
         fetchVotedSongsDetails();
     }, [votedSongs]);
 
-    // useEffect(() => {
-    //     const checkVisibility = () => {
-    //         const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-    //         const items = document.querySelectorAll(".song_item");
+    useEffect(() => {
+        const checkVisibility = () => {
+            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
+            const items = document.querySelectorAll(".song_item");
 
-    //         items.forEach(item => {
-    //             const itemTop = item.getBoundingClientRect().top;
-    //             const el = item as HTMLElement;
+            items.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const el = item as HTMLElement;
 
-    //             el.style.opacity = "1";
-    //             el.style.animation = "normal";
+                if (itemTop < searchBarBottom) {
+                    el.classList.remove("fade_in");
+                    el.classList.add("fade_out");
+                } else {
+                    if (el.classList.contains("fade_out")) {
+                        el.classList.remove("fade_out");
+                        el.classList.add("fade_in");
+                    }
+                }
+            });
+        };
 
-    //             if (itemTop < searchBarBottom) {
-    //                 el.classList.remove("fade-in");
-    //                 el.classList.add("invisible");
-    //             } else {
-    //                 if (el.classList.contains("invisible")) {
-    //                     el.classList.remove("invisible");
-    //                     el.classList.add("fade-in");
-    //                 }
-    //             }
-    //         });
-    //     };
+        window.addEventListener("scroll", checkVisibility);
+        window.addEventListener("resize", checkVisibility);
 
-    //     window.addEventListener("scroll", checkVisibility);
-    //     window.addEventListener("resize", checkVisibility);
-
-    //     // chiamata iniziale
-    //     // checkVisibility();
-
-    //     return () => {
-    //         window.removeEventListener("scroll", checkVisibility);
-    //         window.removeEventListener("resize", checkVisibility);
-    //     };
-    // }, [results, query, activeTab]);
+        return () => {
+            window.removeEventListener("scroll", checkVisibility);
+            window.removeEventListener("resize", checkVisibility);
+        };
+    }, [results, query, activeTab]);
 
     return (
         <div className="consigliaUnaCanzone container">
