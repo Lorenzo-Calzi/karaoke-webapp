@@ -415,41 +415,41 @@ export default function ConsigliaUnaCanzone() {
         fetchVotedSongsDetails();
     }, [votedSongs]);
 
-    useEffect(() => {
-        const checkVisibility = () => {
-            const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
-            const items = document.querySelectorAll(".song_item");
+    // useEffect(() => {
+    //     const checkVisibility = () => {
+    //         const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
+    //         const items = document.querySelectorAll(".song_item");
 
-            items.forEach(item => {
-                const itemTop = item.getBoundingClientRect().top;
-                const el = item as HTMLElement;
+    //         items.forEach(item => {
+    //             const itemTop = item.getBoundingClientRect().top;
+    //             const el = item as HTMLElement;
 
-                el.style.opacity = "1";
-                el.style.animation = "normal";
+    //             el.style.opacity = "1";
+    //             el.style.animation = "normal";
 
-                if (itemTop < searchBarBottom) {
-                    el.classList.remove("fade-in");
-                    el.classList.add("invisible");
-                } else {
-                    if (el.classList.contains("invisible")) {
-                        el.classList.remove("invisible");
-                        el.classList.add("fade-in");
-                    }
-                }
-            });
-        };
+    //             if (itemTop < searchBarBottom) {
+    //                 el.classList.remove("fade-in");
+    //                 el.classList.add("invisible");
+    //             } else {
+    //                 if (el.classList.contains("invisible")) {
+    //                     el.classList.remove("invisible");
+    //                     el.classList.add("fade-in");
+    //                 }
+    //             }
+    //         });
+    //     };
 
-        window.addEventListener("scroll", checkVisibility);
-        window.addEventListener("resize", checkVisibility);
+    //     window.addEventListener("scroll", checkVisibility);
+    //     window.addEventListener("resize", checkVisibility);
 
-        // chiamata iniziale
-        // checkVisibility();
+    //     // chiamata iniziale
+    //     // checkVisibility();
 
-        return () => {
-            window.removeEventListener("scroll", checkVisibility);
-            window.removeEventListener("resize", checkVisibility);
-        };
-    }, [results, query, activeTab]);
+    //     return () => {
+    //         window.removeEventListener("scroll", checkVisibility);
+    //         window.removeEventListener("resize", checkVisibility);
+    //     };
+    // }, [results, query, activeTab]);
 
     return (
         <div className="consigliaUnaCanzone container">
