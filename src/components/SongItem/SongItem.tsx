@@ -37,47 +37,50 @@ export default function SongItem({
                 <span>{artist}</span>
             </div>
 
-            {/* Se la canzone è già stata suonata */}
-            {played ? (
-                isAdmin ? (
-                    <div className="song_toggle_played" onClick={onTogglePlayed}>
+            <div className="song_buttons_container">
+                {/* Se la canzone è già stata suonata */}
+                {played ? (
+                    <div
+                        className="song_toggle_played"
+                        onClick={() => {
+                            if (isAdmin && onTogglePlayed) {
+                                onTogglePlayed();
+                            }
+                        }}
+                    >
                         <i className="fa-solid fa-square-check" style={{ color: "#7CFC00" }}></i>
                     </div>
                 ) : (
-                    <div className="song_toggle_played">
-                        <i className="fa-solid fa-square-check" style={{ color: "#7CFC00" }}></i>
-                    </div>
-                )
-            ) : (
-                <>
-                    {/* Bottone like (solo se played è false) */}
-                    {onVote && (
-                        <div
-                            className={`song_vote ${disabled ? "disabled" : ""}`}
-                            onClick={() => {
-                                if (!disabled) onVote();
-                            }}
-                        >
-                            {voteCount !== undefined && (
-                                <span className="vote_count">{voteCount}</span>
-                            )}
-                            <i
-                                className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
-                                    animating ? "animate-like" : ""
-                                }`}
-                                style={{ color: voted ? "#FF2F40" : "white" }}
-                            ></i>
-                        </div>
-                    )}
+                    <>
+                        {/* Bottone like (solo se played è false) */}
+                        {onVote && (
+                            <div
+                                className={`song_vote ${disabled ? "disabled" : ""}`}
+                                onClick={() => {
+                                    if (!disabled) onVote();
+                                }}
+                            >
+                                {voteCount !== undefined && (
+                                    <span className="vote_count">{voteCount}</span>
+                                )}
+                                <i
+                                    className={`fa-heart ${voted ? "fa-solid" : "fa-regular"} ${
+                                        animating ? "animate-like" : ""
+                                    }`}
+                                    style={{ color: voted ? "#FF2F40" : "white" }}
+                                ></i>
+                            </div>
+                        )}
 
-                    {/* Checkbox vuota (solo admin, se played === false) */}
-                    {isAdmin && (
-                        <div className="song_toggle_played" onClick={onTogglePlayed}>
-                            <i className="fa-solid fa-square-check"></i>
-                        </div>
-                    )}
-                </>
-            )}
+                        {/* Checkbox vuota (solo admin, se played === false) */}
+                        {isAdmin && (
+                            <div className="song_toggle_played" onClick={onTogglePlayed}>
+                                <i className="fa-solid fa-square-check"></i>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </li>
     );
 }

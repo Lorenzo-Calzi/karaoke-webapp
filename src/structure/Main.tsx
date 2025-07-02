@@ -11,6 +11,8 @@ import ListaCanzoni from "../pages/ListaCanzoni/ListaCanzoni";
 import ConsigliaUnaCanzone from "../pages/ConsigliaUnaCanzone/ConsigliaUnaCanzone";
 import Social from "../pages/Social/Social";
 import Calendario from "../pages/Calendario/Calendario";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.scss";
 
 createRoot(document.getElementById("root")!).render(
@@ -30,6 +32,7 @@ createRoot(document.getElementById("root")!).render(
                     </Route>
                 </Routes>
                 <NavBar />
+                <ToastContainer position="top-center" autoClose={3000} />
             </BrowserRouter>
         </VotingProvider>
     </StrictMode>

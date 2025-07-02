@@ -58,29 +58,36 @@
     }
   }
 
-  .song_vote {
+  .song_buttons_container {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    background-color: rgba(159, 159, 159, 0.292);
-    padding: 5px 15px;
-    border-radius: 50px;
 
-    span {
-      font-size: 1rem;
-      color: white;
-      font-weight: bold;
+    .song_vote {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      background-color: rgba(159, 159, 159, 0.292);
+      padding: 0px 1rem;
+      border-radius: 50px;
+
+      span {
+        font-size: 1rem;
+        color: white;
+        font-weight: bold;
+      }
+      i {
+        font-size: 1.7rem;
+      }
     }
-    i {
+    .song_toggle_played {
+      height: 40px;
       font-size: 1.7rem;
+      padding: 0 1rem;
     }
-  }
-  .song_toggle_played {
-    font-size: 1.7rem;
-    padding-top: 3px;
-  }
-  .disabled {
-    opacity: 0.2;
+    .disabled {
+      opacity: 0.2;
+    }
   }
 }
 
@@ -120,8 +127,20 @@
 //   }
 // }
 
-// .song_played_badge,
-// .song_toggle_played {
-//   font-size: 1.5rem;
-//   cursor: pointer;
-// }
+@keyframes check-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-check {
+  animation: check-pop 0.3s ease;
+}

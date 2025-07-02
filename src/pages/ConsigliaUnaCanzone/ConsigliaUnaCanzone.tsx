@@ -5,6 +5,7 @@ import VotoProgressivo from "../../components/VotoProgressivo/VotoProgressivo";
 import Tabs from "../../components/Tabs/Tabs";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SongItem from "../../components/SongItem/SongItem";
+import { showInfo, showError } from "../../lib/toast";
 import "./consigliaUnaCanzone.scss";
 
 type SpotifySong = {
@@ -108,7 +109,23 @@ export default function ConsigliaUnaCanzone() {
             const sorted = Array.from(uniqueMap.values()).sort(
                 (a, b) => b.popularity - a.popularity
             );
-            setResults(sorted);
+
+            // 🧠 Recupera lo stato "played" da Supabase
+            const trackIds = sorted.map(song => song.trackId);
+            const { data: songsPlayedData } = await supabase
+                .from("songs")
+                .select("trackId, played")
+                .in("trackId", trackIds);
+
+            const playedMap = new Map(songsPlayedData?.map(s => [s.trackId, s.played]));
+
+            // 🔁 Enrich dei risultati con .played
+            const enriched = sorted.map(song => ({
+                ...song,
+                played: playedMap.get(song.trackId) ?? false
+            }));
+
+            setResults(enriched);
         } catch (error) {
             console.error("Errore durante la ricerca:", error);
         }
@@ -121,11 +138,30 @@ export default function ConsigliaUnaCanzone() {
         artworkUrl100: string
     ) => {
         const alreadyVoted = votedSongs.includes(trackId);
-
         if (!alreadyVoted && votedSongs.length >= 3) return;
 
         setAnimatingId(trackId);
         setTimeout(() => setAnimatingId(null), 400);
+
+        // 🛡️ Controllo: è già stata suonata?
+        const { data: songs, error: songError } = await supabase
+            .from("songs")
+            .select("played")
+            .eq("trackId", trackId);
+
+        if (songError) {
+            console.error("Errore nel controllo played:", songError.message);
+            showError("Errore nel verificare lo stato della canzone.");
+            return;
+        }
+
+        const songData = songs?.[0];
+
+        if (songData?.played) {
+            showInfo("Questa canzone è già stata suonata.");
+            await fetchTopSongs();
+            return;
+        }
 
         if (alreadyVoted) {
             setVotedSongs(prev => prev.filter(id => id !== trackId));
@@ -140,6 +176,7 @@ export default function ConsigliaUnaCanzone() {
                 .delete()
                 .eq("trackId", trackId)
                 .eq("voterId", voterId);
+
             if (!error) {
                 await fetchVotedSongsDetails();
                 setTimeout(() => fetchTopSongs(), 400);
@@ -148,8 +185,19 @@ export default function ConsigliaUnaCanzone() {
             const { error } = await supabase
                 .from("votes")
                 .insert([{ trackId, title, artist, artworkUrl100, voterId }]);
+
             if (!error) {
+                // Assicura che la canzone sia presente in songs
+                const { error: upsertError } = await supabase
+                    .from("songs")
+                    .upsert([{ trackId, title, artist, artworkUrl100 }]);
+
+                if (upsertError) {
+                    console.error("Errore upsert songs:", upsertError.message);
+                }
+
                 setVotedSongs(prev => [...prev, trackId]);
+
                 setTopSongs(prev => {
                     const songIndex = prev.findIndex(s => s.trackId === trackId);
                     if (songIndex !== -1) {
@@ -160,9 +208,13 @@ export default function ConsigliaUnaCanzone() {
                         };
                         return updated;
                     } else {
-                        return [...prev, { trackId, title, artist, artworkUrl100, voteCount: 1 }];
+                        return [
+                            ...prev,
+                            { trackId, title, artist, artworkUrl100, voteCount: 1, played: false }
+                        ];
                     }
                 });
+
                 await fetchVotedSongsDetails();
                 fetchTopSongs();
                 setTimeout(() => setQuery(""), 400);
@@ -259,6 +311,16 @@ export default function ConsigliaUnaCanzone() {
                 return;
             }
 
+            // ✅ recupera anche lo stato `played`
+            const trackIds = data.map(song => song.trackId);
+
+            const { data: songsPlayedData } = await supabase
+                .from("songs")
+                .select("trackId, played")
+                .in("trackId", trackIds);
+
+            const playedMap = new Map(songsPlayedData?.map(s => [s.trackId, s.played]));
+
             const unique = new Map<string, SpotifySong>();
             for (const song of data) {
                 const trackId = String(song.trackId);
@@ -274,10 +336,12 @@ export default function ConsigliaUnaCanzone() {
                         trackName: song.title,
                         artistName: song.artist,
                         artworkUrl100: song.artworkUrl100,
-                        popularity: 0
+                        popularity: 0,
+                        played: playedMap.get(trackId) ?? false // ✅ qui
                     });
                 }
             }
+
             setVotedSongsDetails(Array.from(unique.values()));
         } catch (e) {
             console.error("Errore nel recuperare dettagli:", e);
@@ -301,15 +365,25 @@ export default function ConsigliaUnaCanzone() {
         const { error } = await supabase.from("songs").update({ played }).eq("trackId", trackId);
 
         if (!error) {
-            fetchTopSongs(); // ricarica la lista aggiornata
+            fetchTopSongs(); // aggiorna classifica
+            fetchVotedSongsDetails(); // aggiorna i voti utente
+
+            if (query.trim()) {
+                searchSongs(query); // aggiorna risultati di ricerca
+            }
         } else {
-            console.log("NO");
             console.error("Errore aggiornamento played:", error.message);
         }
     }
 
     useEffect(() => {
         fetchTopSongs();
+
+        const interval = setInterval(() => {
+            fetchTopSongs(); // ogni 10 secondi
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
@@ -407,13 +481,9 @@ export default function ConsigliaUnaCanzone() {
                                             }
                                             disabled={
                                                 !votedSongs.includes(song.trackId) &&
-                                                votedSongs.length >= 5
+                                                votedSongs.length >= 3
                                             }
-                                            isAdmin={isAdmin}
                                             played={song.played}
-                                            onTogglePlayed={() =>
-                                                togglePlayed(song.trackId, !song.played)
-                                            }
                                         />
                                     ))}
                                 </ul>
@@ -438,11 +508,11 @@ export default function ConsigliaUnaCanzone() {
                                                     song.artworkUrl100
                                                 )
                                             }
-                                            isAdmin={isAdmin}
-                                            played={song.played}
-                                            onTogglePlayed={() =>
-                                                togglePlayed(song.trackId, !song.played)
+                                            disabled={
+                                                !votedSongs.includes(song.trackId) &&
+                                                votedSongs.length >= 3
                                             }
+                                            played={song.played}
                                         />
                                     ))}
                                 </ul>
