@@ -42,11 +42,14 @@ export default function ConsigliaUnaCanzone() {
             artist: string;
             artworkUrl100: string;
             voteCount: number;
-            played?: boolean;
+            played: boolean;
+            iVoted: boolean;
+            firstVoteAt: string;
         }[]
     >([]);
     const [animatingId, setAnimatingId] = useState<string | null>(null);
     const searchBarRef = useRef<HTMLInputElement>(null);
+    // const isReady = (votingAllowed !== undefined || isAdmin) && !loadingVotedSongs;
 
     const normalizeText = (text: string) =>
         text
@@ -221,7 +224,16 @@ export default function ConsigliaUnaCanzone() {
                     } else {
                         return [
                             ...prev,
-                            { trackId, title, artist, artworkUrl100, voteCount: 1, played: false }
+                            {
+                                trackId,
+                                title,
+                                artist,
+                                artworkUrl100,
+                                voteCount: 1,
+                                played: false,
+                                iVoted: true,
+                                firstVoteAt: new Date().toISOString()
+                            }
                         ];
                     }
                 });
@@ -234,29 +246,27 @@ export default function ConsigliaUnaCanzone() {
     };
 
     const fetchTopSongs = async () => {
-        if (!navigator.onLine) {
-            console.warn("Sei offline. Salto aggiornamento classifica.");
-            return;
-        }
-
-        // Step 1: prendi i voti
+        // 1. Recupera tutti i voti
         const { data: votesData, error: votesError } = await supabase
             .from("votes")
-            .select("trackId, title, artist, artworkUrl100");
+            .select("trackId, title, artist, artworkUrl100, created_at");
 
         if (votesError || !votesData) {
             console.error("Errore nel recupero classifica:", votesError?.message);
             return;
         }
 
-        // Step 2: aggrega i voti per canzone
+        // 2. Aggrega voti per canzone
         const voteMap = new Map<
             string,
             { title: string; artist: string; artworkUrl100: string; count: number }
         >();
 
+        const firstVoteTimeMap = new Map<string, string>();
+
         for (const row of votesData) {
             const trackId = row.trackId;
+
             if (!voteMap.has(trackId)) {
                 voteMap.set(trackId, {
                     title: row.title,
@@ -264,12 +274,18 @@ export default function ConsigliaUnaCanzone() {
                     artworkUrl100: row.artworkUrl100,
                     count: 1
                 });
+                firstVoteTimeMap.set(trackId, row.created_at);
             } else {
                 voteMap.get(trackId)!.count += 1;
+
+                const existing = firstVoteTimeMap.get(trackId);
+                if (existing && row.created_at < existing) {
+                    firstVoteTimeMap.set(trackId, row.created_at);
+                }
             }
         }
 
-        // Step 3: assicurati che tutte le canzoni siano presenti in `songs`
+        // 3. Assicura che tutte le canzoni siano in `songs`
         const missingSongs = Array.from(voteMap.entries()).map(([trackId, info]) => ({
             trackId,
             title: info.title,
@@ -282,7 +298,7 @@ export default function ConsigliaUnaCanzone() {
             console.error("Errore nel fare upsert in songs:", upsertError.message);
         }
 
-        // Step 4: recupera stato `played` dalla tabella songs
+        // 4. Recupera stato played
         const { data: songsData, error: songsError } = await supabase
             .from("songs")
             .select("trackId, played");
@@ -293,7 +309,7 @@ export default function ConsigliaUnaCanzone() {
 
         const playedMap = new Map(songsData?.map(s => [s.trackId, s.played]));
 
-        // Step 5: unisci tutto
+        // 5. Crea lista completa con `iVoted` e `firstVoteAt`
         const topList = Array.from(voteMap.entries())
             .map(([trackId, info]) => ({
                 trackId,
@@ -301,9 +317,16 @@ export default function ConsigliaUnaCanzone() {
                 artist: info.artist,
                 artworkUrl100: info.artworkUrl100,
                 voteCount: info.count,
-                played: playedMap.get(trackId) ?? false
+                played: playedMap.get(trackId) ?? false,
+                iVoted: votedSongs.includes(trackId),
+                firstVoteAt: firstVoteTimeMap.get(trackId) ?? ""
             }))
-            .sort((a, b) => b.voteCount - a.voteCount);
+            .sort((a, b) => {
+                if (a.played !== b.played) return a.played ? 1 : -1;
+                if (!a.played && a.iVoted !== b.iVoted) return a.iVoted ? -1 : 1;
+                if (b.voteCount !== a.voteCount) return b.voteCount - a.voteCount;
+                return b.firstVoteAt.localeCompare(a.firstVoteAt); // più recente prima
+            });
 
         setTopSongs(topList);
     };
@@ -489,6 +512,8 @@ export default function ConsigliaUnaCanzone() {
             window.removeEventListener("resize", checkVisibility);
         };
     }, [results, query, activeTab]);
+
+    // if (!isReady) return <Loader />;
 
     return (
         <div className="consigliaUnaCanzone container">
