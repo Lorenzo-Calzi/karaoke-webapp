@@ -47,7 +47,6 @@ export default function NavBar() {
                     to={path}
                     className={`nav-icon ${currentPath === path ? "active" : ""}`}
                     title={label}
-                    onClick={() => console.log("click")}
                 >
                     {iconComponent}
                 </Link>
