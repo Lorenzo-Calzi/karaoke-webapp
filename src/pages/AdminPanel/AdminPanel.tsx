@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { showError } from "../../lib/toast";
 import "./adminPanel.scss";
 
 const ADMIN_EMAIL = "lorenzocalzi@gmail.com";
@@ -46,8 +47,8 @@ export default function AdminPanel() {
     const handleLogin = async () => {
         if (!email) return;
         const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) alert("Errore login: " + error.message);
-        else alert("Controlla la tua email per il link di accesso");
+        if (error) showError("Errore login: " + error.message);
+        else showError("Controlla la tua email per il link di accesso");
     };
 
     const toggleOverride = async () => {
@@ -116,7 +117,7 @@ export default function AdminPanel() {
                             { method: "POST" }
                         );
                         const json = await res.json();
-                        alert(json.message || "Errore");
+                        showError(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-trash"></i>
@@ -134,7 +135,7 @@ export default function AdminPanel() {
                             { method: "POST" }
                         );
                         const json = await res.json();
-                        alert(json.message || "Errore");
+                        showError(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-upload"></i>
