@@ -4,21 +4,8 @@
   align-items: center;
   gap: 15px;
   pointer-events: auto;
-  // opacity: 0;
-  // transform: translateY(0);
-  // transition: opacity 0.5s ease;
-  // animation: fadeInUp 0.5s ease forwards;
-  // animation-delay: calc(var(--i, 0) * 0.1s);
-
-  // pointer-events: auto;
-  // transform: scale(0);
-  // transform-origin: top left;
-  // animation: scaleIn 0.3s ease-out forwards;
-  // animation-delay: calc(var(--i, 0) * 0.1s);
-
-  // visibility: collapse;
-  transform: scale(0.98) translateY(0px);
   filter: opacity(0);
+  transform: scale(0.98) translateY(20px);
   animation: fakeFadeIn 0.75s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
 
@@ -117,22 +104,12 @@
   animation: like-pop 0.2s ease;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+@keyframes fakeFadeIn {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
+    filter: opacity(1);
   }
 }
-
-// @keyframes scaleIn {
-//   to {
-//     transform: scale(1);
-//   }
-// }
 
 @keyframes check-pop {
   0% {
@@ -150,13 +127,4 @@
 
 .animate-check {
   animation: check-pop 0.3s ease;
-}
-
-@keyframes fakeFadeIn {
-  to {
-    transform: scale(1) translateY(0);
-    // filter: blur(0);
-    filter: opacity(1);
-    // visibility: visible;
-  }
 }
