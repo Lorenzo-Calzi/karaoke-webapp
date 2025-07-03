@@ -10,7 +10,10 @@
   box-sizing: border-box;
 
   .logo {
-    width: 70%;
+    background-image: url("/images/karaoke_logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   .buttons_list {

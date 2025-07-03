@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
@@ -9,6 +9,8 @@ import "./homepage.scss";
 function Homepage() {
     const navigate = useNavigate();
     const [clickedPath, setClickedPath] = useState<string | null>(null);
+    const logoRef = useRef<HTMLImageElement>(null);
+    const buttonsRef = useRef<HTMLDivElement>(null);
 
     const handleClick = (path: string) => {
         setClickedPath(path);
@@ -23,11 +25,43 @@ function Homepage() {
         }
     };
 
+    useEffect(() => {
+        const adjustLogoSize = () => {
+            const buttonsHeight = buttonsRef.current?.offsetHeight ?? 0;
+
+            const verticalPadding = 4 * 16;
+            const gap = 3 * 16;
+            const verticalMargin = verticalPadding + gap;
+
+            const orizzontalMargin = window.innerWidth * 0.15;
+            const containerWidth = window.innerWidth - orizzontalMargin;
+            const maxWidth = containerWidth - containerWidth * 0.3;
+
+            const availableHeight = window.innerHeight - buttonsHeight - verticalMargin;
+            const availableWidth = maxWidth;
+
+            if (logoRef.current) {
+                if (availableWidth > availableHeight) {
+                    logoRef.current.style.height = `${availableHeight}px`;
+                    logoRef.current.style.width = `${availableHeight}px`;
+                } else {
+                    logoRef.current.style.height = `${availableWidth}px`;
+                    logoRef.current.style.width = `${availableWidth}px`;
+                }
+            }
+        };
+
+        adjustLogoSize();
+        window.addEventListener("resize", adjustLogoSize);
+        return () => window.removeEventListener("resize", adjustLogoSize);
+    }, []);
+
     return (
         <div className="homepage container">
-            <img className="logo" src="/images/karaoke_logo.png" alt="logo karaoke" />
+            <div ref={logoRef} className="logo"></div>
+            {/* <img ref={logoRef} className="logo" src="/images/karaoke_logo.png" alt="logo karaoke" /> */}
 
-            <div className="buttons_list">
+            <div ref={buttonsRef} className="buttons_list">
                 <button
                     className={`button ${clickedPath === "/karaoke" ? "clicked" : ""}`}
                     onClick={() => handleClick("/karaoke")}
