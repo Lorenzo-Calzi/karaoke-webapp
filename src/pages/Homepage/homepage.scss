@@ -10,14 +10,14 @@
   box-sizing: border-box;
 
   .logo {
-    width: 80%;
+    width: 70%;
   }
 
   .buttons_list {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 
     button {
       padding: 12px 24px 12px 24px;
