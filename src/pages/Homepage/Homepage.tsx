@@ -59,7 +59,6 @@ function Homepage() {
     return (
         <div className="homepage container">
             <div ref={logoRef} className="logo"></div>
-            {/* <img ref={logoRef} className="logo" src="/images/karaoke_logo.png" alt="logo karaoke" /> */}
 
             <div ref={buttonsRef} className="buttons_list">
                 <button

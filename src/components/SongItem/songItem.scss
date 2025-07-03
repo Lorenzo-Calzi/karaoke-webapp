@@ -5,6 +5,7 @@
   gap: 15px;
   pointer-events: auto;
   filter: opacity(0);
+  transform: translateY(0);
   animation: fakeFadeIn 0.5s ease forwards;
   animation-delay: calc(var(--i, 0) * 0.1s);
 
@@ -66,10 +67,11 @@
       padding: 0px 1rem;
       border-radius: 50px;
 
-      span {
+      .vote_count {
         font-size: 1rem;
         color: white;
         font-weight: bold;
+        padding-top: 1px;
       }
       i {
         font-size: 1.7rem;
@@ -88,23 +90,23 @@
 
 @keyframes fakeFadeIn {
   from {
-    transform: scale(0.98) translateY(0px);
     filter: opacity(0);
+    transform: scale(0.8) translateY(-20px);
   }
   to {
-    transform: scale(1) translateY(0);
     filter: opacity(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 @keyframes fakeFadeOut {
   from {
-    transform: scale(1) translateY(0);
     filter: opacity(1);
+    transform: scale(1) translateY(0);
   }
   to {
-    transform: scale(0.98) translateY(0px);
     filter: opacity(0);
+    transform: scale(0.8) translateY(-20px);
   }
 }
 
