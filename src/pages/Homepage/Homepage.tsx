@@ -25,7 +25,7 @@ function Homepage() {
 
     return (
         <div className="homepage container">
-            <img className="logo" src="/images/karaoke_logo_4.png" alt="logo karaoke" />
+            <img className="logo" src="/images/karaoke_logo.png" alt="logo karaoke" />
 
             <div className="buttons_list">
                 <button
