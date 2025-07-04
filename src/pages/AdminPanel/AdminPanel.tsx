@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { showError } from "../../lib/toast";
+import { showError, showSuccess } from "../../lib/toast";
 import "./adminPanel.scss";
 
 const ADMIN_EMAIL = "lorenzocalzi@gmail.com";
@@ -48,7 +48,7 @@ export default function AdminPanel() {
         if (!email) return;
         const { error } = await supabase.auth.signInWithOtp({ email });
         if (error) showError("Errore login: " + error.message);
-        else showError("Controlla la tua email per il link di accesso");
+        else showSuccess("Controlla la tua email per il link di accesso");
     };
 
     const toggleOverride = async () => {
