@@ -52,8 +52,8 @@ const handleInstagramClick = (url: string, e: React.MouseEvent<HTMLAnchorElement
 
     setTimeout(() => {
         window.open(url, "_blank", "noopener,noreferrer");
-        button.classList.remove("clicked"); // pulizia eventuale se torni indietro
-    }, 150); // deve corrispondere alla durata della tua animazione
+        button.classList.remove("clicked");
+    }, 150);
 };
 
 export default function Social() {
@@ -65,7 +65,7 @@ export default function Social() {
                     <div key={index}>
                         {profile.label && <p className="social_section_label">{profile.label}</p>}
                         <a
-                            href={profile.link}
+                            role="button"
                             className="button"
                             onClick={e => handleInstagramClick(profile.link, e)}
                         >
