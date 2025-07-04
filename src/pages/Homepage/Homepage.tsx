@@ -20,14 +20,8 @@ function Homepage() {
         setTimeout(() => {
             navigate(path);
             setClickedPath(null); // reset stato
-        }, 150);
+        }, 250);
     };
-
-    // useEffect(() => {
-    //     if (location.pathname === "/") {
-    //         setClickedPath(null);
-    //     }
-    // }, [location.pathname]);
 
     useEffect(() => {
         const adjustLogoSize = () => {

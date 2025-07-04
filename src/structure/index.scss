@@ -58,8 +58,7 @@ a {
   border-width: 2px 2px 2px 2px;
   border-color: rgba(255, 255, 255, 0.333);
   border-radius: 50px;
-  transform: scale(1);
-  // transition: transform 0.15s ease, box-shadow 0.3s ease;
+  transform: scale(1) translateY(0);
   box-shadow: -2px -1px 6px rgba(255, 255, 255, 0.698), 2px 1px 8px rgba(255, 255, 255, 0.698);
   outline: none;
   cursor: pointer;
@@ -67,8 +66,7 @@ a {
 }
 
 .clicked {
-  // transform: scale(0.92);
-  animation: fixSafariReturn 0.15s ease forwards;
+  animation: fixSafariReturn 0.25s ease forwards;
 }
 
 @keyframes fixSafariReturn {
