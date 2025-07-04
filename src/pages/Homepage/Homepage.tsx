@@ -24,6 +24,10 @@ function Homepage() {
     };
 
     useEffect(() => {
+        setClickedPath(null);
+    }, []);
+
+    useEffect(() => {
         const adjustLogoSize = () => {
             const buttonsHeight = buttonsRef.current?.offsetHeight ?? 0;
 
