@@ -1,50 +1,38 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../../supabaseClient";
 import "./social.scss";
 
 type SocialProfile = {
+    id: string;
     username: string;
-    profileImage: string;
+    profile_image: string;
     link: string;
     label?: string;
-    onAir: boolean;
+    on_air: boolean;
+    force_blue: boolean;
 };
 
-const profiles: SocialProfile[] = [
-    {
-        label: "La nostra pagina",
-        username: "@karaoke_for_you",
-        profileImage: "/images/karaoke_for_you_foto_profilo.png",
-        link: "https://www.instagram.com/karaoke_for_you",
-        onAir: false
-    },
-    {
-        label: "DJ",
-        username: "@alex_delia_",
-        profileImage: "/images/alex_foto_profilo.jpg",
-        link: "https://www.instagram.com/alex_delia_/",
-        onAir: true
-    },
-    {
-        label: "Staff",
-        username: "@lorenzo_calzi",
-        profileImage: "/images/lorenzo_foto_profilo.jpg",
-        link: "https://www.instagram.com/lorenzo_calzi",
-        onAir: true
-    },
-    {
-        username: "@michelegris",
-        profileImage: "/images/michele_foto_profilo.jpg",
-        link: "https://www.instagram.com/michelegris",
-        onAir: true
-    },
-    {
-        username: "@loca.lizzato",
-        profileImage: "/images/andrea_foto_profilo.jpg",
-        link: "https://www.instagram.com/loca.lizzato",
-        onAir: false
-    }
-];
-
 export default function Social() {
+    const [profiles, setProfiles] = useState<SocialProfile[]>([]);
+
+    useEffect(() => {
+        const fetchProfiles = async () => {
+            const { data, error } = await supabase
+                .from("social_profiles")
+                .select("*")
+                .order("order", { ascending: true });
+
+            if (error) {
+                console.error("Errore nel fetch dei profili:", error);
+                return;
+            }
+
+            setProfiles(data as SocialProfile[]);
+        };
+
+        fetchProfiles();
+    }, []);
+
     return (
         <div className="social container">
             <h2 className="title">Seguici sui Social</h2>
@@ -59,14 +47,27 @@ export default function Social() {
                             className="button"
                         >
                             <img
-                                src={profile.profileImage}
+                                src={profile.profile_image}
                                 alt={profile.username}
                                 className="social_image"
                             />
                             <span className="social_username">{profile.username}</span>
 
-                            {profile.onAir && <div className="onair"></div>}
-                            <div className={`onair`}></div>
+                            <div
+                                className="on_air"
+                                style={{
+                                    backgroundColor: profile.force_blue
+                                        ? "#3f95e0" // blu
+                                        : profile.on_air
+                                        ? "rgb(62, 194, 99)" // verde
+                                        : "rgb(220, 20, 60)", // rosso
+                                    color: profile.force_blue
+                                        ? "#3f95e0"
+                                        : profile.on_air
+                                        ? "rgb(62, 194, 99)"
+                                        : "rgb(220, 20, 60)"
+                                }}
+                            ></div>
                         </a>
                     </div>
                 ))}

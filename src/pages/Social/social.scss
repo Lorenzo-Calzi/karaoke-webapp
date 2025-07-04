@@ -43,24 +43,24 @@
         font-size: 0.9rem;
         font-weight: 600;
       }
-      .onair {
+      .on_air {
         position: absolute;
         right: 25px;
         width: 10px;
         height: 10px;
-        background-color: rgb(62, 194, 99);
         border-radius: 50%;
-        animation: onair_wave 1s ease-out infinite;
+        animation: on_air_wave 1s ease-out infinite;
+        color: inherit;
       }
     }
   }
 }
 
-@keyframes onair_wave {
+@keyframes on_air_wave {
   0% {
-    box-shadow: 0 0 0 0 rgb(62, 194, 99, 1);
+    box-shadow: 0 0 0 0 currentColor;
   }
   100% {
-    box-shadow: 0 0 0 4px rgba(220, 20, 60, 0);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0);
   }
 }

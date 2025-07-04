@@ -10,6 +10,7 @@ export default function AdminPanel() {
     const [session, setSession] = useState<any>(null);
     const [overrideActive, setOverrideActive] = useState(false);
     const [loadingOverride, setLoadingOverride] = useState(true);
+    const [profiles, setProfiles] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchOverride = async () => {
@@ -26,12 +27,24 @@ export default function AdminPanel() {
             setLoadingOverride(false);
         };
 
+        const fetchProfiles = async () => {
+            const { data, error } = await supabase
+                .from("social_profiles")
+                .select("id, username, label, on_air, force_blue")
+                .order("order", { ascending: true });
+
+            if (!error && data) {
+                setProfiles(data);
+            }
+        };
+
         supabase.auth.getSession().then(({ data }) => {
             setSession(data.session);
             const email = data.session?.user?.email;
             if (email === ADMIN_EMAIL) {
                 localStorage.setItem("isAdmin", "true");
                 fetchOverride();
+                fetchProfiles();
             }
         });
 
@@ -61,6 +74,20 @@ export default function AdminPanel() {
 
         if (!error) {
             setOverrideActive(newValue);
+        }
+    };
+
+    const toggleOnAir = async (id: string, newValue: boolean) => {
+        const { error } = await supabase
+            .from("social_profiles")
+            .update({ on_air: newValue })
+            .eq("id", id);
+
+        if (!error) {
+            setProfiles(prev => prev.map(p => (p.id === id ? { ...p, on_air: newValue } : p)));
+            showSuccess("Stato aggiornato");
+        } else {
+            showError("Errore aggiornamento stato");
         }
     };
 
@@ -156,6 +183,22 @@ export default function AdminPanel() {
                         </p>
                     </div>
                 </button>
+
+                <div className="social_status_list">
+                    {profiles.map(
+                        profile =>
+                            !profile.force_blue && (
+                                <div key={profile.id} className="social_status_row">
+                                    <p className="paragraph">{profile.username}</p>
+                                    <i
+                                        className="fa-solid fa-square-check"
+                                        style={{ color: profile.on_air ? "#7CFC00" : "" }}
+                                        onClick={() => toggleOnAir(profile.id, !profile.on_air)}
+                                    ></i>
+                                </div>
+                            )
+                    )}
+                </div>
             </>
         );
     }
