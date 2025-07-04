@@ -24,8 +24,10 @@ function Homepage() {
     };
 
     useEffect(() => {
-        setClickedPath(null);
-    }, []);
+        if (location.pathname === "/") {
+            setClickedPath(null);
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         const adjustLogoSize = () => {
