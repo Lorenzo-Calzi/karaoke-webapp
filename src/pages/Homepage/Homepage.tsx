@@ -35,10 +35,11 @@ function Homepage() {
 
             const orizzontalMargin = window.innerWidth * 0.15;
             const containerWidth = window.innerWidth - orizzontalMargin;
-            const maxWidth = containerWidth - containerWidth * 0.3;
+            const containerContent = containerWidth - containerWidth * 0.3;
+            const maxWidth = 420;
 
             const availableHeight = window.innerHeight - buttonsHeight - verticalMargin;
-            const availableWidth = maxWidth;
+            const availableWidth = containerContent < maxWidth ? containerContent : maxWidth;
 
             if (logoRef.current) {
                 if (availableWidth > availableHeight) {
