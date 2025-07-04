@@ -20,7 +20,7 @@ function Homepage() {
         setTimeout(() => {
             navigate(path);
             setClickedPath(null); // reset stato
-        }, 250);
+        }, 150);
     };
 
     useEffect(() => {
@@ -63,7 +63,6 @@ function Homepage() {
                 <button
                     className={`button ${clickedPath === "/karaoke" ? "clicked" : ""}`}
                     onClick={() => handleClick("/karaoke")}
-                    // onTransitionEnd={handleTransitionEnd}
                 >
                     <PiMicrophoneStageFill />
 
