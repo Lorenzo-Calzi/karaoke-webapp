@@ -42,6 +42,8 @@
         font-weight: 600;
         font-size: 0.9rem;
         font-weight: 600;
+        max-width: 65%;
+        font-size: clamp(0.6rem, 3.5vw, 0.9rem);
       }
       .on_air {
         position: absolute;
