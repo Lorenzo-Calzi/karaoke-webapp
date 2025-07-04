@@ -66,12 +66,14 @@ a {
   font-family: "Orbitron", sans-serif;
 
   &:active {
-    transform: scale(0.92) translateY(0.5rem);
+    // transform: scale(0.92) translateY(0.5rem);
+    transform: scale(0.92);
   }
 }
 
 .clicked {
-  transform: scale(0.92) translateY(0.5rem);
+  // transform: scale(0.92) translateY(0.5rem);
+  transform: scale(0.92);
 }
 
 @media (prefers-color-scheme: light) {
