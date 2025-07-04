@@ -4,8 +4,8 @@ import { HiHome } from "react-icons/hi2";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
-import { RiAdminFill } from "react-icons/ri";
 import { IoCalendarNumber } from "react-icons/io5";
+import { RiAdminFill } from "react-icons/ri";
 import "./navBar.scss";
 
 interface NavItem {
