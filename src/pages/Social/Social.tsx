@@ -5,6 +5,7 @@ type SocialProfile = {
     profileImage: string;
     link: string;
     label?: string;
+    onAir: boolean;
 };
 
 const profiles: SocialProfile[] = [
@@ -12,29 +13,34 @@ const profiles: SocialProfile[] = [
         label: "La nostra pagina",
         username: "@karaoke_for_you",
         profileImage: "/images/karaoke_for_you_foto_profilo.png",
-        link: "https://www.instagram.com/karaoke_for_you"
+        link: "https://www.instagram.com/karaoke_for_you",
+        onAir: false
     },
     {
         label: "DJ",
         username: "@alex_delia_",
         profileImage: "/images/alex_foto_profilo.jpg",
-        link: "https://www.instagram.com/alex_delia_/"
+        link: "https://www.instagram.com/alex_delia_/",
+        onAir: true
     },
     {
         label: "Staff",
         username: "@lorenzo_calzi",
         profileImage: "/images/lorenzo_foto_profilo.jpg",
-        link: "https://www.instagram.com/lorenzo_calzi"
+        link: "https://www.instagram.com/lorenzo_calzi",
+        onAir: true
     },
     {
         username: "@michelegris",
         profileImage: "/images/michele_foto_profilo.jpg",
-        link: "https://www.instagram.com/michelegris"
+        link: "https://www.instagram.com/michelegris",
+        onAir: true
     },
     {
         username: "@loca.lizzato",
         profileImage: "/images/andrea_foto_profilo.jpg",
-        link: "https://www.instagram.com/loca.lizzato"
+        link: "https://www.instagram.com/loca.lizzato",
+        onAir: false
     }
 ];
 
@@ -58,6 +64,9 @@ export default function Social() {
                                 className="social_image"
                             />
                             <span className="social_username">{profile.username}</span>
+
+                            {profile.onAir && <div className="onair"></div>}
+                            <div className={`onair`}></div>
                         </a>
                     </div>
                 ))}
