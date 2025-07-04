@@ -23,11 +23,11 @@ function Homepage() {
         }, 150);
     };
 
-    useEffect(() => {
-        if (location.pathname === "/") {
-            setClickedPath(null);
-        }
-    }, [location.pathname]);
+    // useEffect(() => {
+    //     if (location.pathname === "/") {
+    //         setClickedPath(null);
+    //     }
+    // }, [location.pathname]);
 
     useEffect(() => {
         const adjustLogoSize = () => {
