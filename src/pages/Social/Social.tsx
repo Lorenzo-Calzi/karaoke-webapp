@@ -44,18 +44,6 @@ const profiles: SocialProfile[] = [
     }
 ];
 
-const handleInstagramClick = (url: string, e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-
-    const button = e.currentTarget;
-    button.classList.add("clicked");
-
-    setTimeout(() => {
-        window.open(url, "_blank", "noopener,noreferrer");
-        button.classList.remove("clicked");
-    }, 150);
-};
-
 export default function Social() {
     return (
         <div className="social container">
@@ -65,9 +53,10 @@ export default function Social() {
                     <div key={index}>
                         {profile.label && <p className="social_section_label">{profile.label}</p>}
                         <a
-                            role="button"
+                            href={profile.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="button"
-                            onClick={e => handleInstagramClick(profile.link, e)}
                         >
                             <img
                                 src={profile.profileImage}
