@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { showError, showSuccess } from "../../lib/toast";
+import { showError, showInfo, showSuccess } from "../../lib/toast";
 import "./adminPanel.scss";
 
 const ADMIN_EMAIL = "lorenzocalzi@gmail.com";
@@ -144,7 +144,7 @@ export default function AdminPanel() {
                             { method: "POST" }
                         );
                         const json = await res.json();
-                        showError(json.message || "Errore");
+                        showInfo(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-trash"></i>
@@ -162,7 +162,7 @@ export default function AdminPanel() {
                             { method: "POST" }
                         );
                         const json = await res.json();
-                        showError(json.message || "Errore");
+                        showSuccess(json.message || "Errore");
                     }}
                 >
                     <i className="fa-solid fa-upload"></i>
