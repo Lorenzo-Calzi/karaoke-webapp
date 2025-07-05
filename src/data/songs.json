@@ -35,6 +35,22 @@
     "cover": "https://i.scdn.co/image/ab67616d0000b273e748bca8da86284627216b90"
   },
   {
+    "title": "100 Messaggi",
+
+    "singer": "Lazza",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273643268ac0b8c58e88584ee59"
+  },
+  {
+    "title": "Anna",
+    "singer": "30°C",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273617793c02b868e17f9951edc"
+  },
+  {
+    "title": "Anna, Niky Savage",
+    "singer": "TT LE GIRLZ",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273fb7329a6fb6154b1fa3704c7"
+  },
+  {
     "title": "Tranne te",
     "singer": "Fabri Fibra",
     "cover": "https://i.scdn.co/image/ab67616d0000b2734810e64dc7b92d6693b0d55a"
@@ -65,14 +81,19 @@
     "cover": "https://i.scdn.co/image/ab67616d0000b273baea69bad095e8202009ba71"
   },
   {
+    "title": "Una Volta Ancora",
+    "singer": "Fred De Palma, Ana Mena",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2731c3509a7f7690a2cbf8e1b3f"
+  },
+  {
+    "title": "A un passo dalla luna",
+    "singer": "Rocco Hunt, Ana Mena",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27331ec016cb94ccb60cc2ac8d2"
+  },
+  {
     "title": "Notti in bianco",
     "singer": "BLANCO",
     "cover": "https://i.scdn.co/image/ab67616d0000b2735880f9b11a2e6289f9db78d5"
-  },
-  {
-    "title": "Balorda nostalgia",
-    "singer": "Olly",
-    "cover": "https://i.scdn.co/image/ab67616d0000b27313d952d57ef460632cc0975f"
   },
   {
     "title": "Guasto d’amore",
@@ -80,9 +101,34 @@
     "cover": "https://i.scdn.co/image/ab67616d0000b273fdcbf5d28fd6ab6d35c6411f"
   },
   {
+    "title": "Balorda nostalgia",
+    "singer": "Olly",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27313d952d57ef460632cc0975f"
+  },
+  {
+    "title": "Devastante",
+    "singer": "Olly",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273b43ab2a00ff73a7500b67462"
+  },
+  {
     "title": "La nuova stella di broadway",
     "singer": "Cesare Cremonini",
     "cover": "https://i.scdn.co/image/ab67616d0000b27322ae5b5ba67f6f218b5f3e34"
+  },
+  {
+    "title": "Ora che non ho più te",
+    "singer": "Cesare Cremonini",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273a9b9eff7f4b27ea38df7bed9"
+  },
+  {
+    "title": "Pastello Bianco",
+    "singer": "Pinguini Tattici Nucleari",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27399db4ee49d361f876e0a7f14"
+  },
+  {
+    "title": "Tango",
+    "singer": "Tananai",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273f233a0a95594c2d1da1e43e8"
   },
   {
     "title": "Come un pittore",
@@ -93,6 +139,11 @@
     "title": "Ti scatterò una foto",
     "singer": "Tiziano Ferro",
     "cover": "https://i.scdn.co/image/ab67616d0000b273b1aaa7dc3b577778d7dfb421"
+  },
+  {
+    "title": "Sere nere",
+    "singer": "Tiziano Ferro",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273ac315cb80cd5634dbc0802a5"
   },
   {
     "title": "Per dimenticare",
@@ -110,9 +161,29 @@
     "cover": "https://i.scdn.co/image/ab67616d0000b27387f01b35a5806d46277a4316"
   },
   {
+    "title": "Come Mai",
+    "singer": "883",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273243b73f0b9fd2500f491f5bf"
+  },
+  {
     "title": "Più bella cosa",
     "singer": "Eros Ramazzotti",
     "cover": "https://i.scdn.co/image/ab67616d0000b2734400e3f5234b4d217fd48c85"
+  },
+  {
+    "title": "Albachiara",
+    "singer": "Vasco Rossi",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2735dcb1e46fea521d78c81e4ee"
+  },
+  {
+    "title": "Certe Notti",
+    "singer": "Ligabue",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2731143aad3ea8ef5823e5ebbe8"
+  },
+  {
+    "title": "Un nuovo bacio",
+    "singer": "Gigi D'Alessio, Anna Tatangelo",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2730c6410bc16afa5dcdc1a0c37"
   },
   {
     "title": "Tu si a fine du mundo",
