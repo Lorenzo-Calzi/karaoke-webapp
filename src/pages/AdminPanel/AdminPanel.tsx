@@ -69,7 +69,7 @@ export default function AdminPanel() {
         if (!email) return;
 
         // Controlla che l'email sia autorizzata prima di inviare
-        const { data, error } = await supabase.from("admins").select("email");
+        const { data } = await supabase.from("admins").select("email");
         const adminList = data?.map(entry => entry.email) || [];
 
         if (!adminList.includes(email)) {
