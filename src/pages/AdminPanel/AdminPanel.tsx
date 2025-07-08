@@ -3,7 +3,7 @@ import { supabase } from "../../supabaseClient";
 import { showError, showInfo, showSuccess } from "../../lib/toast";
 import "./adminPanel.scss";
 
-const ADMIN_EMAIL = "lorenzocalzi@gmail.com";
+const ADMIN_EMAILS = ["lorenzocalzi@gmail.com", "aledelia28012000@gmail.com"];
 
 export default function AdminPanel() {
     const [email, setEmail] = useState("");
@@ -41,7 +41,7 @@ export default function AdminPanel() {
         supabase.auth.getSession().then(({ data }) => {
             setSession(data.session);
             const email = data.session?.user?.email;
-            if (email === ADMIN_EMAIL) {
+            if (email && ADMIN_EMAILS.includes(email)) {
                 localStorage.setItem("isAdmin", "true");
                 fetchOverride();
                 fetchProfiles();
@@ -51,7 +51,7 @@ export default function AdminPanel() {
         supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             const email = session?.user?.email;
-            if (email === ADMIN_EMAIL) {
+            if (email && ADMIN_EMAILS.includes(email)) {
                 localStorage.setItem("isAdmin", "true");
             }
         });
@@ -62,6 +62,12 @@ export default function AdminPanel() {
         const { error } = await supabase.auth.signInWithOtp({ email });
         if (error) showError("Errore login: " + error.message);
         else showSuccess("Controlla la tua email per il link di accesso");
+    };
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem("isAdmin");
+        setSession(null);
     };
 
     const toggleOverride = async () => {
@@ -107,7 +113,7 @@ export default function AdminPanel() {
                 </div>
             </>
         );
-    } else if (session.user.email !== ADMIN_EMAIL) {
+    } else if (!ADMIN_EMAILS.includes(session.user.email)) {
         content = <p className="paragraph">Accesso non autorizzato</p>;
     } else {
         content = (
@@ -199,6 +205,14 @@ export default function AdminPanel() {
                             )
                     )}
                 </div>
+
+                <button className="button" onClick={handleLogout}>
+                    <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                    <div className="button_content">
+                        <span className="button_title">LOGOUT</span>
+                        <p className="button_description">Esci dalla piattaforma</p>
+                    </div>
+                </button>
             </>
         );
     }
