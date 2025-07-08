@@ -3,9 +3,8 @@ import { supabase } from "../../supabaseClient";
 import { showError, showInfo, showSuccess } from "../../lib/toast";
 import "./adminPanel.scss";
 
-const ADMIN_EMAILS = ["lorenzocalzi@gmail.com", "aledelia28012000@gmail.com"];
-
 export default function AdminPanel() {
+    const [adminEmails, setAdminEmails] = useState<string[]>([]);
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
     const [overrideActive, setOverrideActive] = useState(false);
@@ -13,6 +12,11 @@ export default function AdminPanel() {
     const [profiles, setProfiles] = useState<any[]>([]);
 
     useEffect(() => {
+        const fetchAdmins = async (): Promise<string[]> => {
+            const { data, error } = await supabase.from("admins").select("email");
+            return !error && data ? data.map(entry => entry.email) : [];
+        };
+
         const fetchOverride = async () => {
             const { data, error } = await supabase
                 .from("override_settings")
@@ -38,10 +42,14 @@ export default function AdminPanel() {
             }
         };
 
-        supabase.auth.getSession().then(({ data }) => {
+        supabase.auth.getSession().then(async ({ data }) => {
             setSession(data.session);
             const email = data.session?.user?.email;
-            if (email && ADMIN_EMAILS.includes(email)) {
+
+            const admins = await fetchAdmins();
+            setAdminEmails(admins);
+
+            if (email && admins.includes(email)) {
                 localStorage.setItem("isAdmin", "true");
                 fetchOverride();
                 fetchProfiles();
@@ -51,7 +59,7 @@ export default function AdminPanel() {
         supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             const email = session?.user?.email;
-            if (email && ADMIN_EMAILS.includes(email)) {
+            if (email && adminEmails.includes(email)) {
                 localStorage.setItem("isAdmin", "true");
             }
         });
@@ -59,9 +67,24 @@ export default function AdminPanel() {
 
     const handleLogin = async () => {
         if (!email) return;
-        const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) showError("Errore login: " + error.message);
-        else showSuccess("Controlla la tua email per il link di accesso");
+
+        // Controlla che l'email sia autorizzata prima di inviare
+        const { data, error } = await supabase.from("admins").select("email");
+        const adminList = data?.map(entry => entry.email) || [];
+
+        if (!adminList.includes(email)) {
+            showError("Email non autorizzata");
+            return;
+        }
+
+        // Se autorizzata, invia magic link
+        const { error: signInError } = await supabase.auth.signInWithOtp({ email });
+        if (signInError) {
+            showError("Errore login: " + signInError.message);
+        } else {
+            showSuccess("Controlla la tua email per il link di accesso");
+            setEmail("");
+        }
     };
 
     const handleLogout = async () => {
@@ -113,7 +136,7 @@ export default function AdminPanel() {
                 </div>
             </>
         );
-    } else if (!ADMIN_EMAILS.includes(session.user.email)) {
+    } else if (!adminEmails.includes(session.user.email)) {
         content = <p className="paragraph">Accesso non autorizzato</p>;
     } else {
         content = (
