@@ -17,7 +17,7 @@ type SpotifySong = {
     played?: boolean;
 };
 
-const apiBaseUrl = import.meta.env.DEV ? "https://karaoke-webapp.vercel.app" : "";
+const apiBaseUrl = import.meta.env.DEV ? "https://www.karaokeforyou.it" : "";
 
 export default function ConsigliaUnaCanzone() {
     const { votingAllowed, isAdmin } = useVoting();
@@ -196,9 +196,15 @@ export default function ConsigliaUnaCanzone() {
                 setTimeout(() => fetchTopSongs(), 400);
             }
         } else {
-            const { error } = await supabase
-                .from("votes")
-                .insert([{ trackId, title, artist, artworkUrl100, voterId }]);
+            const { error } = await supabase.from("votes").insert([
+                {
+                    trackId,
+                    title,
+                    artist,
+                    artworkUrl100,
+                    voterId: isAdmin ? "ADMIN" : voterId
+                }
+            ]);
 
             if (!error) {
                 // Assicura che la canzone sia presente in songs
