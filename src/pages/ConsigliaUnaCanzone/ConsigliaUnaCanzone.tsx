@@ -189,7 +189,7 @@ export default function ConsigliaUnaCanzone() {
                 .from("votes")
                 .delete()
                 .eq("trackId", trackId)
-                .eq("voterId", voterId);
+                .eq("voterId", isAdmin ? "ADMIN" : voterId);
 
             if (!error) {
                 await fetchVotedSongsDetails();
@@ -354,7 +354,7 @@ export default function ConsigliaUnaCanzone() {
             const { data, error } = await supabase
                 .from("votes")
                 .select("trackId, title, artist, artworkUrl100")
-                .eq("voterId", voterId);
+                .eq("voterId", isAdmin ? "ADMIN" : voterId);
 
             if (error) {
                 console.error("Errore nel recuperare dettagli:", error.message);
@@ -474,7 +474,7 @@ export default function ConsigliaUnaCanzone() {
             const { data, error } = await supabase
                 .from("votes")
                 .select("trackId")
-                .eq("voterId", voterId);
+                .eq("voterId", isAdmin ? "ADMIN" : voterId);
             if (error) {
                 console.error("Errore nel recupero voti:", error.message);
             } else if (data) {
