@@ -30,23 +30,26 @@ serve(async _req => {
         }
     }
 
-    const separator = ";";
-    const header = ["TITOLO", "ARTISTA", "CONTEGGIO"];
+    // Ordina per numero di voti decrescente
+    const sortedRows = Array.from(grouped.values()).sort((a, b) => b.count - a.count);
 
-    const csvRows = Array.from(grouped.values()).map(row =>
+    const separator = ";";
+    const header = ["title", "artist", "count"];
+
+    const csvRows = sortedRows.map(row =>
         [row.title, row.artist, row.count]
             .map(field => `"${(field ?? "").toString().replace(/"/g, '""')}"`)
             .join(separator)
     );
 
     const today = new Date();
-    const formattedFileDate = today.toLocaleDateString("it-IT").replace(/\//g, "-");
+    const formattedFileDate = today.toLocaleDateString("it-IT").replace(/\//g, "_"); // es. 09_07_2025
     const csv = [header.join(separator), ...csvRows].join("\n");
 
     return new Response(csv, {
         headers: {
             "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": `attachment; filename="${formattedFileDate}.csv"`
+            "Content-Disposition": `attachment; filename="report_${formattedFileDate}.csv"`
         }
     });
 });
