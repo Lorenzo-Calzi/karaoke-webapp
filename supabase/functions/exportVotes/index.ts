@@ -34,7 +34,7 @@ serve(async _req => {
     const sortedRows = Array.from(grouped.values()).sort((a, b) => b.count - a.count);
 
     const separator = ";";
-    const header = ["title", "artist", "count"];
+    const header = ["TITOLO", "ARTISTA", "CONTEGGIO"];
 
     const csvRows = sortedRows.map(row =>
         [row.title, row.artist, row.count]
