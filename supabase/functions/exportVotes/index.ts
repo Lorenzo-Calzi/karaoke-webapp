@@ -49,7 +49,7 @@ serve(async _req => {
     return new Response(csv, {
         headers: {
             "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": `attachment; filename="report_${formattedFileDate}.csv"`
+            "Content-Disposition": `attachment; filename="${formattedFileDate}.csv"`
         }
     });
 });
