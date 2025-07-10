@@ -34,7 +34,7 @@ export default function SongItem({
             <img src={cover} alt={title} className="song_cover" />
             <div className="song_info">
                 <span className="song_title">{title}</span>
-                <span>{artist}</span>
+                <span className="song_singer">{artist}</span>
             </div>
 
             <div className="song_buttons_container">
