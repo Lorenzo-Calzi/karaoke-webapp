@@ -64,7 +64,7 @@ const CustomModal = ({
                         cursor: countdown > 0 ? "not-allowed" : "pointer"
                     }}
                 >
-                    <p className="paragraph">
+                    <p className="paragraph" style={{ fontWeight: 900 }}>
                         {countdown > 0 ? `Attendi ${countdown}s` : "Continua"}
                     </p>
                 </button>

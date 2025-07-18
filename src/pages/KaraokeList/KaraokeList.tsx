@@ -124,6 +124,8 @@ export default function KaraokeList() {
 
             <form onSubmit={addSong} className="karaoke_form">
                 <input
+                    name="title"
+                    autoComplete="off"
                     type="text"
                     placeholder="Titolo*"
                     value={title}
@@ -131,12 +133,16 @@ export default function KaraokeList() {
                     required
                 />
                 <input
+                    name="artist"
+                    autoComplete="off"
                     type="text"
                     placeholder="Cantante"
                     value={artist}
                     onChange={e => setArtist(e.target.value)}
                 />
                 <input
+                    name="singer"
+                    autoComplete="off"
                     type="text"
                     placeholder="Chi deve cantarla*"
                     value={singerName}
