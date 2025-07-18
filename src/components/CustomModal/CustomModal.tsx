@@ -18,7 +18,7 @@ const CustomModal = ({
     onClose,
     showSecondaryButton = false
 }: CustomModalProps) => {
-    const [countdown, setCountdown] = useState(5);
+    const [countdown, setCountdown] = useState(3);
 
     useEffect(() => {
         if (!show) return;
@@ -38,7 +38,7 @@ const CustomModal = ({
         return () => {
             clearInterval(timer);
             document.body.style.overflow = "auto";
-            setCountdown(5);
+            setCountdown(3);
         };
     }, [show]);
 
