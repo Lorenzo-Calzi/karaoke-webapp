@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../supabaseClient";
-import { useVoting } from "../../structure/VotingContext";
+import { useAdmin } from "../../context/AdminContext";
+import { useVoting } from "../../context/VotingContext";
 import VotoProgressivo from "../../components/VotoProgressivo/VotoProgressivo";
 import Tabs from "../../components/Tabs/Tabs";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -20,19 +21,23 @@ type SpotifySong = {
 const apiBaseUrl = import.meta.env.DEV ? "https://www.karaokeforyou.it" : "";
 
 export default function ConsigliaUnaCanzone() {
-    const { votingAllowed, isAdmin } = useVoting();
-    const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
-    const [query, setQuery] = useState<string>("");
-    const [results, setResults] = useState<SpotifySong[]>([]);
-    const [votedSongs, setVotedSongs] = useState<string[]>([]);
+    const { session } = useAdmin();
+    const isAdmin = !!session;
     const [voterId] = useState(() => {
         const stored = localStorage.getItem("voter_id");
         if (stored) return stored;
-
         const newId = crypto.randomUUID();
         localStorage.setItem("voter_id", newId);
         return newId;
     });
+    const currentVoterId = session ? "ADMIN" : voterId;
+
+    const { votingAllowed } = useVoting();
+    const [activeTab, setActiveTab] = useState<"search" | "ranking">("search");
+    const [query, setQuery] = useState<string>("");
+    const [results, setResults] = useState<SpotifySong[]>([]);
+    const [votedSongs, setVotedSongs] = useState<string[]>([]);
+
     const [votedSongsDetails, setVotedSongsDetails] = useState<SpotifySong[]>([]);
     const [loadingVotedSongs, setLoadingVotedSongs] = useState(true);
     const [topSongs, setTopSongs] = useState<
@@ -151,8 +156,8 @@ export default function ConsigliaUnaCanzone() {
             return;
         }
 
-        const alreadyVoted = votedSongs.includes(trackId);
-        if (!alreadyVoted && votedSongs.length >= 3) return;
+        const alreadyVoted = votedSongsDetails.some(s => s.trackId === trackId);
+        if (!alreadyVoted && votedSongsDetails.length >= 3) return;
 
         setAnimatingId(trackId);
         setTimeout(() => setAnimatingId(null), 400);
@@ -181,7 +186,9 @@ export default function ConsigliaUnaCanzone() {
             setVotedSongs(prev => prev.filter(id => id !== trackId));
             setTopSongs(prev =>
                 prev.map(song =>
-                    song.trackId === trackId ? { ...song, voteCount: song.voteCount - 1 } : song
+                    song.trackId === trackId
+                        ? { ...song, voteCount: song.voteCount - 1, iVoted: false }
+                        : song
                 )
             );
 
@@ -189,7 +196,7 @@ export default function ConsigliaUnaCanzone() {
                 .from("votes")
                 .delete()
                 .eq("trackId", trackId)
-                .eq("voterId", isAdmin ? "ADMIN" : voterId);
+                .eq("voterId", currentVoterId);
 
             if (!error) {
                 await fetchVotedSongsDetails();
@@ -202,7 +209,7 @@ export default function ConsigliaUnaCanzone() {
                     title,
                     artist,
                     artworkUrl100,
-                    voterId: isAdmin ? "ADMIN" : voterId
+                    voterId: currentVoterId
                 }
             ]);
 
@@ -224,7 +231,8 @@ export default function ConsigliaUnaCanzone() {
                         const updated = [...prev];
                         updated[songIndex] = {
                             ...updated[songIndex],
-                            voteCount: updated[songIndex].voteCount + 1
+                            voteCount: updated[songIndex].voteCount + 1,
+                            iVoted: true
                         };
                         return updated;
                     } else {
@@ -255,7 +263,7 @@ export default function ConsigliaUnaCanzone() {
         // 1. Recupera tutti i voti
         const { data: votesData, error: votesError } = await supabase
             .from("votes")
-            .select("trackId, title, artist, artworkUrl100, created_at");
+            .select("trackId, title, artist, artworkUrl100, created_at, voterId");
 
         if (votesError || !votesData) {
             console.error("Errore nel recupero classifica:", votesError?.message);
@@ -324,7 +332,8 @@ export default function ConsigliaUnaCanzone() {
                 artworkUrl100: info.artworkUrl100,
                 voteCount: info.count,
                 played: playedMap.get(trackId) ?? false,
-                iVoted: votedSongs.includes(trackId),
+                iVoted: votesData.some(v => v.trackId === trackId && v.voterId === currentVoterId),
+
                 firstVoteAt: firstVoteTimeMap.get(trackId) ?? ""
             }))
             .sort((a, b) => {
@@ -344,21 +353,20 @@ export default function ConsigliaUnaCanzone() {
             return;
         }
 
-        if (votedSongs.length === 0) {
-            setVotedSongsDetails([]);
-            setLoadingVotedSongs(false);
-            return;
-        }
-
         try {
             const { data, error } = await supabase
                 .from("votes")
                 .select("trackId, title, artist, artworkUrl100")
-                .eq("voterId", isAdmin ? "ADMIN" : voterId);
+                .eq("voterId", currentVoterId);
 
             if (error) {
                 console.error("Errore nel recuperare dettagli:", error.message);
-                setLoadingVotedSongs(false);
+                setVotedSongsDetails([]);
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                setVotedSongsDetails([]);
                 return;
             }
 
@@ -388,7 +396,7 @@ export default function ConsigliaUnaCanzone() {
                         artistName: song.artist,
                         artworkUrl100: song.artworkUrl100,
                         popularity: 0,
-                        played: playedMap.get(trackId) ?? false // ✅ qui
+                        played: playedMap.get(trackId) ?? false
                     });
                 }
             }
@@ -396,6 +404,7 @@ export default function ConsigliaUnaCanzone() {
             setVotedSongsDetails(Array.from(unique.values()));
         } catch (e) {
             console.error("Errore nel recuperare dettagli:", e);
+            setVotedSongsDetails([]);
         } finally {
             setLoadingVotedSongs(false);
         }
@@ -429,6 +438,7 @@ export default function ConsigliaUnaCanzone() {
 
     useEffect(() => {
         // fetchTopSongs iniziale
+        if (!currentVoterId) return;
         fetchTopSongs();
 
         // intervallo ogni 10 secondi
@@ -453,7 +463,7 @@ export default function ConsigliaUnaCanzone() {
             window.removeEventListener("offline", handleOffline);
             window.removeEventListener("online", handleOnline);
         };
-    }, []);
+    }, [currentVoterId]);
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
@@ -466,28 +476,28 @@ export default function ConsigliaUnaCanzone() {
 
     useEffect(() => {
         const fetchVotesFromDB = async () => {
-            if (!navigator.onLine) {
-                console.warn("Sei offline. Salto recupero voti da Supabase.");
-                return;
-            }
+            if (!currentVoterId) return;
+            if (!navigator.onLine) return;
 
             const { data, error } = await supabase
                 .from("votes")
                 .select("trackId")
-                .eq("voterId", isAdmin ? "ADMIN" : voterId);
-            if (error) {
-                console.error("Errore nel recupero voti:", error.message);
-            } else if (data) {
+                .eq("voterId", currentVoterId);
+
+            if (!error && data) {
                 const ids = data.map(row => row.trackId);
                 setVotedSongs(ids);
             }
         };
+
         fetchVotesFromDB();
-    }, [voterId]);
+    }, [currentVoterId]);
 
     useEffect(() => {
-        fetchVotedSongsDetails();
-    }, [votedSongs]);
+        if (currentVoterId) {
+            fetchVotedSongsDetails();
+        }
+    }, [votedSongs, currentVoterId]);
 
     useEffect(() => {
         const checkVisibility = () => {
@@ -543,7 +553,7 @@ export default function ConsigliaUnaCanzone() {
 
             {(votingAllowed || isAdmin) && (
                 <>
-                    <VotoProgressivo valore={votedSongs.length} />
+                    <VotoProgressivo valore={votedSongsDetails.length} />
 
                     <Tabs
                         activeTab={activeTab}
@@ -565,6 +575,11 @@ export default function ConsigliaUnaCanzone() {
                             {loadingVotedSongs && (
                                 <p className="loader">Controllo disponibilità votazioni...</p>
                             )}
+                            {!loadingVotedSongs &&
+                                votedSongsDetails.length === 0 &&
+                                query === "" && (
+                                    <p className="loader">Non hai ancora votato nessuna canzone</p>
+                                )}
 
                             {votedSongsDetails.length > 0 && !loadingVotedSongs && query === "" && (
                                 <ul className="song_list">
@@ -575,7 +590,9 @@ export default function ConsigliaUnaCanzone() {
                                             title={song.trackName}
                                             artist={song.artistName}
                                             cover={song.artworkUrl100}
-                                            voted={votedSongs.includes(song.trackId)}
+                                            voted={votedSongsDetails.some(
+                                                s => s.trackId === song.trackId
+                                            )}
                                             animating={animatingId === song.trackId}
                                             onVote={() =>
                                                 handleVote(
@@ -586,8 +603,9 @@ export default function ConsigliaUnaCanzone() {
                                                 )
                                             }
                                             disabled={
-                                                !votedSongs.includes(song.trackId) &&
-                                                votedSongs.length >= 3
+                                                !votedSongsDetails.some(
+                                                    s => s.trackId === song.trackId
+                                                ) && votedSongsDetails.length >= 3
                                             }
                                             played={song.played}
                                         />
@@ -604,7 +622,9 @@ export default function ConsigliaUnaCanzone() {
                                             title={song.trackName}
                                             artist={song.artistName}
                                             cover={song.artworkUrl100}
-                                            voted={votedSongs.includes(song.trackId)}
+                                            voted={votedSongsDetails.some(
+                                                s => s.trackId === song.trackId
+                                            )}
                                             animating={animatingId === song.trackId}
                                             onVote={() =>
                                                 handleVote(
@@ -615,8 +635,9 @@ export default function ConsigliaUnaCanzone() {
                                                 )
                                             }
                                             disabled={
-                                                !votedSongs.includes(song.trackId) &&
-                                                votedSongs.length >= 3
+                                                !votedSongsDetails.some(
+                                                    s => s.trackId === song.trackId
+                                                ) && votedSongsDetails.length >= 3
                                             }
                                             played={song.played}
                                         />
@@ -636,7 +657,7 @@ export default function ConsigliaUnaCanzone() {
                                         title={song.title}
                                         artist={song.artist}
                                         cover={song.artworkUrl100}
-                                        voted={votedSongs.includes(song.trackId)}
+                                        voted={song.iVoted}
                                         animating={animatingId === song.trackId}
                                         voteCount={song.voteCount}
                                         onVote={() =>
@@ -647,10 +668,7 @@ export default function ConsigliaUnaCanzone() {
                                                 song.artworkUrl100
                                             )
                                         }
-                                        disabled={
-                                            !votedSongs.includes(song.trackId) &&
-                                            votedSongs.length >= 3
-                                        }
+                                        disabled={!song.iVoted && votedSongsDetails.length >= 3}
                                         isAdmin={isAdmin}
                                         played={song.played}
                                         onTogglePlayed={() =>

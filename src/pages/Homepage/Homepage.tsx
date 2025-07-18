@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAdmin } from "../../context/AdminContext";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { IoCalendarNumber } from "react-icons/io5";
 import { RiAdminFill } from "react-icons/ri";
+import { BsMusicNoteList } from "react-icons/bs";
 import "./homepage.scss";
 
 function Homepage() {
@@ -12,7 +14,9 @@ function Homepage() {
     const [clickedPath, setClickedPath] = useState<string | null>(null);
     const logoRef = useRef<HTMLImageElement>(null);
     const buttonsRef = useRef<HTMLDivElement>(null);
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    const { session } = useAdmin();
+    const isAdmin = !!session;
+    const isSuperadmin = session?.isSuperadmin;
 
     const handleClick = (path: string) => {
         setClickedPath(path);
@@ -118,6 +122,21 @@ function Homepage() {
                         <div className="button_content">
                             <span className="button_title">ADMIN</span>
                             <p className="button_description">Amministra il sito</p>
+                        </div>
+                    </button>
+                )}
+                {isSuperadmin && (
+                    <button
+                        className={`button ${
+                            clickedPath === "/admin/karaokeList" ? "clicked" : ""
+                        }`}
+                        onClick={() => handleClick("/admin/karaokeList")}
+                    >
+                        <BsMusicNoteList />
+
+                        <div className="button_content">
+                            <span className="button_title">KARAOKE</span>
+                            <p className="button_description">Gestisci la lista</p>
                         </div>
                     </button>
                 )}

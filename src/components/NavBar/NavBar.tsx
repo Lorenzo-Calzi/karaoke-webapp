@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAdmin } from "../../context/AdminContext";
 import { useHideOnScroll } from "../../hooks/useHideOnScroll";
 import { HiHome } from "react-icons/hi2";
 import { PiMicrophoneStageFill } from "react-icons/pi";
@@ -6,6 +7,7 @@ import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { IoCalendarNumber } from "react-icons/io5";
 import { RiAdminFill } from "react-icons/ri";
+import { BsMusicNoteList } from "react-icons/bs";
 import "./navBar.scss";
 
 interface NavItem {
@@ -21,7 +23,9 @@ export default function NavBar() {
 
     if (currentPath === "/") return null;
 
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    const { session } = useAdmin();
+    const isAdmin = !!session;
+    const isSuperadmin = session?.isSuperadmin;
 
     const navItems: NavItem[] = [
         { path: "/", iconComponent: <HiHome />, label: "Home" },
@@ -31,10 +35,18 @@ export default function NavBar() {
         { path: "/calendario", iconComponent: <IoCalendarNumber />, label: "Calendario" }
     ];
 
-    if (isAdmin) {
+    if (isSuperadmin) {
         navItems.push({
             path: "/admin",
             iconComponent: <RiAdminFill />,
+            label: "Admin"
+        });
+    }
+
+    if (isAdmin) {
+        navItems.push({
+            path: "/admin/karaokeList",
+            iconComponent: <BsMusicNoteList />,
             label: "Admin"
         });
     }

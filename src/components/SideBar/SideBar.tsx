@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAdmin } from "../../context/AdminContext";
 import { HiHome } from "react-icons/hi2";
 import { PiMicrophoneStageFill } from "react-icons/pi";
 import { IoHeadset } from "react-icons/io5";
@@ -23,7 +24,8 @@ export default function Sidebar({ isOpen, onClose }: Props) {
 
     if (currentPath === "/") return null;
 
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    const { session } = useAdmin();
+    const isAdmin = !!session;
 
     const navItems: NavItem[] = [
         { path: "/", iconComponent: <HiHome />, label: "Home" },

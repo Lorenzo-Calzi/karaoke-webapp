@@ -57,10 +57,10 @@ export default function Social() {
                                 className="on_air"
                                 style={{
                                     backgroundColor: profile.force_blue
-                                        ? "#3f95e0" // blu
+                                        ? "#3f95e0"
                                         : profile.on_air
-                                        ? "rgb(62, 194, 99)" // verde
-                                        : "rgb(220, 20, 60)", // rosso
+                                        ? "rgb(62, 194, 99)"
+                                        : "rgb(220, 20, 60)",
                                     color: profile.force_blue
                                         ? "#3f95e0"
                                         : profile.on_air
