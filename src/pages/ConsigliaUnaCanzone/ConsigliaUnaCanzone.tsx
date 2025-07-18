@@ -6,6 +6,7 @@ import VotoProgressivo from "../../components/VotoProgressivo/VotoProgressivo";
 import Tabs from "../../components/Tabs/Tabs";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SongItem from "../../components/SongItem/SongItem";
+import CustomModal from "../../components/CustomModal/CustomModal";
 import { showInfo, showError } from "../../lib/toast";
 import "./consigliaUnaCanzone.scss";
 
@@ -54,6 +55,8 @@ export default function ConsigliaUnaCanzone() {
     >([]);
     const [animatingId, setAnimatingId] = useState<string | null>(null);
     const searchBarRef = useRef<HTMLInputElement>(null);
+    const [showModal, setShowModal] = useState(false);
+
     // const isReady = (votingAllowed !== undefined || isAdmin) && !loadingVotedSongs;
 
     const normalizeText = (text: string) =>
@@ -446,6 +449,12 @@ export default function ConsigliaUnaCanzone() {
             fetchTopSongs();
         }, 10000);
 
+        const visited = localStorage.getItem("visited-consiglia");
+        if (!visited) {
+            setShowModal(true);
+            localStorage.setItem("visited-consiglia", "true");
+        }
+
         // listener rete
         const handleOffline = () => {
             showInfo("Sei offline. Alcune funzionalità non saranno disponibili.");
@@ -533,6 +542,14 @@ export default function ConsigliaUnaCanzone() {
 
     return (
         <div className="consigliaUnaCanzone container">
+            <CustomModal
+                show={showModal}
+                onClose={() => setShowModal(false)}
+                description="In questa pagina puoi solo votare le canzoni che vuoi che il DJ metta durante la serata. Hai a disposizione fino a 3 voti!"
+                onPrimaryAction={() => console.log("Modale voti confermata")}
+                showSecondaryButton={false}
+            />
+
             <div className="description">
                 <h2 className="title">
                     {votingAllowed || isAdmin

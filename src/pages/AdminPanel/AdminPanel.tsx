@@ -8,7 +8,6 @@ import "./adminPanel.scss";
 export default function AdminPanel() {
     const { session, login, logout } = useAdmin();
     const navigate = useNavigate();
-    const isAdmin = !!session;
     const isSuperadmin = session?.isSuperadmin;
 
     const [username, setUsername] = useState("");
