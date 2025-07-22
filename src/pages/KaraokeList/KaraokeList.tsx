@@ -236,20 +236,6 @@ export default function KaraokeList() {
         }
     };
 
-    const deleteSong = async (id: string) => {
-        const confirm = window.confirm("Sei sicuro di voler eliminare questa canzone?");
-        if (!confirm) return;
-
-        const { error } = await supabase.from("karaoke_list").delete().eq("id", id);
-
-        if (error) {
-            showError("Errore eliminazione: " + error.message);
-        } else {
-            showSuccess("Canzone eliminata");
-            fetchList();
-        }
-    };
-
     const handleDeleteConfirmed = async () => {
         if (!songToDelete) return;
 
