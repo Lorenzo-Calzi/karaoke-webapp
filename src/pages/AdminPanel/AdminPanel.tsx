@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { showError, showSuccess } from "../../lib/toast";
 import { supabase } from "../../supabaseClient";
 import { useAdmin } from "../../context/AdminContext";
+import { BsMusicNoteList } from "react-icons/bs";
 import "./adminPanel.scss";
 
 export default function AdminPanel() {
@@ -134,9 +135,9 @@ export default function AdminPanel() {
                     window.location.href = "/admin/karaokeList";
                 }}
             >
-                <i className="fa-solid fa-microphone"></i>
+                <BsMusicNoteList />
                 <div className="button_content">
-                    <span className="button_title">KARAOKE</span>
+                    <span className="button_title">LISTA</span>
                     <p className="button_description">Gestisci la lista</p>
                 </div>
             </button>

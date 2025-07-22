@@ -112,7 +112,7 @@ function Homepage() {
                     </div>
                 </button>
 
-                {isAdmin && (
+                {isSuperadmin && (
                     <button
                         className={`button ${clickedPath === "/admin" ? "clicked" : ""}`}
                         onClick={() => handleClick("/admin")}
@@ -125,7 +125,7 @@ function Homepage() {
                         </div>
                     </button>
                 )}
-                {isSuperadmin && (
+                {isAdmin && (
                     <button
                         className={`button ${
                             clickedPath === "/admin/karaokeList" ? "clicked" : ""
@@ -135,7 +135,7 @@ function Homepage() {
                         <BsMusicNoteList />
 
                         <div className="button_content">
-                            <span className="button_title">KARAOKE</span>
+                            <span className="button_title">LISTA</span>
                             <p className="button_description">Gestisci la lista</p>
                         </div>
                     </button>
