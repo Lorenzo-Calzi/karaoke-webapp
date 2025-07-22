@@ -8,6 +8,7 @@ interface CustomModalProps {
     show: boolean;
     onClose: () => void;
     showSecondaryButton?: boolean;
+    timer?: boolean;
 }
 
 const CustomModal = ({
@@ -16,19 +17,20 @@ const CustomModal = ({
     onPrimaryAction,
     show,
     onClose,
-    showSecondaryButton = false
+    showSecondaryButton = false,
+    timer = true
 }: CustomModalProps) => {
     const [countdown, setCountdown] = useState(3);
 
     useEffect(() => {
-        if (!show) return;
+        if (!show || !timer) return;
 
         document.body.style.overflow = "hidden";
 
-        const timer = setInterval(() => {
+        const interval = setInterval(() => {
             setCountdown(c => {
                 if (c <= 1) {
-                    clearInterval(timer);
+                    clearInterval(interval);
                     return 0;
                 }
                 return c - 1;
@@ -36,11 +38,11 @@ const CustomModal = ({
         }, 1000);
 
         return () => {
-            clearInterval(timer);
+            clearInterval(interval);
             document.body.style.overflow = "auto";
-            setCountdown(3);
+            setCountdown(3); // reset
         };
-    }, [show]);
+    }, [show, timer]);
 
     if (!show) return null;
 
@@ -58,24 +60,24 @@ const CustomModal = ({
                         onPrimaryAction();
                         onClose();
                     }}
-                    disabled={countdown > 0}
+                    disabled={timer && countdown > 0}
                     style={{
-                        backgroundColor: countdown > 0 ? "#ccc" : "#007bff",
-                        cursor: countdown > 0 ? "not-allowed" : "pointer"
+                        backgroundColor: timer && countdown > 0 ? "#ccc" : "#007bff",
+                        cursor: timer && countdown > 0 ? "not-allowed" : "pointer"
                     }}
                 >
                     <p className="paragraph" style={{ fontWeight: 900 }}>
-                        {countdown > 0 ? `Attendi ${countdown}s` : "Continua"}
+                        {timer && countdown > 0 ? `Attendi ${countdown}s` : "Continua"}
                     </p>
                 </button>
 
                 {showSecondaryButton && (
                     <button
                         onClick={onClose}
-                        disabled={countdown > 0}
+                        disabled={timer && countdown > 0}
                         style={{
-                            backgroundColor: countdown > 0 ? "#ccc" : "#007bff2f",
-                            cursor: countdown > 0 ? "not-allowed" : "pointer"
+                            backgroundColor: timer && countdown > 0 ? "#ccc" : "#007bff2f",
+                            cursor: timer && countdown > 0 ? "not-allowed" : "pointer"
                         }}
                     >
                         <p className="paragraph" style={{ color: "#007bff" }}>

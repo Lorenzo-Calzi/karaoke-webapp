@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { showError, showSuccess } from "../../lib/toast";
+import CustomModal from "../../components/CustomModal/CustomModal";
 import {
     DndContext,
     closestCenter,
@@ -23,11 +24,10 @@ import "./karaokeList.scss";
 type KaraokeEntry = {
     id: string;
     title: string;
-    artist: string;
     singer_name: string;
     added_at: string;
     sung: boolean;
-    order_position?: number; // Nuovo campo per l'ordinamento
+    order_position?: number;
 };
 
 // Componente sortable per ogni elemento
@@ -35,7 +35,6 @@ function SortableKaraokeItem({
     entry,
     editingId,
     editTitle,
-    editArtist,
     editSinger,
     onEdit,
     onSaveEdit,
@@ -47,7 +46,6 @@ function SortableKaraokeItem({
     entry: KaraokeEntry;
     editingId: string | null;
     editTitle: string;
-    editArtist: string;
     editSinger: string;
     onEdit: (entry: KaraokeEntry) => void;
     onSaveEdit: (id: string) => void;
@@ -76,11 +74,6 @@ function SortableKaraokeItem({
                         onChange={e => onEditChange("title", e.target.value)}
                     />
                     <input
-                        value={editArtist}
-                        placeholder="Cantante"
-                        onChange={e => onEditChange("artist", e.target.value)}
-                    />
-                    <input
                         value={editSinger}
                         placeholder="Chi deve cantarla*"
                         onChange={e => onEditChange("singer", e.target.value)}
@@ -107,9 +100,7 @@ function SortableKaraokeItem({
                     <div className="content">
                         <div className="song">
                             {/* <i className="fa-solid fa-microphone-lines"></i> */}
-                            <p className="paragraph">
-                                {entry.title} {entry.artist && `(${entry.artist})`}
-                            </p>
+                            <p className="paragraph">{entry.title}</p>
                         </div>
                         <div className="user">
                             {/* <i className="fa-regular fa-circle-user"></i> */}
@@ -162,15 +153,15 @@ function SortableKaraokeItem({
 
 export default function KaraokeList() {
     const [title, setTitle] = useState("");
-    const [artist, setArtist] = useState("");
     const [singerName, setSingerName] = useState("");
     const [karaokeList, setKaraokeList] = useState<KaraokeEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [showSung, setShowSung] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState("");
-    const [editArtist, setEditArtist] = useState("");
     const [editSinger, setEditSinger] = useState("");
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [songToDelete, setSongToDelete] = useState<string | null>(null);
 
     // Configurazione sensori per drag and drop
     const sensors = useSensors(
@@ -210,7 +201,6 @@ export default function KaraokeList() {
         const { error } = await supabase.from("karaoke_list").insert([
             {
                 title,
-                artist,
                 singer_name: singerName,
                 sung: false,
                 order_position: maxPosition + 1
@@ -222,7 +212,6 @@ export default function KaraokeList() {
         } else {
             showSuccess("Canzone aggiunta!");
             setTitle("");
-            setArtist("");
             setSingerName("");
             fetchList();
         }
@@ -234,7 +223,6 @@ export default function KaraokeList() {
             .from("karaoke_list")
             .update({
                 title: editTitle,
-                artist: editArtist,
                 singer_name: editSinger
             })
             .eq("id", id);
@@ -260,6 +248,22 @@ export default function KaraokeList() {
             showSuccess("Canzone eliminata");
             fetchList();
         }
+    };
+
+    const handleDeleteConfirmed = async () => {
+        if (!songToDelete) return;
+
+        const { error } = await supabase.from("karaoke_list").delete().eq("id", songToDelete);
+
+        if (error) {
+            showError("Errore eliminazione: " + error.message);
+        } else {
+            showSuccess("Canzone eliminata");
+            fetchList();
+        }
+
+        setShowDeleteModal(false);
+        setSongToDelete(null);
     };
 
     const toggleSung = async (id: string, currentValue: boolean) => {
@@ -340,7 +344,6 @@ export default function KaraokeList() {
     const handleEdit = (entry: KaraokeEntry) => {
         setEditingId(entry.id);
         setEditTitle(entry.title);
-        setEditArtist(entry.artist);
         setEditSinger(entry.singer_name);
     };
 
@@ -349,13 +352,15 @@ export default function KaraokeList() {
             case "title":
                 setEditTitle(value);
                 break;
-            case "artist":
-                setEditArtist(value);
-                break;
             case "singer":
                 setEditSinger(value);
                 break;
         }
+    };
+
+    const confirmDeleteSong = (id: string) => {
+        setSongToDelete(id);
+        setShowDeleteModal(true);
     };
 
     useEffect(() => {
@@ -366,6 +371,19 @@ export default function KaraokeList() {
 
     return (
         <div className="karaokeList container">
+            <CustomModal
+                show={showDeleteModal}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setSongToDelete(null);
+                }}
+                title="Conferma eliminazione"
+                description="Sei sicuro di voler eliminare questa canzone dalla lista?"
+                onPrimaryAction={handleDeleteConfirmed}
+                showSecondaryButton={true}
+                timer={false}
+            />
+
             <h2 className="title">Lista Karaoke</h2>
 
             <form onSubmit={addSong} className="karaoke_form">
@@ -377,14 +395,6 @@ export default function KaraokeList() {
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     required
-                />
-                <input
-                    name="artist"
-                    autoComplete="off"
-                    type="text"
-                    placeholder="Cantante"
-                    value={artist}
-                    onChange={e => setArtist(e.target.value)}
                 />
                 <input
                     name="singer"
@@ -431,13 +441,12 @@ export default function KaraokeList() {
                                 entry={entry}
                                 editingId={editingId}
                                 editTitle={editTitle}
-                                editArtist={editArtist}
                                 editSinger={editSinger}
                                 onEdit={handleEdit}
                                 onSaveEdit={saveEdit}
                                 onCancelEdit={() => setEditingId(null)}
                                 onToggleSung={toggleSung}
-                                onDelete={deleteSong}
+                                onDelete={confirmDeleteSong}
                                 onEditChange={handleEditChange}
                             />
                         ))}
