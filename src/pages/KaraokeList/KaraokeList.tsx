@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { showError, showSuccess } from "../../lib/toast";
 import CustomModal from "../../components/CustomModal/CustomModal";
-import { ReactSortable } from "react-sortablejs";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import "./karaokeList.scss";
 
 type KaraokeEntry = {
@@ -137,6 +138,8 @@ export default function KaraokeList() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [songToDelete, setSongToDelete] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+
+    console.log(setIsDragging);
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -297,6 +300,20 @@ export default function KaraokeList() {
         }
     };
 
+    const handleDragEnd = (result: DropResult) => {
+        if (!result.destination) return;
+
+        const items = Array.from(karaokeList);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        // aggiorna lo stato locale
+        setKaraokeList(items);
+
+        // salva in Supabase se serve
+        handleSortEnd(items);
+    };
+
     const confirmDeleteSong = (id: string) => {
         setSongToDelete(id);
         setShowDeleteModal(true);
@@ -382,47 +399,52 @@ export default function KaraokeList() {
             )}
 
             <div className="karaoke_entries">
-                <ReactSortable
-                    list={karaokeList}
-                    setList={newList => {
-                        setKaraokeList(newList);
-                        handleSortEnd(newList);
-                    }}
-                    handle=".sortable-handle"
-                    animation={150}
-                    delay={50}
-                    ghostClass="sortable-ghost"
-                    chosenClass="sortable-chosen"
-                    dragClass="sortable-drag"
-                    disabled={editingId !== null || isDragging}
-                    touchStartThreshold={10}
-                    forceFallback={true}
-                    fallbackOnBody={true}
-                    onStart={() => setIsDragging(true)}
-                    onEnd={() => {
-                        setTimeout(() => setIsDragging(false), 100);
-                    }}
-                    tag="div"
-                    className="sortable-container"
-                >
-                    {karaokeList
-                        .filter(entry => showSung || !entry.sung)
-                        .map(entry => (
-                            <KaraokeItem
-                                key={entry.id}
-                                entry={entry}
-                                editingId={editingId}
-                                editTitle={editTitle}
-                                editSinger={editSinger}
-                                onEdit={handleEdit}
-                                onSaveEdit={saveEdit}
-                                onCancelEdit={() => setEditingId(null)}
-                                onToggleSung={toggleSung}
-                                onDelete={confirmDeleteSong}
-                                onEditChange={handleEditChange}
-                            />
-                        ))}
-                </ReactSortable>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="karaoke-list">
+                        {provided => (
+                            <div
+                                className="karaoke_entries"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                            >
+                                {karaokeList
+                                    .filter(entry => showSung || !entry.sung)
+                                    .map((entry, index) => (
+                                        <Draggable
+                                            key={entry.id}
+                                            draggableId={entry.id}
+                                            index={index}
+                                        >
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    className={`karaoke_item ${
+                                                        entry.sung ? "sung" : ""
+                                                    } ${snapshot.isDragging ? "dragging" : ""}`}
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    <KaraokeItem
+                                                        entry={entry}
+                                                        editingId={editingId}
+                                                        editTitle={editTitle}
+                                                        editSinger={editSinger}
+                                                        onEdit={handleEdit}
+                                                        onSaveEdit={saveEdit}
+                                                        onCancelEdit={() => setEditingId(null)}
+                                                        onToggleSung={toggleSung}
+                                                        onDelete={confirmDeleteSong}
+                                                        onEditChange={handleEditChange}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </div>
         </div>
     );
