@@ -332,7 +332,7 @@ export default function KaraokeList() {
                 timer={false}
             />
 
-            <h2 className="title">Lista Karaoke TEST</h2>
+            <h2 className="title">Lista Karaoke</h2>
 
             <form onSubmit={addSong} className="karaoke_form">
                 <div className="form_group">
@@ -397,6 +397,7 @@ export default function KaraokeList() {
                     disabled={editingId !== null || isDragging}
                     touchStartThreshold={10}
                     forceFallback={true}
+                    fallbackOnBody={true}
                     onStart={() => setIsDragging(true)}
                     onEnd={() => {
                         setTimeout(() => setIsDragging(false), 100);
