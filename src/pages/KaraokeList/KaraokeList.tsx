@@ -142,7 +142,12 @@ function SortableKaraokeItem({
                         </div>
                     </div>
 
-                    <div className="drag-handle" {...attributes} {...listeners}>
+                    <div
+                        className="drag-handle"
+                        onContextMenu={e => e.preventDefault()}
+                        {...attributes}
+                        {...listeners}
+                    >
                         <i className="fa-solid fa-grip-vertical"></i>
                     </div>
                 </>
@@ -154,6 +159,7 @@ function SortableKaraokeItem({
 export default function KaraokeList() {
     const [title, setTitle] = useState("");
     const [singerName, setSingerName] = useState("");
+    const [errors, setErrors] = useState<{ title?: string; singer?: string }>({});
     const [karaokeList, setKaraokeList] = useState<KaraokeEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [showSung, setShowSung] = useState(false);
@@ -188,20 +194,24 @@ export default function KaraokeList() {
     const addSong = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title || !singerName) {
-            showError("Inserisci almeno titolo e persona che deve cantarla");
+        const newErrors: { title?: string; singer?: string } = {};
+        if (!title.trim()) newErrors.title = "Inserisci un titolo";
+        if (!singerName.trim()) newErrors.singer = "Inserisci chi deve cantarla";
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
+        setErrors({});
         setLoading(true);
 
-        // Trova la posizione più alta attuale
         const maxPosition = Math.max(...karaokeList.map(item => item.order_position || 0), 0);
 
         const { error } = await supabase.from("karaoke_list").insert([
             {
-                title,
-                singer_name: singerName,
+                title: title.trim(),
+                singer_name: singerName.trim(),
                 sung: false,
                 order_position: maxPosition + 1
             }
@@ -350,7 +360,13 @@ export default function KaraokeList() {
     };
 
     useEffect(() => {
-        fetchList();
+        fetchList(); // iniziale
+
+        const interval = setInterval(() => {
+            fetchList(); // ogni X secondi
+        }, 3000); // ogni 3 secondi
+
+        return () => clearInterval(interval); // pulizia
     }, []);
 
     const filteredList = karaokeList.filter(entry => showSung || !entry.sung);
@@ -373,24 +389,30 @@ export default function KaraokeList() {
             <h2 className="title">Lista Karaoke</h2>
 
             <form onSubmit={addSong} className="karaoke_form">
-                <input
-                    name="title"
-                    autoComplete="off"
-                    type="text"
-                    placeholder="Titolo*"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    required
-                />
-                <input
-                    name="singer"
-                    autoComplete="off"
-                    type="text"
-                    placeholder="Chi deve cantarla*"
-                    value={singerName}
-                    onChange={e => setSingerName(e.target.value)}
-                    required
-                />
+                <div className="form_group">
+                    <input
+                        name="title"
+                        autoComplete="off"
+                        type="text"
+                        placeholder="Titolo*"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        className={errors.title ? "input_error" : ""}
+                    />
+                    {errors.title && <p className="error_message">{errors.title}</p>}
+                </div>
+                <div className="form_group">
+                    <input
+                        name="singer"
+                        autoComplete="off"
+                        type="text"
+                        placeholder="Chi deve cantarla*"
+                        value={singerName}
+                        onChange={e => setSingerName(e.target.value)}
+                        className={errors.singer ? "input_error" : ""}
+                    />
+                    {errors.singer && <p className="error_message">{errors.singer}</p>}
+                </div>
                 <button type="submit" disabled={loading}>
                     <p className="paragraph" style={{ fontWeight: 900 }}>
                         {loading ? "Aggiungendo..." : "Aggiungi"}
