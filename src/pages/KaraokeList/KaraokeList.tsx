@@ -238,7 +238,7 @@ export default function KaraokeList() {
     };
 
     // Gestione del riordinamento con SortableJS
-    const handleSortEnd = async (newList: KaraokeEntry[], sortable: any, store: any) => {
+    const handleSortEnd = async (newList: KaraokeEntry[]) => {
         // Controlla se l'ordine è effettivamente cambiato
         const oldOrder = filteredList.map(item => item.id);
         const newOrder = newList.map(item => item.id);
