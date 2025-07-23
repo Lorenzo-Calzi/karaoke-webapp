@@ -29,7 +29,7 @@ function Homepage() {
 
     useEffect(() => {
         const adjustLogoSize = () => {
-            const buttonsHeight = buttonsRef.current?.offsetHeight ?? 0;
+            if (!logoRef.current || !buttonsRef.current) return;
 
             const verticalPadding = 4 * 16;
             const gap = 3 * 16;
@@ -40,24 +40,26 @@ function Homepage() {
             const containerContent = containerWidth - containerWidth * 0.3;
             const maxWidth = 420;
 
+            const buttonsHeight = buttonsRef.current.offsetHeight;
             const availableHeight = window.innerHeight - buttonsHeight - verticalMargin;
             const availableWidth = containerContent < maxWidth ? containerContent : maxWidth;
 
-            if (logoRef.current) {
-                if (availableWidth > availableHeight) {
-                    logoRef.current.style.height = `${availableHeight}px`;
-                    logoRef.current.style.width = `${availableHeight}px`;
-                } else {
-                    logoRef.current.style.height = `${availableWidth}px`;
-                    logoRef.current.style.width = `${availableWidth}px`;
-                }
-            }
+            const finalSize = Math.min(availableHeight, availableWidth);
+
+            logoRef.current.style.width = `${finalSize}px`;
+            logoRef.current.style.height = `${finalSize}px`;
         };
 
-        adjustLogoSize();
+        // Esegui al primo render (ma solo dopo che isAdmin è pronto)
+        const timeout = setTimeout(adjustLogoSize, 0);
+
+        // Esegui anche al resize
         window.addEventListener("resize", adjustLogoSize);
-        return () => window.removeEventListener("resize", adjustLogoSize);
-    }, []);
+        return () => {
+            clearTimeout(timeout);
+            window.removeEventListener("resize", adjustLogoSize);
+        };
+    }, [isAdmin, isSuperadmin]);
 
     return (
         <div className="homepage container">
