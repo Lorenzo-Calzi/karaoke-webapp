@@ -332,7 +332,7 @@ export default function KaraokeList() {
                 timer={false}
             />
 
-            <h2 className="title">Lista Karaoke</h2>
+            <h2 className="title">Lista Karaoke TEST</h2>
 
             <form onSubmit={addSong} className="karaoke_form">
                 <div className="form_group">
