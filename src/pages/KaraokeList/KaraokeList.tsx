@@ -398,18 +398,20 @@ export default function KaraokeList() {
                 </button>
             </form>
 
-            <label className="already_sung_label">
-                <input
-                    type="checkbox"
-                    checked={showSung}
-                    onChange={() => setShowSung(prev => !prev)}
-                />
-                <p className="paragraph">
-                    {showSung
-                        ? "Nascondi le canzoni già cantate"
-                        : "Mostra anche le canzoni già cantate"}
-                </p>
-            </label>
+            {karaokeList.some(song => song.sung) && (
+                <label className="already_sung_label">
+                    <input
+                        type="checkbox"
+                        checked={showSung}
+                        onChange={() => setShowSung(prev => !prev)}
+                    />
+                    <p className="paragraph">
+                        {showSung
+                            ? "Nascondi le canzoni già cantate"
+                            : "Mostra anche le canzoni già cantate"}
+                    </p>
+                </label>
+            )}
 
             <div className="karaoke_entries">
                 <DndContext
