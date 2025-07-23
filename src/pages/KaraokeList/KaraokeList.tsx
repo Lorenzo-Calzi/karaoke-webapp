@@ -18,6 +18,7 @@ type KaraokeEntry = {
 // Componente per ogni elemento della lista
 function KaraokeItem({
     entry,
+    index,
     editingId,
     editTitle,
     editSinger,
@@ -29,6 +30,7 @@ function KaraokeItem({
     onEditChange
 }: {
     entry: KaraokeEntry;
+    index: number;
     editingId: string | null;
     editTitle: string;
     editSinger: string;
@@ -40,88 +42,100 @@ function KaraokeItem({
     onEditChange: (field: string, value: string) => void;
 }) {
     return (
-        <div className={`karaoke_item ${entry.sung ? "sung" : ""}`} data-id={entry.id}>
-            {editingId === entry.id ? (
-                <div className="edit_form">
-                    <input
-                        value={editTitle}
-                        placeholder="Titolo*"
-                        onChange={e => onEditChange("title", e.target.value)}
-                    />
-                    <input
-                        value={editSinger}
-                        placeholder="Chi deve cantarla*"
-                        onChange={e => onEditChange("singer", e.target.value)}
-                    />
-                    <div className="buttons">
-                        <button
-                            onClick={() => onSaveEdit(entry.id)}
-                            className="option"
-                            style={{ backgroundColor: "rgba(85, 255, 0, 0.4)" }}
-                        >
-                            <i className="fa-solid fa-check"></i>
-                        </button>
-                        <button
-                            onClick={onCancelEdit}
-                            className="option"
-                            style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
-                        >
-                            <i className="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
+        <Draggable draggableId={entry.id} index={index}>
+            {(provided, snapshot) => (
+                <div
+                    className={`karaoke_item ${entry.sung ? "sung" : ""} ${
+                        snapshot.isDragging ? "dragging" : ""
+                    }`}
+                    data-id={entry.id}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                >
+                    {editingId === entry.id ? (
+                        <div className="edit_form">
+                            <input
+                                value={editTitle}
+                                placeholder="Titolo*"
+                                onChange={e => onEditChange("title", e.target.value)}
+                            />
+                            <input
+                                value={editSinger}
+                                placeholder="Chi deve cantarla*"
+                                onChange={e => onEditChange("singer", e.target.value)}
+                            />
+                            <div className="buttons">
+                                <button
+                                    onClick={() => onSaveEdit(entry.id)}
+                                    className="option"
+                                    style={{ backgroundColor: "rgba(85, 255, 0, 0.4)" }}
+                                >
+                                    <i className="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    onClick={onCancelEdit}
+                                    className="option"
+                                    style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="content">
+                                <div className="song">
+                                    <p className="paragraph">{entry.title}</p>
+                                </div>
+                                <div className="user">
+                                    <p className="paragraph">{entry.singer_name}</p>
+                                </div>
+
+                                <div className="buttons">
+                                    <button
+                                        onClick={() => onToggleSung(entry.id, entry.sung)}
+                                        className="option"
+                                        style={{
+                                            backgroundColor: "rgba(249, 249, 249, 0.4)"
+                                        }}
+                                    >
+                                        <i
+                                            className={`${
+                                                entry.sung ? "fa-solid" : "fa-regular"
+                                            } fa-square-check`}
+                                            style={{
+                                                color: entry.sung ? "#7CFC00" : "white",
+                                                fontSize: "18px"
+                                            }}
+                                        />
+                                    </button>
+                                    <button
+                                        onClick={() => onEdit(entry)}
+                                        className="option"
+                                        style={{ background: "rgba(0, 123, 255, 0.4)" }}
+                                    >
+                                        <i className="fa-solid fa-pencil"></i>
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(entry.id)}
+                                        className="option"
+                                        style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
+                                    >
+                                        <i className="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Drag handle - ottimizzato per mobile */}
+                            <div className="drag-handle sortable-handle">
+                                <i className="fa-solid fa-grip-vertical"></i>
+                            </div>
+                        </>
+                    )}
                 </div>
-            ) : (
-                <>
-                    <div className="content">
-                        <div className="song">
-                            <p className="paragraph">{entry.title}</p>
-                        </div>
-                        <div className="user">
-                            <p className="paragraph">{entry.singer_name}</p>
-                        </div>
-
-                        <div className="buttons">
-                            <button
-                                onClick={() => onToggleSung(entry.id, entry.sung)}
-                                className="option"
-                                style={{
-                                    backgroundColor: "rgba(249, 249, 249, 0.4)"
-                                }}
-                            >
-                                <i
-                                    className={`${
-                                        entry.sung ? "fa-solid" : "fa-regular"
-                                    } fa-square-check`}
-                                    style={{
-                                        color: entry.sung ? "#7CFC00" : "white",
-                                        fontSize: "18px"
-                                    }}
-                                />
-                            </button>
-                            <button
-                                onClick={() => onEdit(entry)}
-                                className="option"
-                                style={{ background: "rgba(0, 123, 255, 0.4)" }}
-                            >
-                                <i className="fa-solid fa-pencil"></i>
-                            </button>
-                            <button
-                                onClick={() => onDelete(entry.id)}
-                                className="option"
-                                style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
-                            >
-                                <i className="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Drag handle - ottimizzato per mobile */}
-                    <div className="drag-handle sortable-handle">
-                        <i className="fa-solid fa-grip-vertical"></i>
-                    </div>
-                </>
             )}
-        </div>
+        </Draggable>
     );
 }
 
@@ -242,31 +256,17 @@ export default function KaraokeList() {
 
     // Gestione del riordinamento con SortableJS
     const handleSortEnd = async (newList: KaraokeEntry[]) => {
-        // Controlla se l'ordine è effettivamente cambiato
-        const oldOrder = filteredList.map(item => item.id);
-        const newOrder = newList.map(item => item.id);
+        const reordered = [...newList]; // è già filtrata (es. showSung=false)
+        const otherItems = karaokeList.filter(item => !reordered.includes(item));
 
-        if (JSON.stringify(oldOrder) === JSON.stringify(newOrder)) {
-            return; // Nessun cambiamento, esci
-        }
+        const combined = [...reordered, ...otherItems];
 
-        // Crea una nuova lista con le posizioni aggiornate
-        const updatedKaraokeList = karaokeList.map(item => {
-            const newIndex = newOrder.indexOf(item.id);
-            if (newIndex !== -1) {
-                // Questo elemento è nella lista filtrata, aggiorna la sua posizione
-                return { ...item, order_position: newIndex + 1 };
-            }
-            // Elemento non nella lista filtrata, mantieni posizione originale
-            return item;
-        });
+        // aggiorna subito lo stato visivo
+        setKaraokeList(combined);
 
-        // Aggiorna immediatamente lo stato
-        setKaraokeList(updatedKaraokeList);
-
-        // Salva nel database in background
+        // aggiorna su Supabase
         try {
-            const updates = newList.map((item, index) =>
+            const updates = reordered.map((item, index) =>
                 supabase
                     .from("karaoke_list")
                     .update({ order_position: index + 1 })
@@ -278,7 +278,6 @@ export default function KaraokeList() {
         } catch (error) {
             console.error("Errore aggiornamento:", error);
             showError("Errore nell'aggiornamento dell'ordine");
-            // Ricarica la lista in caso di errore
             fetchList();
         }
     };
@@ -303,15 +302,15 @@ export default function KaraokeList() {
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const items = Array.from(karaokeList);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
+        const updated = Array.from(karaokeList);
+        const [moved] = updated.splice(result.source.index, 1);
+        updated.splice(result.destination.index, 0, moved);
 
-        // aggiorna lo stato locale
-        setKaraokeList(items);
+        // ✅ aggiorna subito la lista visiva
+        setKaraokeList(updated);
 
-        // salva in Supabase se serve
-        handleSortEnd(items);
+        // 🔁 aggiorna l’ordine anche sul backend
+        handleSortEnd(updated);
     };
 
     const confirmDeleteSong = (id: string) => {
@@ -331,8 +330,6 @@ export default function KaraokeList() {
 
         return () => clearInterval(interval);
     }, [isDragging, editingId]);
-
-    const filteredList = karaokeList.filter(entry => showSung || !entry.sung);
 
     return (
         <div className="karaokeList container">
@@ -410,35 +407,20 @@ export default function KaraokeList() {
                                 {karaokeList
                                     .filter(entry => showSung || !entry.sung)
                                     .map((entry, index) => (
-                                        <Draggable
+                                        <KaraokeItem
                                             key={entry.id}
-                                            draggableId={entry.id}
+                                            entry={entry}
                                             index={index}
-                                        >
-                                            {(provided, snapshot) => (
-                                                <div
-                                                    className={`karaoke_item ${
-                                                        entry.sung ? "sung" : ""
-                                                    } ${snapshot.isDragging ? "dragging" : ""}`}
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                >
-                                                    <KaraokeItem
-                                                        entry={entry}
-                                                        editingId={editingId}
-                                                        editTitle={editTitle}
-                                                        editSinger={editSinger}
-                                                        onEdit={handleEdit}
-                                                        onSaveEdit={saveEdit}
-                                                        onCancelEdit={() => setEditingId(null)}
-                                                        onToggleSung={toggleSung}
-                                                        onDelete={confirmDeleteSong}
-                                                        onEditChange={handleEditChange}
-                                                    />
-                                                </div>
-                                            )}
-                                        </Draggable>
+                                            editingId={editingId}
+                                            editTitle={editTitle}
+                                            editSinger={editSinger}
+                                            onEdit={handleEdit}
+                                            onSaveEdit={saveEdit}
+                                            onCancelEdit={() => setEditingId(null)}
+                                            onToggleSung={toggleSung}
+                                            onDelete={confirmDeleteSong}
+                                            onEditChange={handleEditChange}
+                                        />
                                     ))}
                                 {provided.placeholder}
                             </div>
