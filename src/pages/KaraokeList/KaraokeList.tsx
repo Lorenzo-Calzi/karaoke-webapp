@@ -396,7 +396,7 @@ export default function KaraokeList() {
                     dragClass="sortable-drag"
                     disabled={editingId !== null || isDragging}
                     touchStartThreshold={10}
-                    forceFallback={false}
+                    forceFallback={true}
                     onStart={() => setIsDragging(true)}
                     onEnd={() => {
                         setTimeout(() => setIsDragging(false), 100);
