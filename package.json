@@ -20,8 +20,10 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.2",
+    "react-sortablejs": "^6.1.4",
     "react-toastify": "^11.0.5",
     "sass": "^1.89.1",
+    "sortablejs": "^1.15.6",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

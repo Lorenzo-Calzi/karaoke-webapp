@@ -2,23 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { showError, showSuccess } from "../../lib/toast";
 import CustomModal from "../../components/CustomModal/CustomModal";
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors
-} from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy
-} from "@dnd-kit/sortable";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { ReactSortable } from "react-sortablejs";
 import "./karaokeList.scss";
 
 type KaraokeEntry = {
@@ -30,8 +14,8 @@ type KaraokeEntry = {
     order_position?: number;
 };
 
-// Componente sortable per ogni elemento
-function SortableKaraokeItem({
+// Componente per ogni elemento della lista
+function KaraokeItem({
     entry,
     editingId,
     editTitle,
@@ -54,18 +38,8 @@ function SortableKaraokeItem({
     onDelete: (id: string) => void;
     onEditChange: (field: string, value: string) => void;
 }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-        id: entry.id
-    });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.5 : 1
-    };
-
     return (
-        <div ref={setNodeRef} style={style} className={`karaoke_item ${entry.sung ? "sung" : ""}`}>
+        <div className={`karaoke_item ${entry.sung ? "sung" : ""}`} data-id={entry.id}>
             {editingId === entry.id ? (
                 <div className="edit_form">
                     <input
@@ -99,11 +73,9 @@ function SortableKaraokeItem({
                 <>
                     <div className="content">
                         <div className="song">
-                            {/* <i className="fa-solid fa-microphone-lines"></i> */}
                             <p className="paragraph">{entry.title}</p>
                         </div>
                         <div className="user">
-                            {/* <i className="fa-regular fa-circle-user"></i> */}
                             <p className="paragraph">{entry.singer_name}</p>
                         </div>
 
@@ -142,12 +114,8 @@ function SortableKaraokeItem({
                         </div>
                     </div>
 
-                    <div
-                        className="drag-handle"
-                        onContextMenu={e => e.preventDefault()}
-                        {...attributes}
-                        {...listeners}
-                    >
+                    {/* Drag handle - ottimizzato per mobile */}
+                    <div className="drag-handle sortable-handle">
                         <i className="fa-solid fa-grip-vertical"></i>
                     </div>
                 </>
@@ -168,14 +136,6 @@ export default function KaraokeList() {
     const [editSinger, setEditSinger] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [songToDelete, setSongToDelete] = useState<string | null>(null);
-
-    // Configurazione sensori per drag and drop
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates
-        })
-    );
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -276,64 +236,42 @@ export default function KaraokeList() {
         }
     };
 
-    // Gestione del drag end
-    const handleDragEnd = async (event: DragEndEvent) => {
-        const { active, over } = event;
+    // Gestione del riordinamento con SortableJS
+    const handleSortEnd = async (newList: KaraokeEntry[]) => {
+        // Aggiorna lo stato locale immediatamente
+        setKaraokeList(prevList => {
+            const updatedList = [...prevList];
+            const filteredList = prevList.filter(entry => showSung || !entry.sung);
 
-        if (!over) return;
-
-        if (active.id !== over.id) {
-            const filteredList = karaokeList.filter(entry => showSung || !entry.sung);
-            const oldIndex = filteredList.findIndex(item => item.id === active.id);
-            const newIndex = filteredList.findIndex(item => item.id === over.id);
-
-            if (oldIndex !== -1 && newIndex !== -1) {
-                const newOrder = arrayMove(filteredList, oldIndex, newIndex);
-
-                // Aggiorna lo stato locale immediatamente per UX fluida
-                const newKaraokeList = [...karaokeList];
-                const movedItem = newKaraokeList.find(item => item.id === active.id);
-                if (movedItem) {
-                    // Rimuovi l'elemento dalla posizione originale
-                    const originalIndex = newKaraokeList.findIndex(item => item.id === active.id);
-                    newKaraokeList.splice(originalIndex, 1);
-
-                    // Trova dove inserirlo nella lista completa
-                    const targetItem = newKaraokeList.find(item => item.id === over.id);
-                    const targetIndex = targetItem
-                        ? newKaraokeList.findIndex(item => item.id === over.id)
-                        : newKaraokeList.length;
-
-                    newKaraokeList.splice(
-                        newIndex > oldIndex ? targetIndex + 1 : targetIndex,
-                        0,
-                        movedItem
-                    );
+            // Aggiorna solo gli elementi visibili
+            newList.forEach((item, index) => {
+                const originalIndex = updatedList.findIndex(original => original.id === item.id);
+                if (originalIndex !== -1) {
+                    updatedList[originalIndex] = { ...item, order_position: index + 1 };
                 }
+            });
 
-                setKaraokeList(newKaraokeList);
+            return updatedList;
+        });
 
-                // Aggiorna le posizioni nel database
-                try {
-                    const updates = newOrder.map((item, index) => ({
-                        id: item.id,
-                        order_position: index + 1
-                    }));
+        // Salva l'ordine nel database
+        try {
+            const updates = newList.map((item, index) => ({
+                id: item.id,
+                order_position: index + 1
+            }));
 
-                    for (const update of updates) {
-                        await supabase
-                            .from("karaoke_list")
-                            .update({ order_position: update.order_position })
-                            .eq("id", update.id);
-                    }
-
-                    showSuccess("Ordine aggiornato!");
-                } catch (error) {
-                    showError("Errore nell'aggiornamento dell'ordine");
-                    // Ricarica la lista in caso di errore
-                    fetchList();
-                }
+            for (const update of updates) {
+                await supabase
+                    .from("karaoke_list")
+                    .update({ order_position: update.order_position })
+                    .eq("id", update.id);
             }
+
+            showSuccess("Ordine aggiornato!");
+        } catch (error) {
+            showError("Errore nell'aggiornamento dell'ordine");
+            fetchList(); // Ricarica in caso di errore
         }
     };
 
@@ -436,32 +374,35 @@ export default function KaraokeList() {
             )}
 
             <div className="karaoke_entries">
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                <ReactSortable
+                    list={filteredList}
+                    setList={handleSortEnd}
+                    handle=".sortable-handle"
+                    animation={200}
+                    delay={100}
+                    ghostClass="sortable-ghost"
+                    chosenClass="sortable-chosen"
+                    dragClass="sortable-drag"
+                    disabled={editingId !== null}
+                    touchStartThreshold={10}
+                    forceFallback={false}
                 >
-                    <SortableContext
-                        items={filteredList.map(item => item.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        {filteredList.map(entry => (
-                            <SortableKaraokeItem
-                                key={entry.id}
-                                entry={entry}
-                                editingId={editingId}
-                                editTitle={editTitle}
-                                editSinger={editSinger}
-                                onEdit={handleEdit}
-                                onSaveEdit={saveEdit}
-                                onCancelEdit={() => setEditingId(null)}
-                                onToggleSung={toggleSung}
-                                onDelete={confirmDeleteSong}
-                                onEditChange={handleEditChange}
-                            />
-                        ))}
-                    </SortableContext>
-                </DndContext>
+                    {filteredList.map(entry => (
+                        <KaraokeItem
+                            key={entry.id}
+                            entry={entry}
+                            editingId={editingId}
+                            editTitle={editTitle}
+                            editSinger={editSinger}
+                            onEdit={handleEdit}
+                            onSaveEdit={saveEdit}
+                            onCancelEdit={() => setEditingId(null)}
+                            onToggleSung={toggleSung}
+                            onDelete={confirmDeleteSong}
+                            onEditChange={handleEditChange}
+                        />
+                    ))}
+                </ReactSortable>
             </div>
         </div>
     );
