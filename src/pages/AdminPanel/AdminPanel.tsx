@@ -4,6 +4,7 @@ import { showError, showSuccess } from "../../lib/toast";
 import { supabase } from "../../supabaseClient";
 import { useAdmin } from "../../context/AdminContext";
 import { BsMusicNoteList } from "react-icons/bs";
+import CustomModal from "../../components/CustomModal/CustomModal";
 import "./adminPanel.scss";
 
 export default function AdminPanel() {
@@ -17,6 +18,9 @@ export default function AdminPanel() {
     const [loadingOverride, setLoadingOverride] = useState(true);
     const [profiles, setProfiles] = useState<any[]>([]);
     const [justLoggedIn, setJustLoggedIn] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalAction, setModalAction] = useState<() => void>(() => {});
+    const [modalDescription, setModalDescription] = useState("");
 
     const fetchOverride = async () => {
         const { data, error } = await supabase
@@ -90,6 +94,12 @@ export default function AdminPanel() {
         }
     };
 
+    const confirmAction = (description: string, action: () => void) => {
+        setModalDescription(description);
+        setModalAction(() => action);
+        setModalVisible(true);
+    };
+
     useEffect(() => {
         if (session) {
             fetchOverride();
@@ -127,6 +137,18 @@ export default function AdminPanel() {
 
     return (
         <div className="adminPanel container">
+            <CustomModal
+                show={modalVisible}
+                onClose={() => setModalVisible(false)}
+                description={modalDescription}
+                onPrimaryAction={() => {
+                    modalAction();
+                    setModalVisible(false);
+                }}
+                showSecondaryButton={true}
+                timer={false}
+            />
+
             <h2 className="title">Benvenuto, {session.username}</h2>
 
             <button
@@ -146,6 +168,35 @@ export default function AdminPanel() {
                 <>
                     <button
                         className="button"
+                        onClick={async () => {
+                            confirmAction(
+                                "Sicuro di voler svuotare la lista karaoke?",
+                                async () => {
+                                    const { error } = await supabase
+                                        .from("karaoke_list")
+                                        .delete()
+                                        .not("id", "is", null);
+
+                                    if (error) {
+                                        showError(
+                                            "Errore durante la cancellazione: " + error.message
+                                        );
+                                    } else {
+                                        showSuccess("Lista karaoke svuotata!");
+                                    }
+                                }
+                            );
+                        }}
+                    >
+                        <i className="fa-solid fa-trash"></i>
+                        <div className="button_content">
+                            <span className="button_title">SVUOTA</span>
+                            <p className="button_description">Svuota tabella lista</p>
+                        </div>
+                    </button>
+
+                    <button
+                        className="button"
                         onClick={() => {
                             window.open(
                                 "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/exportVotes",
@@ -163,17 +214,19 @@ export default function AdminPanel() {
                     <button
                         className="button"
                         onClick={async () => {
-                            const confirm = window.confirm(
-                                "Sicuro di voler svuotare la tabella votes?"
+                            confirmAction(
+                                "Sicuro di voler svuotare la tabella votes?",
+                                async () => {
+                                    const res = await fetch(
+                                        "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/clearVotes",
+                                        {
+                                            method: "POST"
+                                        }
+                                    );
+                                    const json = await res.json();
+                                    showSuccess(json.message || "Errore");
+                                }
                             );
-                            if (!confirm) return;
-
-                            const res = await fetch(
-                                "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/clearVotes",
-                                { method: "POST" }
-                            );
-                            const json = await res.json();
-                            showSuccess(json.message || "Errore");
                         }}
                     >
                         <i className="fa-solid fa-trash"></i>
