@@ -383,8 +383,11 @@ export default function KaraokeList() {
 
             <div className="karaoke_entries">
                 <ReactSortable
-                    list={filteredList}
-                    setList={handleSortEnd}
+                    list={karaokeList}
+                    setList={newList => {
+                        setKaraokeList(newList);
+                        handleSortEnd(newList);
+                    }}
                     handle=".sortable-handle"
                     animation={150}
                     delay={50}
@@ -401,21 +404,23 @@ export default function KaraokeList() {
                     tag="div"
                     className="sortable-container"
                 >
-                    {filteredList.map(entry => (
-                        <KaraokeItem
-                            key={entry.id}
-                            entry={entry}
-                            editingId={editingId}
-                            editTitle={editTitle}
-                            editSinger={editSinger}
-                            onEdit={handleEdit}
-                            onSaveEdit={saveEdit}
-                            onCancelEdit={() => setEditingId(null)}
-                            onToggleSung={toggleSung}
-                            onDelete={confirmDeleteSong}
-                            onEditChange={handleEditChange}
-                        />
-                    ))}
+                    {karaokeList
+                        .filter(entry => showSung || !entry.sung)
+                        .map(entry => (
+                            <KaraokeItem
+                                key={entry.id}
+                                entry={entry}
+                                editingId={editingId}
+                                editTitle={editTitle}
+                                editSinger={editSinger}
+                                onEdit={handleEdit}
+                                onSaveEdit={saveEdit}
+                                onCancelEdit={() => setEditingId(null)}
+                                onToggleSung={toggleSung}
+                                onDelete={confirmDeleteSong}
+                                onEditChange={handleEditChange}
+                            />
+                        ))}
                 </ReactSortable>
             </div>
         </div>
