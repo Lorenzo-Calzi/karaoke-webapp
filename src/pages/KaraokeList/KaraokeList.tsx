@@ -241,7 +241,7 @@ export default function KaraokeList() {
         // Aggiorna lo stato locale immediatamente
         setKaraokeList(prevList => {
             const updatedList = [...prevList];
-            const filteredList = prevList.filter(entry => showSung || !entry.sung);
+            // const filteredList = prevList.filter(entry => showSung || !entry.sung);
 
             // Aggiorna solo gli elementi visibili
             newList.forEach((item, index) => {
