@@ -59,9 +59,11 @@
   }
 
   .karaoke_entries {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    .sortable-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
     .karaoke_item {
       display: flex;

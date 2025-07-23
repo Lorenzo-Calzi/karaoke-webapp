@@ -136,6 +136,7 @@ export default function KaraokeList() {
     const [editSinger, setEditSinger] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [songToDelete, setSongToDelete] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -237,41 +238,45 @@ export default function KaraokeList() {
     };
 
     // Gestione del riordinamento con SortableJS
-    const handleSortEnd = async (newList: KaraokeEntry[]) => {
-        // Aggiorna lo stato locale immediatamente
-        setKaraokeList(prevList => {
-            const updatedList = [...prevList];
-            // const filteredList = prevList.filter(entry => showSung || !entry.sung);
+    const handleSortEnd = async (newList: KaraokeEntry[], sortable: any, store: any) => {
+        // Controlla se l'ordine è effettivamente cambiato
+        const oldOrder = filteredList.map(item => item.id);
+        const newOrder = newList.map(item => item.id);
 
-            // Aggiorna solo gli elementi visibili
-            newList.forEach((item, index) => {
-                const originalIndex = updatedList.findIndex(original => original.id === item.id);
-                if (originalIndex !== -1) {
-                    updatedList[originalIndex] = { ...item, order_position: index + 1 };
-                }
-            });
+        if (JSON.stringify(oldOrder) === JSON.stringify(newOrder)) {
+            return; // Nessun cambiamento, esci
+        }
 
-            return updatedList;
+        // Crea una nuova lista con le posizioni aggiornate
+        const updatedKaraokeList = karaokeList.map(item => {
+            const newIndex = newOrder.indexOf(item.id);
+            if (newIndex !== -1) {
+                // Questo elemento è nella lista filtrata, aggiorna la sua posizione
+                return { ...item, order_position: newIndex + 1 };
+            }
+            // Elemento non nella lista filtrata, mantieni posizione originale
+            return item;
         });
 
-        // Salva l'ordine nel database
+        // Aggiorna immediatamente lo stato
+        setKaraokeList(updatedKaraokeList);
+
+        // Salva nel database in background
         try {
-            const updates = newList.map((item, index) => ({
-                id: item.id,
-                order_position: index + 1
-            }));
-
-            for (const update of updates) {
-                await supabase
+            const updates = newList.map((item, index) =>
+                supabase
                     .from("karaoke_list")
-                    .update({ order_position: update.order_position })
-                    .eq("id", update.id);
-            }
+                    .update({ order_position: index + 1 })
+                    .eq("id", item.id)
+            );
 
+            await Promise.all(updates);
             showSuccess("Ordine aggiornato!");
         } catch (error) {
+            console.error("Errore aggiornamento:", error);
             showError("Errore nell'aggiornamento dell'ordine");
-            fetchList(); // Ricarica in caso di errore
+            // Ricarica la lista in caso di errore
+            fetchList();
         }
     };
 
@@ -301,11 +306,14 @@ export default function KaraokeList() {
         fetchList(); // iniziale
 
         const interval = setInterval(() => {
-            fetchList(); // ogni X secondi
-        }, 3000); // ogni 3 secondi
+            // Non aggiornare se si sta trascinando o modificando
+            if (!isDragging && editingId === null) {
+                fetchList();
+            }
+        }, 3000);
 
-        return () => clearInterval(interval); // pulizia
-    }, []);
+        return () => clearInterval(interval);
+    }, [isDragging, editingId]);
 
     const filteredList = karaokeList.filter(entry => showSung || !entry.sung);
 
@@ -378,14 +386,20 @@ export default function KaraokeList() {
                     list={filteredList}
                     setList={handleSortEnd}
                     handle=".sortable-handle"
-                    animation={200}
-                    delay={100}
+                    animation={150}
+                    delay={50}
                     ghostClass="sortable-ghost"
                     chosenClass="sortable-chosen"
                     dragClass="sortable-drag"
-                    disabled={editingId !== null}
+                    disabled={editingId !== null || isDragging}
                     touchStartThreshold={10}
                     forceFallback={false}
+                    onStart={() => setIsDragging(true)}
+                    onEnd={() => {
+                        setTimeout(() => setIsDragging(false), 100);
+                    }}
+                    tag="div"
+                    className="sortable-container"
                 >
                     {filteredList.map(entry => (
                         <KaraokeItem
