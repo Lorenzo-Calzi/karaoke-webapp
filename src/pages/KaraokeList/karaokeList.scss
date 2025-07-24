@@ -59,11 +59,9 @@
   }
 
   .karaoke_entries {
-    .sortable-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    display: flex;
+    flex-direction: column;
+    // gap: 1rem;
 
     .karaoke_item {
       display: flex;
@@ -73,6 +71,7 @@
       background-color: rgba(0, 0, 0, 0.276);
       border: 1px solid rgba(255, 255, 255, 0.334);
       position: relative;
+      margin: 0.5rem 0;
 
       .edit_form {
         width: 100%;
