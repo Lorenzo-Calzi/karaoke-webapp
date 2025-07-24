@@ -212,7 +212,9 @@ export default function KaraokeList() {
             setSingerName("");
             fetchList();
             // 👇 Dopo l'invio, rimetti il focus sul primo input
-            titleRef.current?.focus();
+            // 🔽 Chiudi la tastiera
+            titleRef.current?.blur();
+            singerRef.current?.blur();
         }
 
         setLoading(false);
