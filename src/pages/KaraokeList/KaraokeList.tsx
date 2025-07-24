@@ -173,11 +173,20 @@ export default function KaraokeList() {
         e.preventDefault();
 
         const newErrors: { title?: string; singer?: string } = {};
+
         if (!title.trim()) newErrors.title = "Inserisci un titolo";
         if (!singerName.trim()) newErrors.singer = "Inserisci chi deve cantarla";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+
+            // 🔁 Focus automatico sul primo campo non valido
+            if (newErrors.title) {
+                titleRef.current?.focus();
+            } else if (newErrors.singer) {
+                singerRef.current?.focus();
+            }
+
             return;
         }
 
@@ -202,7 +211,10 @@ export default function KaraokeList() {
             setTitle("");
             setSingerName("");
             fetchList();
+            // 👇 Dopo l'invio, rimetti il focus sul primo input
+            titleRef.current?.focus();
         }
+
         setLoading(false);
     };
 
