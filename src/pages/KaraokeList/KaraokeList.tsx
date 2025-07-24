@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../supabaseClient";
 import { showError, showSuccess } from "../../lib/toast";
 import CustomModal from "../../components/CustomModal/CustomModal";
@@ -142,6 +142,8 @@ function KaraokeItem({
 export default function KaraokeList() {
     const [title, setTitle] = useState("");
     const [singerName, setSingerName] = useState("");
+    const titleRef = useRef<HTMLInputElement>(null);
+    const singerRef = useRef<HTMLInputElement>(null);
     const [errors, setErrors] = useState<{ title?: string; singer?: string }>({});
     const [karaokeList, setKaraokeList] = useState<KaraokeEntry[]>([]);
     const [loading, setLoading] = useState(false);
@@ -152,8 +154,6 @@ export default function KaraokeList() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [songToDelete, setSongToDelete] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
-
-    console.log(setIsDragging);
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -358,6 +358,13 @@ export default function KaraokeList() {
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                         className={errors.title ? "input_error" : ""}
+                        ref={titleRef}
+                        onKeyDown={e => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                singerRef.current?.focus();
+                            }
+                        }}
                     />
                     {errors.title && <p className="error_message">{errors.title}</p>}
                 </div>
@@ -370,6 +377,7 @@ export default function KaraokeList() {
                         value={singerName}
                         onChange={e => setSingerName(e.target.value)}
                         className={errors.singer ? "input_error" : ""}
+                        ref={singerRef}
                     />
                     {errors.singer && <p className="error_message">{errors.singer}</p>}
                 </div>
@@ -396,7 +404,13 @@ export default function KaraokeList() {
             )}
 
             <div className="karaoke_entries">
-                <DragDropContext onDragEnd={handleDragEnd}>
+                <DragDropContext
+                    onDragStart={() => setIsDragging(true)}
+                    onDragEnd={result => {
+                        setIsDragging(false);
+                        handleDragEnd(result);
+                    }}
+                >
                     <Droppable droppableId="karaoke-list">
                         {provided => (
                             <div
