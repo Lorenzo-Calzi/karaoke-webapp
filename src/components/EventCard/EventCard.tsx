@@ -18,7 +18,7 @@ export default function EventCard({ event, index }: { event: Event; index: numbe
     });
 
     return (
-        <div className="event-card" style={{ ["--i" as any]: index }}>
+        <div className="event-card" style={{ ["--i" as string]: index }}>
             <div className="event-date-box">
                 <span className="event-day">{day}</span>
                 <span className="event-month">{month}</span>

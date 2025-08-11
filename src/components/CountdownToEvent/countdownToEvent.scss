@@ -1,0 +1,40 @@
+.countdown-container {
+  width: fit-content;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  font-family: "Roboto Mono", monospace;
+  background-color: rgba(70, 70, 90, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 3rem;
+  border-radius: 12px;
+}
+
+.countdown-grid {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.countdown-box {
+  text-align: center;
+}
+
+.countdown-value {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.countdown-label {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: #c0c0c0;
+  margin-top: 0.3rem;
+}
+
+.countdown-separator {
+  font-size: 2.5rem;
+  color: #999;
+}

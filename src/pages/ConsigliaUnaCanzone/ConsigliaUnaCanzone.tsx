@@ -7,6 +7,7 @@ import Tabs from "../../components/Tabs/Tabs";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SongItem from "../../components/SongItem/SongItem";
 import CustomModal from "../../components/CustomModal/CustomModal";
+import CountdownToEvent from "../../components/CountdownToEvent/CountdownToEvent";
 import { showInfo, showError } from "../../lib/toast";
 import "./consigliaUnaCanzone.scss";
 
@@ -17,6 +18,18 @@ type SpotifySong = {
     artworkUrl100: string;
     popularity: number;
     played?: boolean;
+};
+
+type SpotifyApiTrack = {
+    id: string;
+    name: string;
+    popularity?: number;
+    artists?: Array<{ name?: string }>;
+    album?: { images?: Array<{ url?: string }> };
+};
+
+type SpotifySearchResponse = {
+    tracks: { items: SpotifyApiTrack[] };
 };
 
 const apiBaseUrl = import.meta.env.DEV ? "https://www.karaokeforyou.it" : "";
@@ -94,11 +107,11 @@ export default function ConsigliaUnaCanzone() {
                 }
             );
 
-            const data = await res.json();
+            const data: SpotifySearchResponse = await res.json();
 
             const loweredWords = normalizeText(trimmed).split(/\s+/);
 
-            const rawTracks: SpotifySong[] = data.tracks.items.map((item: any) => ({
+            const rawTracks: SpotifySong[] = data.tracks.items.map((item: SpotifyApiTrack) => ({
                 trackId: item.id,
                 trackName: item.name,
                 artistName: item.artists?.[0]?.name || "Sconosciuto",
@@ -568,7 +581,7 @@ export default function ConsigliaUnaCanzone() {
                 </p>
             </div>
 
-            {(votingAllowed || isAdmin) && (
+            {votingAllowed && isAdmin ? (
                 <>
                     <VotoProgressivo valore={votedSongsDetails.length} />
 
@@ -698,6 +711,8 @@ export default function ConsigliaUnaCanzone() {
                             <p>Ancora nessuna canzone in classifica</p>
                         ))}
                 </>
+            ) : (
+                <CountdownToEvent />
             )}
         </div>
     );

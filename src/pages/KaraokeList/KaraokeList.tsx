@@ -51,7 +51,6 @@ function KaraokeItem({
                     data-id={entry.id}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    {...provided.dragHandleProps}
                 >
                     {editingId === entry.id ? (
                         <div className="edit_form">
@@ -59,6 +58,8 @@ function KaraokeItem({
                                 value={editTitle}
                                 placeholder="Titolo*"
                                 onChange={e => onEditChange("title", e.target.value)}
+                                autoFocus
+                                onFocus={e => e.currentTarget.select()}
                             />
                             <input
                                 value={editSinger}
@@ -127,8 +128,10 @@ function KaraokeItem({
                                 </div>
                             </div>
 
-                            {/* Drag handle - ottimizzato per mobile */}
-                            <div className="drag-handle sortable-handle">
+                            <div
+                                className="drag-handle sortable-handle"
+                                {...provided.dragHandleProps}
+                            >
                                 <i className="fa-solid fa-grip-vertical"></i>
                             </div>
                         </>
@@ -154,6 +157,7 @@ export default function KaraokeList() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [songToDelete, setSongToDelete] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [isSavingOrder, setIsSavingOrder] = useState(false);
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -268,34 +272,6 @@ export default function KaraokeList() {
         }
     };
 
-    // Gestione del riordinamento con SortableJS
-    const handleSortEnd = async (newList: KaraokeEntry[]) => {
-        const reordered = [...newList]; // è già filtrata (es. showSung=false)
-        const otherItems = karaokeList.filter(item => !reordered.includes(item));
-
-        const combined = [...reordered, ...otherItems];
-
-        // aggiorna subito lo stato visivo
-        setKaraokeList(combined);
-
-        // aggiorna su Supabase
-        try {
-            const updates = reordered.map((item, index) =>
-                supabase
-                    .from("karaoke_list")
-                    .update({ order_position: index + 1 })
-                    .eq("id", item.id)
-            );
-
-            await Promise.all(updates);
-            showSuccess("Ordine aggiornato!");
-        } catch (error) {
-            console.error("Errore aggiornamento:", error);
-            showError("Errore nell'aggiornamento dell'ordine");
-            fetchList();
-        }
-    };
-
     const handleEdit = (entry: KaraokeEntry) => {
         setEditingId(entry.id);
         setEditTitle(entry.title);
@@ -313,18 +289,44 @@ export default function KaraokeList() {
         }
     };
 
-    const handleDragEnd = (result: DropResult) => {
+    const handleDragEnd = async (result: DropResult) => {
         if (!result.destination) return;
 
-        const updated = Array.from(karaokeList);
-        const [moved] = updated.splice(result.source.index, 1);
-        updated.splice(result.destination.index, 0, moved);
+        setIsSavingOrder(true);
 
-        // ✅ aggiorna subito la lista visiva
-        setKaraokeList(updated);
+        // split current state
+        const visible = karaokeList.filter(e => showSung || !e.sung);
+        const hidden = karaokeList.filter(e => !(showSung || !e.sung));
 
-        // 🔁 aggiorna l’ordine anche sul backend
-        handleSortEnd(updated);
+        // reorder only the visible slice
+        const [moved] = visible.splice(result.source.index, 1);
+        visible.splice(result.destination.index, 0, moved);
+
+        // stitch back and reindex globally
+        const combined = [...visible, ...hidden];
+        const reordered = combined.map((item, idx) => ({ ...item, order_position: idx + 1 }));
+        setKaraokeList(reordered); // optimistic
+
+        // persist only the rows whose position changed
+        const changed = reordered.filter(item => {
+            const prev = karaokeList.find(k => k.id === item.id);
+            return prev && prev.order_position !== item.order_position;
+        });
+
+        if (changed.length) {
+            await Promise.all(
+                changed.map(item =>
+                    supabase
+                        .from("karaoke_list")
+                        .update({ order_position: item.order_position })
+                        .eq("id", item.id)
+                )
+            );
+        }
+
+        showSuccess("Ordine aggiornato!");
+        setIsSavingOrder(false);
+        setTimeout(fetchList, 400); // small delay to avoid racing with DB propagation
     };
 
     const confirmDeleteSong = (id: string) => {
@@ -333,17 +335,14 @@ export default function KaraokeList() {
     };
 
     useEffect(() => {
-        fetchList(); // iniziale
-
+        fetchList();
         const interval = setInterval(() => {
-            // Non aggiornare se si sta trascinando o modificando
-            if (!isDragging && editingId === null) {
+            if (!isDragging && !isSavingOrder && editingId === null) {
                 fetchList();
             }
-        }, 3000);
-
+        }, 5000); // 🔁 polling più lento per ridurre interferenze
         return () => clearInterval(interval);
-    }, [isDragging, editingId]);
+    }, [isDragging, isSavingOrder, editingId]);
 
     return (
         <div className="karaokeList container">
