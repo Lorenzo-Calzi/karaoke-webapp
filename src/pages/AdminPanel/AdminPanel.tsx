@@ -3,38 +3,38 @@ import { useNavigate } from "react-router-dom";
 import { showError, showSuccess } from "../../lib/toast";
 import { supabase } from "../../supabaseClient";
 import { useAdmin } from "../../context/AdminContext";
+import { useVoting } from "../../context/VotingContext"; // ⬅️ nuovo
 import { BsMusicNoteList } from "react-icons/bs";
 import CustomModal from "../../components/CustomModal/CustomModal";
 import "./adminPanel.scss";
 
+type SocialProfile = {
+    id: string;
+    username: string;
+    label?: string;
+    on_air: boolean;
+    force_blue?: boolean;
+};
+
 export default function AdminPanel() {
     const { session, login, logout } = useAdmin();
+    const { manualOpen, openVotingNow, closeVotingNow } = useVoting(); // ⬅️ nuovo
     const navigate = useNavigate();
     const isSuperadmin = session?.isSuperadmin;
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [overrideActive, setOverrideActive] = useState(false);
-    const [loadingOverride, setLoadingOverride] = useState(true);
-    const [profiles, setProfiles] = useState<any[]>([]);
+
+    // override votazioni (solo per UI: lo stato vero è nel context)
+    const [togglingOverride, setTogglingOverride] = useState(false);
+
+    const [profiles, setProfiles] = useState<SocialProfile[]>([]);
     const [justLoggedIn, setJustLoggedIn] = useState(false);
+
+    // modal di conferma riusabile
     const [modalVisible, setModalVisible] = useState(false);
     const [modalAction, setModalAction] = useState<() => void>(() => {});
     const [modalDescription, setModalDescription] = useState("");
-
-    const fetchOverride = async () => {
-        const { data, error } = await supabase
-            .from("override_settings")
-            .select("enabled")
-            .eq("key", "voting_override")
-            .single();
-
-        if (!error && data) {
-            setOverrideActive(data.enabled);
-        }
-
-        setLoadingOverride(false);
-    };
 
     const fetchProfiles = async () => {
         const { data, error } = await supabase
@@ -43,7 +43,7 @@ export default function AdminPanel() {
             .order("order", { ascending: true });
 
         if (!error && data) {
-            setProfiles(data);
+            setProfiles(data as SocialProfile[]);
         }
     };
 
@@ -56,27 +56,10 @@ export default function AdminPanel() {
         const success = await login(username, password);
         if (success) {
             showSuccess("Login riuscito");
-            fetchOverride();
             fetchProfiles();
             setJustLoggedIn(true);
         } else {
             showError("Credenziali non valide");
-        }
-    };
-
-    const toggleOverride = async () => {
-        const newValue = !overrideActive;
-
-        const { error } = await supabase
-            .from("override_settings")
-            .update({ enabled: newValue })
-            .eq("key", "voting_override");
-
-        if (error) {
-            showError("Errore override: " + error.message);
-        } else {
-            showSuccess("Override aggiornato");
-            setOverrideActive(newValue);
         }
     };
 
@@ -100,19 +83,21 @@ export default function AdminPanel() {
         setModalVisible(true);
     };
 
+    // Caricamenti dopo login
     useEffect(() => {
         if (session) {
-            fetchOverride();
             fetchProfiles();
         }
     }, [session]);
 
+    // Se non superadmin, dopo login porta alla pagina lista
     useEffect(() => {
         if (justLoggedIn && session && !session.isSuperadmin) {
             navigate("/admin/karaokeList");
         }
     }, [justLoggedIn, session, navigate]);
 
+    // --- RENDER LOGIN ---
     if (!session) {
         return (
             <div className="adminPanel container">
@@ -135,6 +120,7 @@ export default function AdminPanel() {
         );
     }
 
+    // --- RENDER ADMIN PANEL ---
     return (
         <div className="adminPanel container">
             <CustomModal
@@ -166,9 +152,10 @@ export default function AdminPanel() {
 
             {isSuperadmin && (
                 <>
+                    {/* SVUOTA LISTA KARAOKE */}
                     <button
                         className="button"
-                        onClick={async () => {
+                        onClick={() => {
                             confirmAction(
                                 "Sicuro di voler svuotare la lista karaoke?",
                                 async () => {
@@ -176,7 +163,6 @@ export default function AdminPanel() {
                                         .from("karaoke_list")
                                         .delete()
                                         .not("id", "is", null);
-
                                     if (error) {
                                         showError(
                                             "Errore durante la cancellazione: " + error.message
@@ -195,6 +181,7 @@ export default function AdminPanel() {
                         </div>
                     </button>
 
+                    {/* REPORT CSV */}
                     <button
                         className="button"
                         onClick={() => {
@@ -211,20 +198,19 @@ export default function AdminPanel() {
                         </div>
                     </button>
 
+                    {/* SVUOTA VOTI */}
                     <button
                         className="button"
-                        onClick={async () => {
+                        onClick={() => {
                             confirmAction(
                                 "Sicuro di voler svuotare la tabella votes?",
                                 async () => {
                                     const res = await fetch(
                                         "https://mzcqosceyruvhzguvbcc.functions.supabase.co/functions/v1/clearVotes",
-                                        {
-                                            method: "POST"
-                                        }
+                                        { method: "POST" }
                                     );
                                     const json = await res.json();
-                                    showSuccess(json.message || "Errore");
+                                    showSuccess(json.message || "Operazione completata");
                                 }
                             );
                         }}
@@ -236,6 +222,7 @@ export default function AdminPanel() {
                         </div>
                     </button>
 
+                    {/* POPOLA VOTI */}
                     <button
                         className="button"
                         onClick={async () => {
@@ -244,7 +231,7 @@ export default function AdminPanel() {
                                 { method: "POST" }
                             );
                             const json = await res.json();
-                            showSuccess(json.message || "Errore");
+                            showSuccess(json.message || "Operazione completata");
                         }}
                     >
                         <i className="fa-solid fa-upload"></i>
@@ -254,20 +241,40 @@ export default function AdminPanel() {
                         </div>
                     </button>
 
-                    <button className="button" onClick={toggleOverride} disabled={loadingOverride}>
+                    {/* OVERRIDE VOTAZIONI (usa il VotingContext) */}
+                    <button
+                        className="button"
+                        onClick={async () => {
+                            try {
+                                setTogglingOverride(true);
+                                if (manualOpen) {
+                                    await closeVotingNow(); // chiude override
+                                    showSuccess("Votazioni disabilitate (override admin OFF)");
+                                } else {
+                                    await openVotingNow(); // apre override
+                                    showSuccess("Votazioni abilitate (override admin ON)");
+                                }
+                            } catch (e: unknown) {
+                                const msg = e instanceof Error ? e.message : String(e);
+                                showError("Errore override: " + msg);
+                            } finally {
+                                setTogglingOverride(false);
+                            }
+                        }}
+                        disabled={togglingOverride}
+                    >
                         <i
-                            className={`fa-solid ${
-                                overrideActive ? "fa-toggle-on" : "fa-toggle-off"
-                            }`}
+                            className={`fa-solid ${manualOpen ? "fa-toggle-on" : "fa-toggle-off"}`}
                         />
                         <div className="button_content">
                             <span className="button_title">OVERRIDE</span>
                             <p className="button_description">
-                                {overrideActive ? "Disabilita votazione" : "Abilita votazione"}
+                                {manualOpen ? "Disabilita votazione" : "Abilita votazione"}
                             </p>
                         </div>
                     </button>
 
+                    {/* SOCIAL STATUS */}
                     <div className="social_status_list">
                         {profiles.map(
                             profile =>

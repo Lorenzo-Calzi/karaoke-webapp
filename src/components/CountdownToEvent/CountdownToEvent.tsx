@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import Countdown from "react-countdown";
-import events from "../../data/eventi.json"; // ⬅️ adatta il path
+import events from "../../data/eventi.json";
 import { useVoting } from "../../context/VotingContext";
 import type { EventItem } from "../../context/VotingContext";
-import "./countdownToEvent.scss"; // opzionale
+import "./countdownToEvent.scss";
 
-// Helper locale: prossimo evento futuro (start > now)
+// Prossimo evento futuro (start > now)
 function getNextEventLocal(list: EventItem[], now: Date = new Date()): EventItem | null {
     const t = now.getTime();
     const sorted = [...list].sort(
@@ -15,13 +15,13 @@ function getNextEventLocal(list: EventItem[], now: Date = new Date()): EventItem
         const s = new Date(e.start).getTime();
         const en = new Date(e.end).getTime();
         if (Number.isNaN(s) || Number.isNaN(en)) continue;
-        if (t < s) return e; // primo evento con start futuro
+        if (t < s) return e;
     }
     return null;
 }
 
 export default function CountdownToEvent() {
-    const { refreshVoting } = useVoting();
+    const { refreshVoting, manualOpen } = useVoting();
     const gridRef = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(true);
 
@@ -42,7 +42,7 @@ export default function CountdownToEvent() {
 
     const next = getNextEventLocal(events as EventItem[]);
 
-    // Hook sempre chiamati
+    // Hooks sempre chiamati
     useEffect(() => {
         const raf = requestAnimationFrame(updateSeparators);
         return () => cancelAnimationFrame(raf);
@@ -54,36 +54,43 @@ export default function CountdownToEvent() {
         return () => window.removeEventListener("resize", onResize);
     }, [updateSeparators]);
 
+    // Se cambia "next" (dopo uno scatto), ri-mostra il countdown
     useEffect(() => {
-        if (next) {
-            setVisible(true);
-        }
+        setVisible(true);
     }, [next?.start]);
 
-    const targetDate = next ? new Date(next.start) : null;
+    // Se l'admin apre manualmente le votazioni, nascondi il countdown subito
+    useEffect(() => {
+        if (manualOpen) setVisible(false);
+    }, [manualOpen]);
 
-    if (!next || !visible) return null;
+    // Condizioni di visibilità:
+    // - manualOpen → countdown nascosto
+    // - nessun prossimo evento → niente countdown
+    // - visible=false → niente countdown (evita flicker allo scatto)
+    if (manualOpen || !next || !visible) return null;
+
+    const targetDate = new Date(next.start);
 
     return (
         <div className="countdown-container">
             <Countdown
-                date={targetDate!}
+                date={targetDate}
                 onTick={() => requestAnimationFrame(updateSeparators)}
                 onComplete={() => {
-                    setVisible(false); // nasconde subito
-                    refreshVoting(); // poi aggiorna stato globale
+                    // nascondi subito per evitare flicker, poi aggiorna lo stato globale
+                    setVisible(false);
+                    refreshVoting();
                     requestAnimationFrame(updateSeparators);
                 }}
                 renderer={({ days, hours, minutes, seconds, completed }) => {
                     if (completed) return null;
-
                     const box = (value: number, label: string) => (
                         <div className="countdown-box">
                             <div className="countdown-value">{String(value).padStart(2, "0")}</div>
                             <div className="countdown-label">{label}</div>
                         </div>
                     );
-
                     return (
                         <div className="countdown-grid" ref={gridRef}>
                             {box(days, "DAYS")}
