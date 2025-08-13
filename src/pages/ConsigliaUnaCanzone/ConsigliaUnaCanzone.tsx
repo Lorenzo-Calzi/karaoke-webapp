@@ -581,7 +581,7 @@ export default function ConsigliaUnaCanzone() {
                 </p>
             </div>
 
-            {votingAllowed && isAdmin ? (
+            {votingAllowed || isAdmin ? (
                 <>
                     <VotoProgressivo valore={votedSongsDetails.length} />
 

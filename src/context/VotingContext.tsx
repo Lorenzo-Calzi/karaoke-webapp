@@ -1,69 +1,63 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../supabaseClient";
-import eventi from "../data/eventi.json";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import events from "../data/eventi.json";
+import { getCurrentEvent } from "../utils/getCurrentEvent";
 
-type VotingContextType = {
-    votingAllowed: boolean;
+export type EventItem = {
+    start: string;
+    end: string;
+    location?: string;
+    poster?: string;
 };
 
-const VotingContext = createContext<VotingContextType>({
-    votingAllowed: false
-});
-
-export function VotingProvider({ children }: { children: React.ReactNode }) {
-    const [votingAllowed, setVotingAllowed] = useState(false);
-
-    async function getServerTime(): Promise<Date | null> {
-        if (!navigator.onLine) {
-            console.warn("Sei offline. Impossibile recuperare l'orario dal server.");
-            return null;
-        }
-
-        const { data, error } = await supabase.rpc("get_server_time");
-        if (error) {
-            console.error("Errore nel recuperare l’orario dal server:", error);
-            return null;
-        }
-        return new Date(data);
-    }
-
-    async function isVotingActiveNow(): Promise<boolean> {
-        const now = await getServerTime();
-        if (!now) return false;
-
-        // 1. Controlla override
-        const { data: override } = await supabase
-            .from("override_settings")
-            .select("enabled")
-            .eq("key", "voting_override")
-            .single();
-
-        const overrideAttivo = override?.enabled === true;
-
-        // 2. Controlla eventi
-        const eventoAttivo = eventi.some(event => {
-            const start = new Date(event.start);
-            const end = new Date(event.end);
-            return now >= start && now <= end;
-        });
-
-        return overrideAttivo || eventoAttivo;
-    }
-
-    useEffect(() => {
-        const checkVoting = async () => {
-            const allowed = await isVotingActiveNow();
-            setVotingAllowed(allowed);
-        };
-
-        checkVoting();
-        const interval = setInterval(checkVoting, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    return <VotingContext.Provider value={{ votingAllowed }}>{children}</VotingContext.Provider>;
+export interface VotingContextValue {
+    votingAllowed: boolean; // true se ora ∈ [start, end) di un evento
+    currentEvent: EventItem | null; // evento in corso (se presente)
+    refreshVoting: () => void; // forza ricalcolo immediato
 }
 
-export function useVoting() {
+const VotingContext = createContext<VotingContextValue>({
+    votingAllowed: false,
+    currentEvent: null,
+    refreshVoting: () => {}
+});
+
+interface ProviderProps {
+    children: React.ReactNode;
+}
+
+export function VotingProvider({ children }: ProviderProps) {
+    const [votingAllowed, setVotingAllowed] = useState<boolean>(false);
+    const [currentEvent, setCurrentEvent] = useState<EventItem | null>(null);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const recompute = useCallback(() => {
+        const now = new Date();
+        const curr = getCurrentEvent(events as EventItem[], now);
+        setCurrentEvent(curr);
+        setVotingAllowed(!!curr);
+    }, []);
+
+    useEffect(() => {
+        // primo calcolo
+        recompute();
+
+        // polling frequente per passaggi precisi su start/end
+        intervalRef.current = setInterval(recompute, 1000);
+
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, [recompute]);
+
+    const value: VotingContextValue = {
+        votingAllowed,
+        currentEvent,
+        refreshVoting: recompute
+    };
+
+    return <VotingContext.Provider value={value}>{children}</VotingContext.Provider>;
+}
+
+export function useVoting(): VotingContextValue {
     return useContext(VotingContext);
 }
