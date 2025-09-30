@@ -3,7 +3,7 @@ import { useAdmin } from "../../context/AdminContext";
 import { useHideOnScroll } from "../../hooks/useHideOnScroll";
 import { HiHome } from "react-icons/hi2";
 import { PiMicrophoneStageFill } from "react-icons/pi";
-import { IoHeadset } from "react-icons/io5";
+// import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { IoCalendarNumber } from "react-icons/io5";
 import { RiAdminFill } from "react-icons/ri";
@@ -30,7 +30,7 @@ export default function NavBar() {
     const navItems: NavItem[] = [
         { path: "/", iconComponent: <HiHome />, label: "Home" },
         { path: "/karaoke", iconComponent: <PiMicrophoneStageFill />, label: "Karaoke" },
-        { path: "/djset", iconComponent: <IoHeadset />, label: "DJ Set" },
+        // { path: "/djset", iconComponent: <IoHeadset />, label: "DJ Set" },
         { path: "/social", iconComponent: <AiFillInstagram />, label: "Social" },
         { path: "/calendario", iconComponent: <IoCalendarNumber />, label: "Calendario" }
     ];

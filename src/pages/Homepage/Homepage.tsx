@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "../../context/AdminContext";
 import { PiMicrophoneStageFill } from "react-icons/pi";
-import { IoHeadset } from "react-icons/io5";
+// import { IoHeadset } from "react-icons/io5";
 import { AiFillInstagram } from "react-icons/ai";
 import { IoCalendarNumber } from "react-icons/io5";
 import { RiAdminFill } from "react-icons/ri";
@@ -78,7 +78,7 @@ function Homepage() {
                     </div>
                 </button>
 
-                <button
+                {/* <button
                     className={`button ${clickedPath === "/djset" ? "clicked" : ""}`}
                     onClick={() => handleClick("/djset")}
                 >
@@ -88,7 +88,7 @@ function Homepage() {
                         <span className="button_title">DJ SET</span>
                         <p className="button_description">Vota le canzoni che vuoi ballare</p>
                     </div>
-                </button>
+                </button> */}
 
                 <button
                     className={`button ${clickedPath === "/social" ? "clicked" : ""}`}
