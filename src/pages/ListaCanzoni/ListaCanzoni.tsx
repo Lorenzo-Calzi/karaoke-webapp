@@ -4,8 +4,11 @@ import songs from "../../data/songs.json";
 import CustomModal from "../../components/CustomModal/CustomModal";
 import "./listaCanzoni.scss";
 
+type Lingua = "italiana" | "spagnola" | "altra";
+
 export default function ListaCanzoni() {
     const [showModal, setShowModal] = useState(false);
+    const [filterLang, setFilterLang] = useState<Lingua>("italiana");
 
     useEffect(() => {
         const hasVisited = localStorage.getItem("visited-djset");
@@ -14,6 +17,8 @@ export default function ListaCanzoni() {
             localStorage.setItem("visited-djset", "true");
         }
     }, []);
+
+    const filteredSongs = songs.filter(song => song.lingua === filterLang);
 
     return (
         <div className="listaCanzoni container">
@@ -32,8 +37,29 @@ export default function ListaCanzoni() {
                 <p className="paragraph">Quando hai deciso, vieni a prenotarti!</p>
             </div>
 
+            <div className="filters" style={{ marginBottom: "2rem" }}>
+                <label
+                    htmlFor="lingua-filter"
+                    className="filter-label"
+                    style={{ marginRight: ".5rem" }}
+                >
+                    Filtra per lingua:
+                </label>
+                <select
+                    id="lingua-filter"
+                    aria-label="Filtra per lingua"
+                    value={filterLang}
+                    onChange={e => setFilterLang(e.target.value as Lingua)}
+                    className="filter-select"
+                >
+                    <option value="italiana">Italiana</option>
+                    <option value="spagnola">Spagnola</option>
+                    <option value="inglese">Inglese</option>
+                </select>
+            </div>
+
             <ul className="song_list">
-                {songs.map((song, index) => (
+                {filteredSongs.map((song, index) => (
                     <SongItem
                         key={index}
                         index={index}
