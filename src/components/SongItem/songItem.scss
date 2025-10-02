@@ -7,14 +7,12 @@
   pointer-events: auto;
   filter: opacity(0);
   transform: translateY(0);
-  // animation: fakeFadeIn 0.5s ease forwards;
-  // animation-delay: calc(var(--i, 0) * 0.04s);
-  // animation-delay: calc(clamp(0, var(--i, 0), 1) * 0.1s);
-  // border: 1px solid white;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.7rem;
-  border-radius: 16px;
+  border-radius: 1rem;
+  // animation: fakeFadeIn 0.5s ease forwards;
+  // animation-delay: calc(var(--i, 0) * 0.04s);
 
   &.fade_in {
     filter: opacity(0);
@@ -30,7 +28,7 @@
   .song_cover {
     height: 60px;
     width: 60px;
-    border-radius: 5px;
+    border-radius: 0.5rem;
     flex-shrink: 0;
   }
 
