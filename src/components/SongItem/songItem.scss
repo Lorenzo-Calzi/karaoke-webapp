@@ -1,5 +1,6 @@
 .song_item {
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -9,6 +10,11 @@
   // animation: fakeFadeIn 0.5s ease forwards;
   // animation-delay: calc(var(--i, 0) * 0.04s);
   // animation-delay: calc(clamp(0, var(--i, 0), 1) * 0.1s);
+  // border: 1px solid white;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.7rem;
+  border-radius: 16px;
 
   &.fade_in {
     filter: opacity(0);
