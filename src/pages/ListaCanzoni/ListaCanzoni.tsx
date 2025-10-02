@@ -20,6 +20,37 @@ export default function ListaCanzoni() {
 
     const filteredSongs = songs.filter(song => song.lingua === filterLang);
 
+    useEffect(() => {
+        const items = Array.from(document.querySelectorAll<HTMLElement>(".song_item"));
+        if (!items.length) return;
+
+        const prefersReduced =
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // reset: togli "inview" quando cambi filtro
+        items.forEach(el => el.classList.remove("inview"));
+
+        if (prefersReduced) {
+            items.forEach(el => el.classList.add("inview"));
+            return;
+        }
+
+        const io = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("inview");
+                        io.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+
+        items.forEach(el => io.observe(el));
+        return () => io.disconnect();
+    }, [filterLang]); // <— aggiungi la dipendenza
+
     return (
         <div className="listaCanzoni container">
             <CustomModal
@@ -38,9 +69,9 @@ export default function ListaCanzoni() {
             </div>
 
             <div className="filters">
-                <label htmlFor="lingua-filter" className="filter-label">
+                {/* <label htmlFor="lingua-filter" className="filter-label">
                     Filtro:
-                </label>
+                </label> */}
                 <select
                     id="lingua-filter"
                     aria-label="Filtro"

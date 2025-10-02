@@ -6,8 +6,9 @@
   pointer-events: auto;
   filter: opacity(0);
   transform: translateY(0);
-  animation: fakeFadeIn 0.5s ease forwards;
-  animation-delay: calc(var(--i, 0) * 0.1s);
+  // animation: fakeFadeIn 0.5s ease forwards;
+  // animation-delay: calc(var(--i, 0) * 0.04s);
+  // animation-delay: calc(clamp(0, var(--i, 0), 1) * 0.1s);
 
   &.fade_in {
     filter: opacity(0);
@@ -124,4 +125,8 @@
   100% {
     transform: scale(1);
   }
+}
+
+.song_item.inview {
+  animation: fakeFadeIn 0.5s ease forwards;
 }
