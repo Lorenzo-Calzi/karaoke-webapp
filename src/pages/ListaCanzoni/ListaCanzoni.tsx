@@ -49,7 +49,7 @@ export default function ListaCanzoni() {
 
         items.forEach(el => io.observe(el));
         return () => io.disconnect();
-    }, [filterLang]); // <— aggiungi la dipendenza
+    }, [filterLang]);
 
     return (
         <div className="listaCanzoni container">
@@ -69,9 +69,9 @@ export default function ListaCanzoni() {
             </div>
 
             <div className="filters">
-                {/* <label htmlFor="lingua-filter" className="filter-label">
+                <label htmlFor="lingua-filter" className="filter-label sr-only">
                     Filtro:
-                </label> */}
+                </label>
                 <select
                     id="lingua-filter"
                     aria-label="Filtro"
