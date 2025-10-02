@@ -37,24 +37,20 @@ export default function ListaCanzoni() {
                 <p className="paragraph">Quando hai deciso, vieni a prenotarti!</p>
             </div>
 
-            <div className="filters" style={{ marginBottom: "2rem" }}>
-                <label
-                    htmlFor="lingua-filter"
-                    className="filter-label"
-                    style={{ marginRight: ".5rem" }}
-                >
-                    Filtra per lingua:
+            <div className="filters">
+                <label htmlFor="lingua-filter" className="filter-label">
+                    Filtro:
                 </label>
                 <select
                     id="lingua-filter"
-                    aria-label="Filtra per lingua"
+                    aria-label="Filtro"
                     value={filterLang}
                     onChange={e => setFilterLang(e.target.value as Lingua)}
                     className="filter-select"
                 >
-                    <option value="italiana">Italiana</option>
-                    <option value="spagnola">Spagnola</option>
-                    <option value="inglese">Inglese</option>
+                    <option value="italiana">Italiane</option>
+                    <option value="spagnola">Spagnole</option>
+                    <option value="inglese">Inglesi</option>
                 </select>
             </div>
 

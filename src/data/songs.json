@@ -12,6 +12,24 @@
     "lingua": "italiana"
   },
   {
+    "title": "Happy Birthday",
+    "singer": "Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273f20a98e5b96a05ac0bc8a984",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Bottiglie Privé",
+    "singer": "Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273ea92ae0adc02261dd7cc9c58",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Neon",
+    "singer": "Sfera Ebbasta, Shiva",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273d6cdd0e09df54245b00fa9c6",
+    "lingua": "italiana"
+  },
+  {
     "title": "Nuovo range",
     "singer": "Rkomi, Sfera Ebbasta",
     "cover": "https://i.scdn.co/image/ab67616d0000b27301161c81847e31dd1817926a",
@@ -30,9 +48,33 @@
     "lingua": "italiana"
   },
   {
+    "title": "Insta Lova",
+    "singer": "Marracash, Gué",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273fcdb056319eddf6f6f4b20da",
+    "lingua": "italiana"
+  },
+  {
     "title": "Brivido",
     "singer": "Gué, Marracash",
     "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdF51oPcSvMnTLbyplS9_PmQSqDDK11BZ_iw&s",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Cookies N' Cream",
+    "singer": "Gué, ANNA, Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2732f81606d1dbb823ca4a021b3",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Parole di ghiaccio",
+    "singer": "Emis Killa",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273343ada3f2f036a4979857eec",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Fuoco e benzina",
+    "singer": "Emis Killa",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273997664830fdbbe2164fce2bc",
     "lingua": "italiana"
   },
   {
@@ -48,13 +90,43 @@
     "lingua": "italiana"
   },
   {
-    "title": "Anna",
+    "title": "Piove",
+    "singer": "Lazza, Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273e1660f0eff9c7330b1d99084",
+    "lingua": "italiana"
+  },
+  {
+    "title": "BON TON",
+    "singer": "Lazza, BLANCO, Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2730700e1cf6a3469e938bd392d",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Giovane Fuoriclasse",
+    "singer": "Capo Plaza",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2734a12e334287c23c182e65114",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Tesla",
+    "singer": "Capo Plaza, Sfera Ebbasta, DrefGold",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273fe950b9b68419fdb2d3b7631",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Stamm Fort",
+    "singer": "Luchè, Sfera Ebbasta",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273baacd7694d925cfc35efc588",
+    "lingua": "italiana"
+  },
+  {
+    "title": "ANNA",
     "singer": "30°C",
     "cover": "https://i.scdn.co/image/ab67616d0000b273617793c02b868e17f9951edc",
     "lingua": "italiana"
   },
   {
-    "title": "Anna, Niky Savage",
+    "title": "ANNA, Niky Savage",
     "singer": "TT LE GIRLZ",
     "cover": "https://i.scdn.co/image/ab67616d0000b273fb7329a6fb6154b1fa3704c7",
     "lingua": "italiana"
@@ -63,6 +135,12 @@
     "title": "Tranne te",
     "singer": "Fabri Fibra",
     "cover": "https://i.scdn.co/image/ab67616d0000b2734810e64dc7b92d6693b0d55a",
+    "lingua": "italiana"
+  },
+  {
+    "title": "I P’ ME, TU P’ TE",
+    "singer": "Geolier",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2736160e0b4c4bb1bd00add6c60",
     "lingua": "italiana"
   },
   {
@@ -90,15 +168,33 @@
     "lingua": "italiana"
   },
   {
-    "title": "A me mi piace",
-    "singer": "Alfa, Manu Chao",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273baea69bad095e8202009ba71",
-    "lingua": "italiana"
-  },
-  {
     "title": "Una Volta Ancora",
     "singer": "Fred De Palma, Ana Mena",
     "cover": "https://i.scdn.co/image/ab67616d0000b2731c3509a7f7690a2cbf8e1b3f",
+    "lingua": "italiana"
+  },
+  {
+    "title": "COME UN TUONO",
+    "singer": "Rose Villain, Gué",
+    "cover": "https://i.scdn.co/image/ab67616d00001e027d3c7c72548a5c8bff302714",
+    "lingua": "italiana"
+  },
+  {
+    "title": "SESSO E SAMBA",
+    "singer": "Tonyy Effe, Gaia",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273638bb7621c3b50df1ef607ca",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Mon Amour",
+    "singer": "Annalisa",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27318cfcfb5f053d8cf88b8b48c",
+    "lingua": "italiana"
+  },
+  {
+    "title": "ITALODISCO",
+    "singer": "The Kolors",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2737811146a7f29756c0bbda111",
     "lingua": "italiana"
   },
   {
@@ -150,6 +246,18 @@
     "lingua": "italiana"
   },
   {
+    "title": "Il filo rosso",
+    "singer": "Alfa",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2731ba5e37f7f18eb3fa4591a04",
+    "lingua": "italiana"
+  },
+  {
+    "title": "A me mi piace",
+    "singer": "Alfa, Manu Chao",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273baea69bad095e8202009ba71",
+    "lingua": "italiana"
+  },
+  {
     "title": "Tango",
     "singer": "Tananai",
     "cover": "https://i.scdn.co/image/ab67616d0000b273f233a0a95594c2d1da1e43e8",
@@ -198,9 +306,9 @@
     "lingua": "italiana"
   },
   {
-    "title": "Più bella cosa",
-    "singer": "Eros Ramazzotti",
-    "cover": "https://i.scdn.co/image/ab67616d0000b2734400e3f5234b4d217fd48c85",
+    "title": "Gli anni (96)",
+    "singer": "883",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2735fadc5fb1c4b1eb60798c7bc",
     "lingua": "italiana"
   },
   {
@@ -210,9 +318,21 @@
     "lingua": "italiana"
   },
   {
+    "title": "Vita spericolata",
+    "singer": "Vasco Rossi",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2735f859d5afb35312b549c59ab",
+    "lingua": "italiana"
+  },
+  {
     "title": "Certe Notti",
     "singer": "Ligabue",
     "cover": "https://i.scdn.co/image/ab67616d0000b2731143aad3ea8ef5823e5ebbe8",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Maledetta primavera",
+    "singer": "Loretta Goggi",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27395dcaca4f86ec0904426cb32",
     "lingua": "italiana"
   },
   {
@@ -222,9 +342,15 @@
     "lingua": "italiana"
   },
   {
-    "title": "Io vagabondo (CHe non sono altro)",
+    "title": "Io vagabondo (Che non sono altro)",
     "singer": "Nomadi",
     "cover": "https://i.scdn.co/image/ab67616d0000b273218645d74c580fc57fb89a7d",
+    "lingua": "italiana"
+  },
+  {
+    "title": "Più bella cosa",
+    "singer": "Eros Ramazzotti",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2734400e3f5234b4d217fd48c85",
     "lingua": "italiana"
   },
   {
@@ -255,12 +381,6 @@
     "title": "Angela",
     "singer": "Checco Zalone",
     "cover": "https://i.scdn.co/image/ab67616d0000b2734d40ffa2c1ecf2f65316edd0",
-    "lingua": "italiana"
-  },
-  {
-    "title": "Whats my destiny dragon ball",
-    "singer": "Giorgio Vanni",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273eda277eff19d4357f36b43f1",
     "lingua": "italiana"
   },
   {
@@ -594,9 +714,39 @@
     "lingua": "inglese"
   },
   {
+    "title": "Shallow",
+    "singer": "Lady Gaga, Bradley Cooper",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273e2d156fdc691f57900134342",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Perfect",
+    "singer": "Ed Sheeran",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Call Me Maybe",
+    "singer": "Carly Rae Jepsen",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273d3ee4bf67c2ac2154006ad72",
+    "lingua": "inglese"
+  },
+  {
     "title": "I want it that way",
     "singer": "Backstreet Boys",
     "cover": "https://i.scdn.co/image/ab67616d0000b2732160c02bc56f192df0f4986b",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Wonderwall",
+    "singer": "Oasis",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2732f2eeee9b405f4d00428d84c",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Oops...I did it again",
+    "singer": "Britney Spears",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273c50b7d96737041f4bfd844d6",
     "lingua": "inglese"
   }
 ]
