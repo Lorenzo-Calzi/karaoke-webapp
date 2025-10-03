@@ -199,7 +199,7 @@ export default function AdminPanel() {
                     </button>
 
                     {/* SVUOTA VOTI */}
-                    <button
+                    {/* <button
                         className="button"
                         onClick={() => {
                             confirmAction(
@@ -220,10 +220,10 @@ export default function AdminPanel() {
                             <span className="button_title">SVUOTA</span>
                             <p className="button_description">Svuota tabella voti</p>
                         </div>
-                    </button>
+                    </button> */}
 
                     {/* POPOLA VOTI */}
-                    <button
+                    {/* <button
                         className="button"
                         onClick={async () => {
                             const res = await fetch(
@@ -239,7 +239,7 @@ export default function AdminPanel() {
                             <span className="button_title">POPOLA</span>
                             <p className="button_description">Popola tabella voti</p>
                         </div>
-                    </button>
+                    </button> */}
 
                     {/* OVERRIDE VOTAZIONI (usa il VotingContext) */}
                     <button

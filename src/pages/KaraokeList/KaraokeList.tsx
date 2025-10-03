@@ -395,7 +395,7 @@ export default function KaraokeList() {
                     {errors.singer && <p className="error_message">{errors.singer}</p>}
                 </div>
                 <button type="submit" disabled={loading}>
-                    <p className="paragraph" style={{ fontWeight: 900 }}>
+                    <p className="paragraph" style={{ fontWeight: 600 }}>
                         {loading ? "Aggiungendo..." : "Aggiungi"}
                     </p>
                 </button>
