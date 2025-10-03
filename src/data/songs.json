@@ -66,6 +66,12 @@
     "lingua": "italiana"
   },
   {
+    "title": "P.E.S.",
+    "singer": "Club Dogo",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2731a38b36b6bfba6ff02e198ef",
+    "lingua": "italiana"
+  },
+  {
     "title": "Parole di ghiaccio",
     "singer": "Emis Killa",
     "cover": "https://i.scdn.co/image/ab67616d0000b273343ada3f2f036a4979857eec",
@@ -414,18 +420,6 @@
     "lingua": "spagnola"
   },
   {
-    "title": "Date La Vuelta",
-    "singer": "Luis Fonsi, Sebastián Yatra, Nicky Jam",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273f1cd873dcbf250ae851b5aa7",
-    "lingua": "spagnola"
-  },
-  {
-    "title": "Capaz (Merenguetón)",
-    "singer": "Alleh, Yorghaki",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273e686e94b5140cb98362235a6",
-    "lingua": "spagnola"
-  },
-  {
     "title": "Sofía",
     "singer": "Álvaro Soler",
     "cover": "https://i.scdn.co/image/ab67616d0000b2738937497be9a2da8e95ca718c",
@@ -441,18 +435,6 @@
     "title": "La Cintura",
     "singer": "Álvaro Soler",
     "cover": "https://i.scdn.co/image/ab67616d0000b2735767e044062c6d03256397e5",
-    "lingua": "spagnola"
-  },
-  {
-    "title": "Djadja (Remix)",
-    "singer": "Aya Nakamura, Maluma",
-    "cover": "https://i.scdn.co/image/ab67616d0000b2734ec452efed595a418b746ce8",
-    "lingua": "spagnola"
-  },
-  {
-    "title": "Tití Me Preguntó",
-    "singer": "Bad Bunny",
-    "cover": "https://i.scdn.co/image/ab67616d0000b2738a16b635c98c3d7209b73ce4",
     "lingua": "spagnola"
   },
   {
@@ -522,21 +504,9 @@
     "lingua": "spagnola"
   },
   {
-    "title": "Pepas",
-    "singer": "Farruko",
-    "cover": "https://i.scdn.co/image/ab67616d0000b2734239a6aa89738d8f798168ad",
-    "lingua": "spagnola"
-  },
-  {
     "title": "Musica",
     "singer": "Fly Project",
     "cover": "https://i.scdn.co/image/ab67616d0000b2731903dab9ecbfa52310aeb784",
-    "lingua": "spagnola"
-  },
-  {
-    "title": "Me Emborracharé",
-    "singer": "Grupo Extra",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273262b14c2ec6eb11849c7e926",
     "lingua": "spagnola"
   },
   {
@@ -678,12 +648,6 @@
     "lingua": "spagnola"
   },
   {
-    "title": "Miràndote",
-    "singer": "Rvfv",
-    "cover": "https://i.scdn.co/image/ab67616d0000b273a23466c42b2a5d5708738aff",
-    "lingua": "spagnola"
-  },
-  {
     "title": "Yo No Sé",
     "singer": "Rvfv, Pablo Mas",
     "cover": "https://i.scdn.co/image/ab67616d0000b273ea13f28450e095021d2bcbfe",
@@ -705,6 +669,12 @@
     "title": "La Plena - W Sound 05",
     "singer": "W Sound, Beéle, Ovy On The Drums",
     "cover": "https://i.scdn.co/image/ab67616d0000b273d629a6041cde59d7ba67143c",
+    "lingua": "spagnola"
+  },
+  {
+    "title": "Capaz (Merenguetón)",
+    "singer": "Alleh, Yorghaki",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273e686e94b5140cb98362235a6",
     "lingua": "spagnola"
   },
   {
@@ -747,6 +717,18 @@
     "title": "Oops...I did it again",
     "singer": "Britney Spears",
     "cover": "https://i.scdn.co/image/ab67616d0000b273c50b7d96737041f4bfd844d6",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Summer Paradise",
+    "singer": "Simple Plan",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2739f7b8f92d097a39af0c0178e",
+    "lingua": "inglese"
+  },
+  {
+    "title": "Stay",
+    "singer": "Justin Bieber, The Kid Laroi ",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27341e31d6ea1d493dd77933ee5",
     "lingua": "inglese"
   }
 ]
