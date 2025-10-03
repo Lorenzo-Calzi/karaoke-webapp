@@ -33,6 +33,36 @@ export default function Social() {
         fetchProfiles();
     }, []);
 
+    useEffect(() => {
+        const targets = document.querySelectorAll<HTMLElement>(
+            ".social_list .button, .social_section_label"
+        );
+        if (!targets.length) return;
+
+        const prefersReduced =
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (prefersReduced) {
+            targets.forEach(el => el.classList.add("enter"));
+            return;
+        }
+
+        const io = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("enter");
+                        io.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+
+        targets.forEach(el => io.observe(el));
+        return () => io.disconnect();
+    }, [profiles.length]);
+
     return (
         <div className="social container">
             <h2 className="title">Seguici sui Social</h2>
