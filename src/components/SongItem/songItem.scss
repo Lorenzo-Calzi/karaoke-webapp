@@ -61,8 +61,11 @@
   .song_buttons_container {
     display: flex;
     align-items: center;
+    height: 100%;
 
-    .song_vote {
+    .song_vote,
+    .song_toggle_played,
+    .song_admin_action {
       height: 40px;
       display: flex;
       align-items: center;
@@ -78,7 +81,7 @@
         padding-top: 1px;
       }
       i {
-        font-size: 1.7rem;
+        font-size: 1.2rem;
       }
     }
     .song_toggle_played {
@@ -86,6 +89,42 @@
       font-size: 1.7rem;
       padding: 0 1rem;
     }
+
+    .edit_buttons_container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+
+      .song_admin_delete {
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        color: #666;
+        background: rgba(255, 0, 0, 0.4);
+
+        border-radius: 0.25rem;
+
+        i {
+          color: white;
+        }
+      }
+      .song_admin_sort {
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        color: #666;
+        background: rgba(249, 249, 249, 0.4);
+        border-radius: 0.25rem;
+
+        i {
+          color: white;
+        }
+      }
+    }
+
     .disabled {
       opacity: 0.2;
     }

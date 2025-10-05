@@ -44,6 +44,9 @@
         box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
       }
     }
+    .button {
+      height: 34px;
+    }
   }
 
   .song_list {
@@ -53,5 +56,8 @@
     gap: 0.7rem;
     margin: 0;
     padding: 0;
+  }
+  .search_bar_container {
+    margin: 1rem 0;
   }
 }
