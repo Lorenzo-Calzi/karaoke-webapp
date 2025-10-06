@@ -485,13 +485,17 @@ export default function KaraokeList() {
                                 right: 0,
                                 top: "100%",
                                 zIndex: 50,
-                                background: "rgba(0,0,0,0.9)",
+                                background: "rgba(0,0,0,0.95)",
                                 border: "1px solid rgba(255,255,255,0.12)",
                                 borderRadius: 8,
-                                marginTop: 6,
+                                marginTop: 10,
+                                padding: "10px 0",
                                 maxHeight: 320,
                                 overflowY: "auto",
-                                boxShadow: "0 8px 28px rgba(0,0,0,.35)"
+                                boxShadow: "0 8px 28px rgba(0,0,0,.35)",
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 10
                             }}
                         >
                             {searching && (
@@ -503,9 +507,9 @@ export default function KaraokeList() {
                                         type="button"
                                         key={item.trackId}
                                         onClick={() => {
-                                            skipNextSearch.current = true; // evita riapertura immediata
+                                            skipNextSearch.current = true;
                                             setTitle(item.title);
-                                            setTrackId(item.trackId); // NON compiliamo singer_name: lo scrivi tu
+                                            setTrackId(item.trackId);
                                             setShowResults(false);
                                             titleRef.current?.blur();
                                             singerRef.current?.focus();
@@ -518,7 +522,7 @@ export default function KaraokeList() {
                                             alignItems: "center",
                                             textAlign: "left",
                                             background: "transparent",
-                                            color: "inherit",
+                                            color: "white",
                                             border: "none",
                                             cursor: "pointer"
                                         }}
@@ -527,8 +531,8 @@ export default function KaraokeList() {
                                             <img
                                                 src={item.cover}
                                                 alt=""
-                                                width={36}
-                                                height={36}
+                                                width={35}
+                                                height={35}
                                                 style={{ borderRadius: 4, objectFit: "cover" }}
                                             />
                                         )}
