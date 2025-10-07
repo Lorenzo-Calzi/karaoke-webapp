@@ -190,7 +190,7 @@ export default function KaraokeList() {
     const [showResults, setShowResults] = useState(false);
     const skipNextSearch = useRef(false);
 
-    const BLUR_DELAY_MS = 100;
+    const BLUR_DELAY_MS = 200;
     const blurTimer = useRef<number | null>(null);
 
     const fetchList = async () => {
