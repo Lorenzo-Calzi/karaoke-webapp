@@ -242,6 +242,7 @@ export default function KaraokeList() {
             );
             setResults(items);
             setShowResults(true);
+            requestAnimationFrame(() => (document.activeElement as HTMLElement | null)?.blur?.());
         } finally {
             setSearching(false);
         }

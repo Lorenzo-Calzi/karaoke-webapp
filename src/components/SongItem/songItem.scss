@@ -67,12 +67,13 @@
     .song_toggle_played,
     .song_admin_action {
       height: 40px;
+      width: 40px;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.7rem;
       background-color: rgba(159, 159, 159, 0.292);
-      padding: 0px 1rem;
-      border-radius: 50px;
+      border-radius: 0.5rem;
 
       .vote_count {
         font-size: 1rem;
@@ -103,7 +104,6 @@
         align-items: center;
         color: #666;
         background: rgba(255, 0, 0, 0.4);
-
         border-radius: 0.25rem;
 
         i {
