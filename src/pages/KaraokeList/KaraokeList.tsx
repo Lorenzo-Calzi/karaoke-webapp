@@ -190,6 +190,9 @@ export default function KaraokeList() {
     const [showResults, setShowResults] = useState(false);
     const skipNextSearch = useRef(false);
 
+    const BLUR_DELAY_MS = 600; // regola a piacere (400–800ms)
+    const blurTimer = useRef<number | null>(null);
+
     const fetchList = async () => {
         const { data, error } = await supabase
             .from("karaoke_list")
@@ -242,7 +245,6 @@ export default function KaraokeList() {
             );
             setResults(items);
             setShowResults(true);
-            requestAnimationFrame(() => (document.activeElement as HTMLElement | null)?.blur?.());
         } finally {
             setSearching(false);
         }
@@ -435,6 +437,33 @@ export default function KaraokeList() {
         return () => clearInterval(interval);
     }, [isDragging, isSavingOrder, editingId]);
 
+    useEffect(() => {
+        // se non ci sono risultati o il menu è chiuso, annulla timer
+        if (!showResults) {
+            if (blurTimer.current) {
+                clearTimeout(blurTimer.current);
+                blurTimer.current = null;
+            }
+            return;
+        }
+
+        // programma il blur con ritardo
+        if (blurTimer.current) clearTimeout(blurTimer.current);
+        blurTimer.current = window.setTimeout(() => {
+            const el = document.activeElement as HTMLElement | null;
+            // blur solo se è ancora focussato il campo Titolo
+            if (el === titleRef.current) el?.blur?.();
+            blurTimer.current = null;
+        }, BLUR_DELAY_MS);
+
+        return () => {
+            if (blurTimer.current) {
+                clearTimeout(blurTimer.current);
+                blurTimer.current = null;
+            }
+        };
+    }, [showResults]);
+
     return (
         <div className="karaokeList container">
             <CustomModal
@@ -462,9 +491,14 @@ export default function KaraokeList() {
                         placeholder="Titolo*"
                         value={title}
                         onChange={e => {
+                            // se sto digitando di nuovo, non voglio il blur programmato
+                            if (blurTimer.current) {
+                                clearTimeout(blurTimer.current);
+                                blurTimer.current = null;
+                            }
                             setTitle(e.target.value);
-                            setTrackId(null); // se ritocchi, invalidi la selezione
-                            setShowResults(false); // riapre solo dopo debounce
+                            setTrackId(null);
+                            setShowResults(false); // riapre solo dopo il debounce
                         }}
                         className={errors.title || errors.track ? "input_error" : ""}
                         ref={titleRef}
@@ -523,7 +557,7 @@ export default function KaraokeList() {
                                             alignItems: "center",
                                             textAlign: "left",
                                             background: "transparent",
-                                            color: "white",
+                                            color: "#fff",
                                             border: "none",
                                             cursor: "pointer"
                                         }}
