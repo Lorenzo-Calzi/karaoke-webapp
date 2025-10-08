@@ -517,18 +517,13 @@ export default function KaraokeList() {
                     {showResults && (results.length > 0 || searching) && (
                         <div
                             style={{
-                                position: "absolute",
-                                left: 0,
-                                right: 0,
-                                top: "100%",
-                                zIndex: 50,
-                                background: "rgba(0,0,0,0.9)",
+                                background: "rgba(0,0,0,0.3)",
                                 border: "1px solid rgba(255,255,255,0.12)",
-                                borderRadius: 8,
-                                marginTop: 6,
+                                borderRadius: 5,
+                                marginTop: "0.75rem",
                                 maxHeight: 320,
                                 overflowY: "auto",
-                                boxShadow: "0 8px 28px rgba(0,0,0,.35)"
+                                padding: "0 0.7rem"
                             }}
                         >
                             {searching && (
@@ -549,7 +544,8 @@ export default function KaraokeList() {
                                         }}
                                         style={{
                                             width: "100%",
-                                            padding: "10px 12px",
+                                            margin: "0.7rem 0",
+                                            padding: 0,
                                             display: "flex",
                                             gap: 10,
                                             alignItems: "center",
@@ -564,8 +560,8 @@ export default function KaraokeList() {
                                             <img
                                                 src={item.cover}
                                                 alt=""
-                                                width={36}
-                                                height={36}
+                                                width={40}
+                                                height={40}
                                                 style={{
                                                     borderRadius: 4,
                                                     objectFit: "cover",

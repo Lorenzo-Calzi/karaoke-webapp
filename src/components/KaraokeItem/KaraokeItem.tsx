@@ -89,13 +89,13 @@ export default function KaraokeItem({
                                 {editShowResults && (
                                     <div
                                         style={{
-                                            background: "rgba(0,0,0,0.4)",
+                                            background: "rgba(0,0,0,0.3)",
                                             border: "1px solid rgba(255,255,255,0.12)",
                                             borderRadius: 5,
-                                            marginTop: "0.4rem",
-                                            padding: "0 0.7rem",
+                                            marginTop: "0.75rem",
                                             maxHeight: 320,
-                                            overflowY: "auto"
+                                            overflowY: "auto",
+                                            padding: "0 0.7rem"
                                         }}
                                     >
                                         {editSearching && (
@@ -113,9 +113,9 @@ export default function KaraokeItem({
                                                     }
                                                     style={{
                                                         width: "100%",
-                                                        padding: "0",
+                                                        margin: "0.7rem 0",
+                                                        padding: 0,
                                                         display: "flex",
-                                                        margin: "10px 0",
                                                         gap: 10,
                                                         alignItems: "center",
                                                         textAlign: "left",
