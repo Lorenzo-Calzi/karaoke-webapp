@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { showError, showSuccess } from "../../lib/toast";
 import CustomModal from "../../components/CustomModal/CustomModal";
-import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
+import KaraokeItem from "../../components/KaraokeItem/KaraokeItem";
 import "./karaokeList.scss";
 
 type KaraokeEntry = {
@@ -15,155 +16,94 @@ type KaraokeEntry = {
     track_id?: string | null;
 };
 
-// ---- Spotify types ----
+/* ---------------- Spotify types + helpers (dedupe) ---------------- */
 type SpotifyApiTrack = {
     id: string;
     name: string;
+    popularity?: number;
     artists?: Array<{ name?: string }>;
-    album?: { images?: Array<{ url?: string }> };
+    album?: {
+        images?: Array<{ url?: string }>;
+        album_type?: "album" | "single" | "compilation";
+        release_date?: string;
+    };
 };
-type SpotifySearchResponse = {
-    tracks?: { items?: SpotifyApiTrack[] };
-};
+type SpotifySearchResponse = { tracks?: { items?: SpotifyApiTrack[] } };
 type UiSong = { trackId: string; title: string; artist: string; cover: string };
 
 const apiBaseUrl = import.meta.env.DEV ? "https://www.karaokeforyou.it" : "";
 
-/* ------------------------- Item della lista (Draggable) ------------------------- */
-function KaraokeItem({
-    entry,
-    index,
-    editingId,
-    editTitle,
-    editSinger,
-    onEdit,
-    onSaveEdit,
-    onCancelEdit,
-    onToggleSung,
-    onDelete,
-    onEditChange
-}: {
-    entry: KaraokeEntry;
-    index: number;
-    editingId: string | null;
-    editTitle: string;
-    editSinger: string;
-    onEdit: (entry: KaraokeEntry) => void;
-    onSaveEdit: (id: string) => void;
-    onCancelEdit: () => void;
-    onToggleSung: (id: string, currentValue: boolean) => void;
-    onDelete: (id: string) => void;
-    onEditChange: (field: "title" | "singer", value: string) => void;
-}) {
-    return (
-        <Draggable draggableId={entry.id} index={index}>
-            {(provided, snapshot) => (
-                <div
-                    className={`karaoke_item ${entry.sung ? "sung" : ""} ${
-                        snapshot.isDragging ? "dragging" : ""
-                    }`}
-                    data-id={entry.id}
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                >
-                    {editingId === entry.id ? (
-                        <div className="edit_form">
-                            <input
-                                value={editTitle}
-                                placeholder="Titolo*"
-                                onChange={e => onEditChange("title", e.target.value)}
-                                autoFocus
-                                onFocus={e => e.currentTarget.select()}
-                            />
-                            <input
-                                value={editSinger}
-                                placeholder="Chi deve cantarla*"
-                                onChange={e => onEditChange("singer", e.target.value)}
-                            />
-                            <div className="buttons">
-                                <button
-                                    onClick={() => onSaveEdit(entry.id)}
-                                    className="option"
-                                    style={{ backgroundColor: "rgba(85, 255, 0, 0.4)" }}
-                                >
-                                    <i className="fa-solid fa-check"></i>
-                                </button>
-                                <button
-                                    onClick={onCancelEdit}
-                                    className="option"
-                                    style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="content">
-                                <div className="song">
-                                    <p className="paragraph">{entry.title}</p>
-                                </div>
-                                <div className="user">
-                                    <p className="paragraph">{entry.singer_name}</p>
-                                </div>
+const BAD_WORDS = [
+    "remaster",
+    "remastered",
+    "live",
+    "acoustic",
+    "karaoke",
+    "instrumental",
+    "radio edit",
+    "sped up",
+    "slowed",
+    "remix",
+    "version",
+    "edit"
+];
 
-                                <div className="buttons">
-                                    <button
-                                        onClick={() => onToggleSung(entry.id, entry.sung)}
-                                        className="option"
-                                        style={{ backgroundColor: "rgba(249, 249, 249, 0.4)" }}
-                                    >
-                                        <i
-                                            className={`${
-                                                entry.sung ? "fa-solid" : "fa-regular"
-                                            } fa-square-check`}
-                                            style={{
-                                                color: entry.sung ? "#7CFC00" : "white",
-                                                fontSize: "18px"
-                                            }}
-                                        />
-                                    </button>
-                                    <button
-                                        onClick={() => onEdit(entry)}
-                                        className="option"
-                                        style={{ background: "rgba(0, 123, 255, 0.4)" }}
-                                    >
-                                        <i className="fa-solid fa-pencil"></i>
-                                    </button>
-                                    <button
-                                        onClick={() => onDelete(entry.id)}
-                                        className="option"
-                                        style={{ backgroundColor: "rgba(255, 0, 0, 0.4)" }}
-                                    >
-                                        <i className="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
+const norm = (s: string) =>
+    s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .replace(/\s*\([^)]*\)\s*/g, " ")
+        .replace(/\s*-\s*[^-]+$/g, " ")
+        .replace(/[^\p{L}\p{N} ]+/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
-                            <div
-                                className="drag-handle sortable-handle"
-                                {...provided.dragHandleProps}
-                            >
-                                <i className="fa-solid fa-grip-vertical"></i>
-                            </div>
-                        </>
-                    )}
-                </div>
-            )}
-        </Draggable>
-    );
+// ✅ controlla i “bad words” sul titolo GREZZO (minuscolo), non normalizzato
+const hasBadWord = (s: string) => {
+    const low = s.toLowerCase();
+    return BAD_WORDS.some(w => low.includes(w));
+};
+
+const scoreTrack = (t: SpotifyApiTrack) => {
+    let s = 0;
+    if (t.popularity != null) s += t.popularity / 100; // 0..1
+    if (t.album?.album_type === "single") s += 0.2; // preferisci single
+    if (hasBadWord(t.name)) s -= 0.7; // penalizza remix/live/etc. più forte
+    return s;
+};
+
+function collapseTracks(items: SpotifyApiTrack[]): UiSong[] {
+    const best = new Map<string, SpotifyApiTrack>(); // key = artist|title (normalizzati)
+    for (const t of items) {
+        const artist = t.artists?.[0]?.name ?? "";
+        const key = `${norm(artist)}|${norm(t.name)}`;
+        const prev = best.get(key);
+        if (!prev || scoreTrack(t) > scoreTrack(prev)) best.set(key, t);
+    }
+    const out: UiSong[] = [];
+    for (const t of best.values()) {
+        const imgs = t.album?.images ?? [];
+        const cover = imgs[2]?.url ?? imgs[1]?.url ?? imgs[0]?.url ?? ""; // prendi la più piccola disponibile
+        out.push({
+            trackId: t.id,
+            title: t.name,
+            artist: t.artists?.[0]?.name ?? "Sconosciuto",
+            cover
+        });
+    }
+    return out;
 }
 
 /* ---------------------------------- Pagina ---------------------------------- */
 export default function KaraokeList() {
-    // form state
+    // form (aggiunta)
     const [title, setTitle] = useState("");
     const [singerName, setSingerName] = useState("");
     const [trackId, setTrackId] = useState<string | null>(null);
 
     const titleRef = useRef<HTMLInputElement>(null);
     const singerRef = useRef<HTMLInputElement>(null);
-    const errorsRef = useRef<{ title?: string; singer?: string; track?: string }>({});
     const [errors, setErrors] = useState<{ title?: string; singer?: string; track?: string }>({});
 
     // lista
@@ -175,6 +115,10 @@ export default function KaraokeList() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState("");
     const [editSinger, setEditSinger] = useState("");
+    const editingEntryRef = useRef<KaraokeEntry | null>(null);
+    const editTitleRef = useRef<HTMLInputElement>(null);
+    const editSingerRef = useRef<HTMLInputElement>(null);
+    const [editTrackId, setEditTrackId] = useState<string | null>(null);
 
     // modale delete
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -184,14 +128,17 @@ export default function KaraokeList() {
     const [isDragging, setIsDragging] = useState(false);
     const [isSavingOrder, setIsSavingOrder] = useState(false);
 
-    // ricerca Spotify
+    // ricerca Spotify (aggiunta)
     const [searching, setSearching] = useState(false);
     const [results, setResults] = useState<UiSong[]>([]);
     const [showResults, setShowResults] = useState(false);
     const skipNextSearch = useRef(false);
 
-    const BLUR_DELAY_MS = 200;
-    const blurTimer = useRef<number | null>(null);
+    // ricerca Spotify (EDIT)
+    const [editSearching, setEditSearching] = useState(false);
+    const [editResults, setEditResults] = useState<UiSong[]>([]);
+    const [editShowResults, setEditShowResults] = useState(false);
+    const skipNextSearchEdit = useRef(false);
 
     const fetchList = async () => {
         const { data, error } = await supabase
@@ -204,7 +151,7 @@ export default function KaraokeList() {
         else setKaraokeList(data || []);
     };
 
-    // ricerca Spotify sul titolo (debounced)
+    /* ----------- Ricerca Spotify (AGGIUNTA) con dedupe ----------- */
     async function searchSongs(q: string) {
         const query = q.trim();
         if (!query) {
@@ -213,7 +160,6 @@ export default function KaraokeList() {
             setTrackId(null);
             return;
         }
-
         try {
             setSearching(true);
             const tokenRes = await fetch(`${apiBaseUrl}/api/spotify-token`);
@@ -226,7 +172,7 @@ export default function KaraokeList() {
 
             const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
                 query
-            )}&type=track&limit=12&market=IT`;
+            )}&type=track&limit=25&market=IT`;
             const res = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
             if (!res.ok) {
                 setResults([]);
@@ -235,22 +181,14 @@ export default function KaraokeList() {
             }
 
             const data: SpotifySearchResponse = await res.json();
-            const items = (data.tracks?.items ?? []).map(
-                (t): UiSong => ({
-                    trackId: t.id,
-                    title: t.name,
-                    artist: t.artists?.[0]?.name ?? "Sconosciuto",
-                    cover: t.album?.images?.[2]?.url ?? ""
-                })
-            );
-            setResults(items);
+            const collapsed = collapseTracks(data.tracks?.items ?? []);
+            setResults(collapsed);
             setShowResults(true);
         } finally {
             setSearching(false);
         }
     }
 
-    // debounce su "title" + skip dopo selezione
     useEffect(() => {
         const id = setTimeout(() => {
             if (skipNextSearch.current) {
@@ -268,7 +206,6 @@ export default function KaraokeList() {
         return () => clearTimeout(id);
     }, [title]);
 
-    // chiudi dropdown clic esterno
     useEffect(() => {
         function onDocClick(e: MouseEvent) {
             if (!titleRef.current) return;
@@ -280,7 +217,72 @@ export default function KaraokeList() {
         return () => document.removeEventListener("click", onDocClick);
     }, [showResults]);
 
-    // submit
+    /* ----------- Ricerca Spotify (EDIT) con dedupe ----------- */
+    async function searchSongsEdit(q: string) {
+        const query = q.trim();
+        if (!query) {
+            setEditResults([]);
+            setEditShowResults(false);
+            return;
+        }
+        try {
+            setEditSearching(true);
+            const tokenRes = await fetch(`${apiBaseUrl}/api/spotify-token`);
+            if (!tokenRes.ok) {
+                setEditResults([]);
+                setEditShowResults(false);
+                return;
+            }
+            const { access_token }: { access_token: string } = await tokenRes.json();
+
+            const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+                query
+            )}&type=track&limit=25&market=IT`;
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
+            if (!res.ok) {
+                setEditResults([]);
+                setEditShowResults(false);
+                return;
+            }
+
+            const data: SpotifySearchResponse = await res.json();
+            const collapsed = collapseTracks(data.tracks?.items ?? []);
+            setEditResults(collapsed);
+            setEditShowResults(true);
+        } finally {
+            setEditSearching(false);
+        }
+    }
+
+    useEffect(() => {
+        if (editingId === null) return;
+        const id = setTimeout(() => {
+            if (skipNextSearchEdit.current) {
+                skipNextSearchEdit.current = false;
+                return;
+            }
+            const q = editTitle.trim();
+            if (q.length >= 2) searchSongsEdit(q);
+            else {
+                setEditResults([]);
+                setEditShowResults(false);
+            }
+        }, 220);
+        return () => clearTimeout(id);
+    }, [editTitle, editingId]);
+
+    useEffect(() => {
+        function onDocClick(e: MouseEvent) {
+            if (!editTitleRef.current) return;
+            const parent = editTitleRef.current.parentElement;
+            if (e.target instanceof Node && parent?.contains(e.target)) return;
+            setEditShowResults(false);
+        }
+        if (editShowResults) document.addEventListener("click", onDocClick);
+        return () => document.removeEventListener("click", onDocClick);
+    }, [editShowResults]);
+
+    /* -------------------------- CRUD -------------------------- */
     const addSong = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -289,7 +291,6 @@ export default function KaraokeList() {
         if (!singerName.trim()) errs.singer = "Inserisci chi deve cantarla";
         if (!trackId) errs.track = "Seleziona una canzone dai risultati";
 
-        errorsRef.current = errs;
         setErrors(errs);
         if (errs.title) {
             titleRef.current?.focus();
@@ -301,14 +302,13 @@ export default function KaraokeList() {
         }
 
         setLoading(true);
-
         const maxPosition = Math.max(...karaokeList.map(i => i.order_position || 0), 0);
 
         const { error } = await supabase.from("karaoke_list").insert([
             {
                 title: title.trim(),
                 singer_name: singerName.trim(),
-                track_id: trackId, // 🔑 salviamo sempre il collegamento
+                track_id: trackId, // 🔑 collegamento certo alla traccia scelta
                 sung: false,
                 order_position: maxPosition + 1
             }
@@ -326,41 +326,60 @@ export default function KaraokeList() {
             titleRef.current?.blur();
             singerRef.current?.blur();
         }
-
         setLoading(false);
-    };
-
-    // edit
-    const saveEdit = async (id: string) => {
-        const { error } = await supabase
-            .from("karaoke_list")
-            .update({ title: editTitle, singer_name: editSinger })
-            .eq("id", id);
-
-        if (error) showError("Errore aggiornamento: " + error.message);
-        else {
-            showSuccess("Canzone aggiornata");
-            setEditingId(null);
-            fetchList();
-        }
     };
 
     const handleEdit = (entry: KaraokeEntry) => {
         setEditingId(entry.id);
+        editingEntryRef.current = entry;
         setEditTitle(entry.title);
         setEditSinger(entry.singer_name);
+        setEditTrackId(entry.track_id ?? null);
+        setEditResults([]);
+        setEditShowResults(false);
+        setTimeout(() => editTitleRef.current?.focus(), 0);
+    };
+
+    const saveEdit = async (id: string) => {
+        const newTrackId = editTrackId ?? editingEntryRef.current?.track_id ?? null;
+        const payload: Partial<KaraokeEntry> = {
+            title: editTitle,
+            singer_name: editSinger,
+            track_id: newTrackId
+        };
+
+        const { error } = await supabase.from("karaoke_list").update(payload).eq("id", id);
+        if (error) showError("Errore aggiornamento: " + error.message);
+        else {
+            showSuccess("Canzone aggiornata");
+            setEditingId(null);
+            editingEntryRef.current = null;
+            fetchList();
+        }
     };
 
     const handleEditChange = (field: "title" | "singer", value: string) => {
-        if (field === "title") setEditTitle(value);
-        if (field === "singer") setEditSinger(value);
+        if (field === "title") {
+            setEditTitle(value);
+            setEditShowResults(false); // riapre dopo debounce
+        } else {
+            setEditSinger(value);
+        }
     };
 
-    // delete
+    const onPickEditResult = (item: UiSong) => {
+        skipNextSearchEdit.current = true;
+        setEditTitle(item.title);
+        setEditTrackId(item.trackId); // collega la riga alla nuova canzone
+        setEditShowResults(false);
+        editSingerRef.current?.focus(); // scrivi chi deve cantarla
+    };
+
     const confirmDeleteSong = (id: string) => {
         setSongToDelete(id);
         setShowDeleteModal(true);
     };
+
     const handleDeleteConfirmed = async () => {
         if (!songToDelete) return;
         const { error } = await supabase.from("karaoke_list").delete().eq("id", songToDelete);
@@ -373,7 +392,6 @@ export default function KaraokeList() {
         setSongToDelete(null);
     };
 
-    // toggle sung
     const toggleSung = async (id: string, currentValue: boolean) => {
         const { error } = await supabase
             .from("karaoke_list")
@@ -437,35 +455,9 @@ export default function KaraokeList() {
         return () => clearInterval(interval);
     }, [isDragging, isSavingOrder, editingId]);
 
-    useEffect(() => {
-        // se non ci sono risultati o il menu è chiuso, annulla timer
-        if (!showResults) {
-            if (blurTimer.current) {
-                clearTimeout(blurTimer.current);
-                blurTimer.current = null;
-            }
-            return;
-        }
-
-        // programma il blur con ritardo
-        if (blurTimer.current) clearTimeout(blurTimer.current);
-        blurTimer.current = window.setTimeout(() => {
-            const el = document.activeElement as HTMLElement | null;
-            // blur solo se è ancora focussato il campo Titolo
-            if (el === titleRef.current) el?.blur?.();
-            blurTimer.current = null;
-        }, BLUR_DELAY_MS);
-
-        return () => {
-            if (blurTimer.current) {
-                clearTimeout(blurTimer.current);
-                blurTimer.current = null;
-            }
-        };
-    }, [showResults]);
-
     return (
         <div className="karaokeList container">
+            {/* Modale delete */}
             <CustomModal
                 show={showDeleteModal}
                 onClose={() => {
@@ -481,6 +473,7 @@ export default function KaraokeList() {
 
             <h2 className="title">Lista Karaoke</h2>
 
+            {/* --- FORM AGGIUNTA --- */}
             <form onSubmit={addSong} className="karaoke_form">
                 {/* Titolo con risultati Spotify (menu inline per non toccare SCSS) */}
                 <div className="form_group" style={{ position: "relative" }}>
@@ -491,13 +484,8 @@ export default function KaraokeList() {
                         placeholder="Titolo*"
                         value={title}
                         onChange={e => {
-                            // se sto digitando di nuovo, non voglio il blur programmato
-                            if (blurTimer.current) {
-                                clearTimeout(blurTimer.current);
-                                blurTimer.current = null;
-                            }
                             setTitle(e.target.value);
-                            setTrackId(null);
+                            setTrackId(null); // se ritocchi, invalidi la selezione
                             setShowResults(false); // riapre solo dopo il debounce
                         }}
                         className={errors.title || errors.track ? "input_error" : ""}
@@ -515,22 +503,13 @@ export default function KaraokeList() {
                     {showResults && (results.length > 0 || searching) && (
                         <div
                             style={{
-                                position: "absolute",
-                                left: 0,
-                                right: 0,
-                                top: "100%",
-                                zIndex: 50,
-                                background: "rgba(0,0,0,0.95)",
+                                background: "rgba(0,0,0,0.4)",
                                 border: "1px solid rgba(255,255,255,0.12)",
-                                borderRadius: 8,
-                                marginTop: 10,
-                                padding: "10px 0",
+                                borderRadius: 5,
+                                marginTop: "0.4rem",
+                                padding: "0 0.7rem",
                                 maxHeight: 320,
-                                overflowY: "auto",
-                                boxShadow: "0 8px 28px rgba(0,0,0,.35)",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 10
+                                overflowY: "auto"
                             }}
                         >
                             {searching && (
@@ -542,22 +521,23 @@ export default function KaraokeList() {
                                         type="button"
                                         key={item.trackId}
                                         onClick={() => {
-                                            skipNextSearch.current = true;
+                                            skipNextSearch.current = true; // evita riapertura immediata
                                             setTitle(item.title);
-                                            setTrackId(item.trackId);
+                                            setTrackId(item.trackId); // NON compiliamo singer_name: lo scrivi tu
                                             setShowResults(false);
                                             titleRef.current?.blur();
                                             singerRef.current?.focus();
                                         }}
                                         style={{
                                             width: "100%",
-                                            padding: "10px 12px",
+                                            padding: "0",
                                             display: "flex",
+                                            margin: "10px 0",
                                             gap: 10,
                                             alignItems: "center",
                                             textAlign: "left",
                                             background: "transparent",
-                                            color: "#fff",
+                                            color: "inherit",
                                             border: "none",
                                             cursor: "pointer"
                                         }}
@@ -566,16 +546,47 @@ export default function KaraokeList() {
                                             <img
                                                 src={item.cover}
                                                 alt=""
-                                                width={35}
-                                                height={35}
-                                                style={{ borderRadius: 4, objectFit: "cover" }}
+                                                width={40}
+                                                height={40}
+                                                style={{
+                                                    borderRadius: 4,
+                                                    objectFit: "cover",
+                                                    flex: "0 0 auto"
+                                                }}
                                             />
                                         )}
-                                        <div style={{ display: "flex", flexDirection: "column" }}>
-                                            <span style={{ fontWeight: 600, lineHeight: 1.2 }}>
+                                        {/* Testi monoriga con ellissi */}
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                minWidth: 0
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    lineHeight: 1.2,
+                                                    fontWeight: 600,
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    maxWidth: "100%"
+                                                }}
+                                                title={item.title}
+                                            >
                                                 {item.title}
                                             </span>
-                                            <span style={{ opacity: 0.8, fontSize: 13 }}>
+                                            <span
+                                                style={{
+                                                    opacity: 0.85,
+                                                    fontSize: 13,
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    maxWidth: "100%"
+                                                }}
+                                                title={item.artist}
+                                            >
                                                 {item.artist}
                                             </span>
                                         </div>
@@ -606,6 +617,7 @@ export default function KaraokeList() {
                 </button>
             </form>
 
+            {/* --- FILTRO --- */}
             {karaokeList.some(song => song.sung) && (
                 <label className="already_sung_label">
                     <input
@@ -621,6 +633,7 @@ export default function KaraokeList() {
                 </label>
             )}
 
+            {/* --- LISTA --- */}
             <div className="karaoke_entries">
                 <DragDropContext
                     onDragStart={() => setIsDragging(true)}
@@ -652,6 +665,18 @@ export default function KaraokeList() {
                                             onToggleSung={toggleSung}
                                             onDelete={confirmDeleteSong}
                                             onEditChange={handleEditChange}
+                                            // refs sicuri
+                                            editTitleRef={editTitleRef}
+                                            editSingerRef={editSingerRef}
+                                            // dropdown edit solo sulla riga in editing
+                                            editShowResults={
+                                                editingId === entry.id ? editShowResults : false
+                                            }
+                                            editResults={editingId === entry.id ? editResults : []}
+                                            editSearching={
+                                                editingId === entry.id ? editSearching : false
+                                            }
+                                            onPickEditResult={onPickEditResult}
                                         />
                                     ))}
                                 {provided.placeholder}
@@ -660,6 +685,20 @@ export default function KaraokeList() {
                     </Droppable>
                 </DragDropContext>
             </div>
+
+            {/* Modale delete (duplicata qui per avere overlay sopra la lista) */}
+            <CustomModal
+                show={showDeleteModal}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setSongToDelete(null);
+                }}
+                title="Conferma eliminazione"
+                description="Sei sicuro di voler eliminare questa canzone dalla lista?"
+                onPrimaryAction={handleDeleteConfirmed}
+                showSecondaryButton={true}
+                timer={false}
+            />
         </div>
     );
 }

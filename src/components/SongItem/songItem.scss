@@ -72,7 +72,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.7rem;
-      background-color: rgba(159, 159, 159, 0.292);
+      // background-color: rgba(159, 159, 159, 0.292);
       border-radius: 0.5rem;
 
       .vote_count {
@@ -84,11 +84,6 @@
       i {
         font-size: 1.2rem;
       }
-    }
-    .song_toggle_played {
-      height: 40px;
-      font-size: 1.7rem;
-      padding: 0 1rem;
     }
 
     .edit_buttons_container {

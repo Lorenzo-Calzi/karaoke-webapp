@@ -12,6 +12,7 @@ type Props = {
     disabled?: boolean;
     isAdmin?: boolean;
     played?: boolean;
+    queued?: boolean;
     onTogglePlayed?: () => void;
     onAddRecommended?: () => void;
     onRemoveRecommended?: () => void;
@@ -31,12 +32,29 @@ export default function SongItem({
     disabled,
     isAdmin,
     played,
+    queued,
     onTogglePlayed,
     onAddRecommended,
     onRemoveRecommended,
     onMoveUp,
     onMoveDown
 }: Props) {
+    const stateIcon = !isAdmin ? (
+        played ? (
+            <i
+                className="fa-solid fa-square-check"
+                style={{ color: "#7CFC00" }}
+                title="Cantata"
+            ></i>
+        ) : queued ? (
+            <i
+                className="fa-solid fa-hourglass-half"
+                style={{ color: "#fcba03" }}
+                title="Prenotata"
+            ></i>
+        ) : null
+    ) : null;
+
     return (
         <li className={`song_item ${played ? "played" : ""}`} style={{ ["--i" as string]: index }}>
             <img src={cover} alt={title} className="song_cover" />
@@ -46,7 +64,7 @@ export default function SongItem({
             </div>
 
             <div className="song_buttons_container">
-                {played ? (
+                {played || queued ? (
                     <div
                         className="song_toggle_played"
                         onClick={() => {
@@ -54,7 +72,7 @@ export default function SongItem({
                         }}
                         title="Segna come NON cantata"
                     >
-                        <i className="fa-solid fa-square-check" style={{ color: "#7CFC00" }}></i>
+                        {stateIcon}
                     </div>
                 ) : (
                     <>
