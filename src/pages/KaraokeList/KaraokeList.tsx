@@ -59,11 +59,7 @@ const norm = (s: string) =>
         .replace(/\s+/g, " ")
         .trim();
 
-// ✅ controlla i “bad words” sul titolo GREZZO (minuscolo), non normalizzato
-const hasBadWord = (s: string) => {
-    const low = s.toLowerCase();
-    return BAD_WORDS.some(w => low.includes(w));
-};
+const hasBadWord = (s: string) => BAD_WORDS.some(w => s.toLowerCase().includes(w));
 
 const scoreTrack = (t: SpotifyApiTrack) => {
     let s = 0;
@@ -93,6 +89,24 @@ function collapseTracks(items: SpotifyApiTrack[]): UiSong[] {
         });
     }
     return out;
+}
+
+/* --------------------------- focus helper --------------------------- */
+function focusNoScroll(el: HTMLElement | null | undefined) {
+    if (!el) return;
+    const x = window.scrollX;
+    const y = window.scrollY;
+    try {
+        (el as HTMLElement).focus({ preventScroll: true });
+    } catch {
+        el.focus();
+    }
+    // ripristina la posizione in ogni caso (fallback per browser che ignorano preventScroll)
+    requestAnimationFrame(() => {
+        window.scrollTo(x, y);
+        // doppio rAF utile su iOS per contrastare lo “snap” della tastiera
+        requestAnimationFrame(() => window.scrollTo(x, y));
+    });
 }
 
 /* ---------------------------------- Pagina ---------------------------------- */
@@ -293,11 +307,11 @@ export default function KaraokeList() {
 
         setErrors(errs);
         if (errs.title) {
-            titleRef.current?.focus();
+            focusNoScroll(titleRef.current);
             return;
         }
         if (errs.singer) {
-            singerRef.current?.focus();
+            focusNoScroll(singerRef.current);
             return;
         }
 
@@ -308,7 +322,7 @@ export default function KaraokeList() {
             {
                 title: title.trim(),
                 singer_name: singerName.trim(),
-                track_id: trackId, // 🔑 collegamento certo alla traccia scelta
+                track_id: trackId, // collegamento certo alla traccia scelta
                 sung: false,
                 order_position: maxPosition + 1
             }
@@ -337,7 +351,7 @@ export default function KaraokeList() {
         setEditTrackId(entry.track_id ?? null);
         setEditResults([]);
         setEditShowResults(false);
-        setTimeout(() => editTitleRef.current?.focus(), 0);
+        setTimeout(() => editTitleRef.current?.focus(), 0); // qui ok se scrolla perché è la stessa posizione
     };
 
     const saveEdit = async (id: string) => {
@@ -372,7 +386,7 @@ export default function KaraokeList() {
         setEditTitle(item.title);
         setEditTrackId(item.trackId); // collega la riga alla nuova canzone
         setEditShowResults(false);
-        editSingerRef.current?.focus(); // scrivi chi deve cantarla
+        focusNoScroll(editSingerRef.current); // ✅ focus senza scroll
     };
 
     const confirmDeleteSong = (id: string) => {
@@ -446,7 +460,7 @@ export default function KaraokeList() {
         setTimeout(fetchList, 400);
     };
 
-    // polling soft
+    // polling soft (se lo usi; altrimenti puoi rimuoverlo)
     useEffect(() => {
         fetchList();
         const interval = setInterval(() => {
@@ -475,7 +489,7 @@ export default function KaraokeList() {
 
             {/* --- FORM AGGIUNTA --- */}
             <form onSubmit={addSong} className="karaoke_form">
-                {/* Titolo con risultati Spotify (menu inline per non toccare SCSS) */}
+                {/* Titolo con risultati Spotify */}
                 <div className="form_group" style={{ position: "relative" }}>
                     <input
                         name="title"
@@ -493,7 +507,7 @@ export default function KaraokeList() {
                         onKeyDown={e => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
-                                singerRef.current?.focus();
+                                focusNoScroll(singerRef.current); // ✅ focus senza scroll
                             }
                         }}
                     />
@@ -503,13 +517,18 @@ export default function KaraokeList() {
                     {showResults && (results.length > 0 || searching) && (
                         <div
                             style={{
-                                background: "rgba(0,0,0,0.4)",
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: "100%",
+                                zIndex: 50,
+                                background: "rgba(0,0,0,0.9)",
                                 border: "1px solid rgba(255,255,255,0.12)",
-                                borderRadius: 5,
-                                marginTop: "0.4rem",
-                                padding: "0 0.7rem",
+                                borderRadius: 8,
+                                marginTop: 6,
                                 maxHeight: 320,
-                                overflowY: "auto"
+                                overflowY: "auto",
+                                boxShadow: "0 8px 28px rgba(0,0,0,.35)"
                             }}
                         >
                             {searching && (
@@ -526,13 +545,12 @@ export default function KaraokeList() {
                                             setTrackId(item.trackId); // NON compiliamo singer_name: lo scrivi tu
                                             setShowResults(false);
                                             titleRef.current?.blur();
-                                            singerRef.current?.focus();
+                                            focusNoScroll(singerRef.current); // ✅ focus senza scroll
                                         }}
                                         style={{
                                             width: "100%",
-                                            padding: "0",
+                                            padding: "10px 12px",
                                             display: "flex",
-                                            margin: "10px 0",
                                             gap: 10,
                                             alignItems: "center",
                                             textAlign: "left",
@@ -546,8 +564,8 @@ export default function KaraokeList() {
                                             <img
                                                 src={item.cover}
                                                 alt=""
-                                                width={40}
-                                                height={40}
+                                                width={36}
+                                                height={36}
                                                 style={{
                                                     borderRadius: 4,
                                                     objectFit: "cover",
@@ -665,7 +683,7 @@ export default function KaraokeList() {
                                             onToggleSung={toggleSung}
                                             onDelete={confirmDeleteSong}
                                             onEditChange={handleEditChange}
-                                            // refs sicuri
+                                            // refs
                                             editTitleRef={editTitleRef}
                                             editSingerRef={editSingerRef}
                                             // dropdown edit solo sulla riga in editing
