@@ -67,10 +67,10 @@ export default function SongItem({
                 {played || queued ? (
                     <div
                         className="song_toggle_played"
-                        onClick={() => {
-                            if (isAdmin && onTogglePlayed) onTogglePlayed();
-                        }}
-                        title="Segna come NON cantata"
+                        // onClick={() => {
+                        //     if (isAdmin && onTogglePlayed) onTogglePlayed();
+                        // }}
+                        // title="Segna come NON cantata"
                     >
                         {stateIcon}
                     </div>

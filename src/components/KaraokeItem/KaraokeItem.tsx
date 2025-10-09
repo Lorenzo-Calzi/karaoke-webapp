@@ -153,7 +153,8 @@ export default function KaraokeItem({
                                                                 whiteSpace: "nowrap",
                                                                 overflow: "hidden",
                                                                 textOverflow: "ellipsis",
-                                                                maxWidth: "100%"
+                                                                maxWidth: "100%",
+                                                                color: "#fff"
                                                             }}
                                                             title={item.title}
                                                         >
@@ -166,7 +167,8 @@ export default function KaraokeItem({
                                                                 whiteSpace: "nowrap",
                                                                 overflow: "hidden",
                                                                 textOverflow: "ellipsis",
-                                                                maxWidth: "100%"
+                                                                maxWidth: "100%",
+                                                                color: "#fff"
                                                             }}
                                                             title={item.artist}
                                                         >
