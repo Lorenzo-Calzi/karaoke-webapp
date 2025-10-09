@@ -527,7 +527,15 @@ export default function KaraokeList() {
                             }}
                         >
                             {searching && (
-                                <div style={{ padding: 12, fontSize: 14 }}>Cerco su Spotify…</div>
+                                <div
+                                    style={{
+                                        padding: "0.7rem",
+                                        fontSize: "0.75rem",
+                                        color: "#fff"
+                                    }}
+                                >
+                                    Cerco su Spotify…
+                                </div>
                             )}
                             {!searching &&
                                 results.map(item => (
@@ -594,7 +602,7 @@ export default function KaraokeList() {
                                             <span
                                                 style={{
                                                     opacity: 0.85,
-                                                    fontSize: 13,
+                                                    fontSize: "0.8rem",
                                                     whiteSpace: "nowrap",
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",

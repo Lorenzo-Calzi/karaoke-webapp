@@ -70,7 +70,14 @@ export default function ConsigliaUnaCanzone() {
     const searchBarRef = useRef<HTMLInputElement>(null);
     const [showModal, setShowModal] = useState(false);
 
-    // const isReady = (votingAllowed !== undefined || isAdmin) && !loadingVotedSongs;
+    // ==== ANIMAZIONI: IntersectionObserver persistente ====
+    const ioRef = useRef<IntersectionObserver | null>(null);
+    // contestoLista cambia quando cambia ciò che stai mostrando (per resettare le animazioni iniziali)
+    const listContext = (() => {
+        if (activeTab === "ranking") return "ranking";
+        // tab "search": se query vuota mostri i votedSongsDetails, altrimenti results
+        return query.trim() === "" ? "search-voted" : "search-results";
+    })();
 
     const normalizeText = (text: string) =>
         text
@@ -521,6 +528,7 @@ export default function ConsigliaUnaCanzone() {
         }
     }, [votedSongs, currentVoterId]);
 
+    // ==== Effetto esistente di fade_in / fade_out (lasciato invariato) ====
     useEffect(() => {
         const checkVisibility = () => {
             const searchBarBottom = searchBarRef.current?.getBoundingClientRect().bottom || 0;
@@ -550,6 +558,60 @@ export default function ConsigliaUnaCanzone() {
             window.removeEventListener("resize", checkVisibility);
         };
     }, [results, query, activeTab]);
+
+    // ==== NUOVE ANIMAZIONI: gestione .inview per evitare opacity:0 ====
+
+    // (A) Setup/Reset animazioni quando cambia il contesto della lista (tab o tipo lista)
+    useEffect(() => {
+        // chiudi e resetta un eventuale observer precedente
+        if (ioRef.current) {
+            ioRef.current.disconnect();
+            ioRef.current = null;
+        }
+
+        const items = Array.from(document.querySelectorAll<HTMLElement>(".song_item"));
+
+        // reset animazione: togli .inview (così la animazione iniziale può rieseguire)
+        items.forEach(el => el.classList.remove("inview"));
+
+        const prefersReduced =
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (prefersReduced) {
+            items.forEach(el => el.classList.add("inview"));
+            return;
+        }
+
+        const io = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("inview");
+                        io.unobserve(entry.target as Element);
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+        ioRef.current = io;
+
+        // osserva tutti gli item attuali
+        items.forEach(el => io.observe(el));
+
+        return () => {
+            io.disconnect();
+            ioRef.current = null;
+        };
+    }, [listContext]); // cambia quando: tab cambia oppure query passa da "" a non-vuota (e viceversa)
+
+    // (B) Quando arrivano/si aggiornano i dati, attacca l’observer ai nodi NON ancora inview
+    useEffect(() => {
+        const io = ioRef.current;
+        if (!io) return;
+
+        const fresh = document.querySelectorAll<HTMLElement>(".song_item:not(.inview)");
+        fresh.forEach(el => io.observe(el));
+    }, [results.length, votedSongsDetails.length, topSongs.length]);
 
     // if (!isReady) return <Loader />;
 
