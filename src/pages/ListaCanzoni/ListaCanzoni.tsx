@@ -103,6 +103,7 @@ export default function ListaCanzoni() {
 
     const { session } = useAdmin();
     const isAdmin = !!session;
+    const isSuperadmin = session?.isSuperadmin;
 
     // Admin toggle
     const [adminMode, setAdminMode] = useState(false);
@@ -533,7 +534,7 @@ export default function ListaCanzoni() {
                     <option value="inglese">Inglesi</option>
                 </select>
 
-                {isAdmin && (
+                {isSuperadmin && (
                     <button
                         className="button"
                         onClick={() => setAdminMode(v => !v)}
@@ -544,7 +545,7 @@ export default function ListaCanzoni() {
                 )}
             </div>
 
-            {isAdmin && adminMode && (
+            {isSuperadmin && adminMode && (
                 <div className="admin_panel">
                     <SearchBar
                         query={query}
